@@ -1,0 +1,5 @@
+_minted-configuration/
+elpa/
+*.tex
+places
+projectile-bookmarks.eld
