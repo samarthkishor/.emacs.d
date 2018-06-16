@@ -50,8 +50,7 @@
     :ensure t
     :init
     (diminish 'undo-tree-mode)
-    (diminish 'flyspell-mode)
-    (diminish 'projectile-mode))
+    (diminish 'flyspell-mode))
 
 (setq display-time-default-load-average nil)
 
@@ -185,6 +184,16 @@
 (add-to-list 'org-latex-packages-alist '("" "minted"))
 (setq org-latex-listings 'minted)
 
+(use-package helm
+  :ensure t
+  :diminish helm-mode
+  :bind
+  ("C-x C-f" . 'helm-find-files)
+  ("C-x C-b" . 'helm-buffers-list)
+  ("M-x" . 'helm-M-x)
+  :init
+  (helm-mode 1))
+
 (require 'flycheck)
 
 (flycheck-define-checker proselint
@@ -228,6 +237,7 @@
 
 (use-package projectile
   :ensure t
+  :diminish projectile-mode
   :init
     (projectile-mode 1))
 

@@ -106,8 +106,7 @@ Get rid of clutter using =diminish=.
       :ensure t
       :init
       (diminish 'undo-tree-mode)
-      (diminish 'flyspell-mode)
-      (diminish 'projectile-mode))
+      (diminish 'flyspell-mode))
 #+END_SRC
 
 Don't display the system load average.
@@ -390,6 +389,22 @@ Produce pdfs with syntax highlighting with =minted=.
 (setq org-latex-listings 'minted)
 #+END_SRC
 
+* Helm
+
+Use Helm for incremental completions and narrowing selections.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm
+    :ensure t
+    :diminish helm-mode
+    :bind
+    ("C-x C-f" . 'helm-find-files)
+    ("C-x C-b" . 'helm-buffers-list)
+    ("M-x" . 'helm-M-x)
+    :init
+    (helm-mode 1))
+#+END_SRC
+
 * Prose
 ** Linting
 
@@ -477,6 +492,7 @@ No explanation needed.
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
     :ensure t
+    :diminish projectile-mode
     :init
       (projectile-mode 1))
 #+END_SRC
