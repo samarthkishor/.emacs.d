@@ -51,6 +51,7 @@
     :init
     (diminish 'undo-tree-mode)
     (diminish 'auto-revert-mode)
+    (diminish 'global-auto-revert-mode)
     (diminish 'flyspell-mode))
 
 (setq display-time-default-load-average nil)
@@ -163,7 +164,10 @@
 
 (setq org-directory "~/Dropbox/org")
 
-(setq org-agenda-files (list "~/Dropbox/org/todo.org"
+(global-set-key (kbd "C-c a") 'org-agenda)
+(setq org-agenda-show-log t)
+
+(setq org-agenda-files (list "~/Dropbox/org/tasks.org"
                              "~/Dropbox/org/beorg-local.org"))
 
 (setq org-log-done 'time)

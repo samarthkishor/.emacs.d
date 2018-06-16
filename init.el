@@ -21,9 +21,7 @@
    (quote
     ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" default)))
  '(display-time-mode t)
- '(org-agenda-files
-   (quote
-    ("~/.emacs.d/configuration.org" "~/Dropbox/org/todo.org" "~/Dropbox/org/beorg-local.org")))
+ '(org-agenda-files (quote ("~/Dropbox/org/beorg-local.org")))
  '(package-selected-packages
    (quote
     (helm telephone-line minions which-key pretty-mode smart-mode-line spaceline-all-the-icons all-the-icons diminish nlinum-hl fancy-battery spaceline exec-path-from-shell flycheck ox-pandoc evil-magit melpa-upstream-visit magit org-bullets evil-visual-mark-mode))))

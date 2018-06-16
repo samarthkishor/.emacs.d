@@ -107,6 +107,7 @@ Get rid of clutter using =diminish=.
       :init
       (diminish 'undo-tree-mode)
       (diminish 'auto-revert-mode)
+      (diminish 'global-auto-revert-mode)
       (diminish 'flyspell-mode))
 #+END_SRC
 
@@ -345,7 +346,10 @@ Store org files in Dropbox.
 Setup the global TODO list.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files (list "~/Dropbox/org/todo.org"
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (setq org-agenda-show-log t)
+
+  (setq org-agenda-files (list "~/Dropbox/org/tasks.org"
                                "~/Dropbox/org/beorg-local.org"))
 #+END_SRC
 
