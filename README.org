@@ -1,0 +1,6 @@
+#+TITLE: My Emacs Configuration
+#+AUTHOR: Samarth Kishor
+
+Making the transition from Vim to Emacs (with Evil Mode, of course)
+
+The main configuration settings are in =configuration.org= which controls =init.el=
