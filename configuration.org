@@ -106,6 +106,7 @@ Get rid of clutter using =diminish=.
       :ensure t
       :init
       (diminish 'undo-tree-mode)
+      (diminish 'auto-revert-mode)
       (diminish 'flyspell-mode))
 #+END_SRC
 

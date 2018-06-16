@@ -50,6 +50,7 @@
     :ensure t
     :init
     (diminish 'undo-tree-mode)
+    (diminish 'auto-revert-mode)
     (diminish 'flyspell-mode))
 
 (setq display-time-default-load-average nil)
