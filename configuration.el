@@ -68,7 +68,7 @@
     (setq-default mode-line-format
                   (list
                    "("
-                   "%02l" "," "%01c"
+                   "%02l" "," "%02c"
                    ") "
                    mode-line-front-space
                    " "

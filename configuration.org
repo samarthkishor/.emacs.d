@@ -80,12 +80,15 @@ Set the theme as a "safe theme".
 
 ** Mode line
 
-Use =fancy-battery=.
+Use =fancy-battery= to display the battery status in the mode-line.
 
 #+BEGIN_SRC emacs-lisp
   (display-battery-mode 1)
   (display-time-mode 1)
 #+END_SRC
+
+Configure the mode-line and use =all-the-icons= for some git branch eye-candy.
+I didn't want to include any evil mode status indicators to keep things clean.
 
 #+BEGIN_SRC emacs-lisp
   (use-package all-the-icons
@@ -122,7 +125,7 @@ Use =fancy-battery=.
       (setq-default mode-line-format
                     (list
                      "("
-                     "%02l" "," "%01c"
+                     "%02l" "," "%02c"
                      ") "
                      mode-line-front-space
                      " "
@@ -138,7 +141,7 @@ Use =fancy-battery=.
       (concat evil-mode-line-tag)))
 #+END_SRC
 
-Use =telephone-line=.
+Use =telephone-line=. [disabled]
 
 #+BEGIN_SRC emacs-lisp
   ;; (require 'telephone-line)
