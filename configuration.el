@@ -31,20 +31,72 @@
 
 (setq custom-safe-themes t)
 
-(require 'telephone-line)
-(setq telephone-line-lhs
-      '((evil   . (telephone-line-evil-tag-segment))
-        (accent . (telephone-line-vc-segment
-                   telephone-line-erc-modified-channels-segment
-                   telephone-line-process-segment))
-        (nil    . (telephone-line-minor-mode-segment
-                   telephone-line-buffer-segment))))
-(setq telephone-line-rhs
-      '((nil    . (telephone-line-misc-info-segment))
-        (accent . (telephone-line-major-mode-segment
-                   telephone-line-flycheck-segment))
-        (evil   . (telephone-line-airline-position-segment))))
-(telephone-line-mode t)
+(display-battery-mode 1)
+(display-time-mode 1)
+
+(use-package all-the-icons
+  :demand
+  :init
+  (progn (defun -custom-modeline-github-vc ()
+           (let ((branch (mapconcat 'concat (cdr (split-string vc-mode "[:-]")) "-")))
+             (concat
+              (propertize (format " %s" (all-the-icons-octicon "git-branch"))
+                          'face `(:height 1 :family ,(all-the-icons-octicon-family))
+                          'display '(raise 0))
+              (propertize (format " %s" branch))
+              (propertize "  "))))
+
+         (defun -custom-modeline-svn-vc ()
+           (let ((revision (cadr (split-string vc-mode "-"))))
+             (concat
+              (propertize (format " %s" (all-the-icons-faicon "cloud"))
+                          'face `(:height 1)
+                          'display '(raise 0))
+              (propertize (format " %s" revision) 'face `(:height 0.9)))))
+
+         (defvar mode-line-my-vc
+           '(:propertize
+             (:eval (when vc-mode
+                      (cond
+                       ((string-match "Git[:-]" vc-mode) (-custom-modeline-github-vc))
+                       ((string-match "SVN-" vc-mode) (-custom-modeline-svn-vc))
+                       (t (format "%s" vc-mode)))))
+             face mode-line-directory)
+           "Formats the current directory's git information in the modeline."))
+  :config
+  (progn
+    (setq-default mode-line-format
+                  (list
+                   "("
+                   "%02l" "," "%01c"
+                   ") "
+                   mode-line-front-space
+                   " "
+                   mode-line-mule-info
+                   mode-line-modified
+                   mode-line-frame-identification
+                   mode-line-buffer-identification
+                   " %6 "
+                   mode-line-modes
+                   mode-line-my-vc
+                   '("  " battery-mode-line-string "  " display-time-string)
+                   ))
+    (concat evil-mode-line-tag)))
+
+;; (require 'telephone-line)
+;; (setq telephone-line-lhs
+;;       '((evil   . (telephone-line-evil-tag-segment))
+;;         (accent . (telephone-line-vc-segment
+;;                    ;; telephone-line-erc-modified-channels-segment
+;;                    telephone-line-process-segment))
+;;         (nil    . (telephone-line-minor-mode-segment
+;;                    telephone-line-buffer-segment))))
+;; (setq telephone-line-rhs
+;;       '((nil    . (telephone-line-misc-info-segment))
+;;         (accent . (telephone-line-major-mode-segment
+;;                    telephone-line-flycheck-segment))
+;;         (evil   . (telephone-line-airline-position-segment))))
+;; (telephone-line-mode t)
 
 (use-package diminish
     :ensure t
@@ -55,15 +107,6 @@
     (diminish 'flyspell-mode))
 
 (setq display-time-default-load-average nil)
-
-;; (use-package fancy-battery
-;;   :ensure t
-;;   :config
-;;     (setq fancy-battery-show-percentage t)
-;;     (setq battery-update-interval 15)
-;;     (if window-system
-;;       (fancy-battery-mode)
-;;       (display-battery-mode)))
 
 (when window-system
       (use-package pretty-mode
