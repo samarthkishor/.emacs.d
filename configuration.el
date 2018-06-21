@@ -15,6 +15,8 @@
 
 (evil-mode 1)
 
+(global-set-key (kbd "M-x") 'execute-extended-command)
+
 (define-key evil-normal-state-map (kbd "C-p") 'projectile-find-file)
 
 (evil-define-key nil evil-normal-state-map

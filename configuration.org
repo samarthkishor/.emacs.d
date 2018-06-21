@@ -39,6 +39,12 @@ Use =evil=.
   (evil-mode 1)
 #+END_SRC
 
+Enable =M-x= in evil-mode.
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-x") 'execute-extended-command)
+#+END_SRC
+
 Bind =C-p= to fuzzy-finding files in the current project.
 
 #+BEGIN_SRC emacs-lisp
