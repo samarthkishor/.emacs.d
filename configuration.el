@@ -315,6 +315,8 @@
 
 (save-place-mode t)
 
+(global-auto-revert-mode t)
+
 (setq-default indent-tabs-mode nil)
 
 (use-package projectile

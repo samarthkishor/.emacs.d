@@ -590,6 +590,13 @@ If I close the file and open it later, I will return to the place I left off.
 #+BEGIN_SRC emacs-lisp
   (save-place-mode t)
 #+END_SRC
+** Auto revert files on change
+
+When something changes a file, automatically refresh the buffer containing that file so they can’t get out of sync.
+
+#+BEGIN_SRC emacs-lisp
+  (global-auto-revert-mode t)
+#+END_SRC
 
 ** Always indent with spaces
 
