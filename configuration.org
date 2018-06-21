@@ -53,10 +53,40 @@ Scroll by visual line.
     "k" 'evil-previous-visual-line)
 #+END_SRC
 
+Change sentence (marked by a period) ending from one space to two spaces. This mostly fixes evil-mode sentence motions.
+
+#+BEGIN_SRC emacs-lisp
+  (setq sentence-end-double-space nil)
+  (define-key evil-normal-state-map ")" 'forward-sentence)
+#+END_SRC
+
+Use =evil-leader= to emulate leader key functionality. Set , as the leader key.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-leader
+    :commands (evil-leader-mode)
+    :ensure evil-leader
+    :demand evil-leader
+    :init
+    (setq evil-leader/in-all-states 1)
+    (global-evil-leader-mode)
+    :config
+    (evil-leader/set-leader ","))
+#+End_SRC
+
+Use =evil-surround= to emulate =surround.vim=.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-surround
+    :ensure t
+    :config
+    (global-evil-surround-mode 1))
+#+END_SRC
+
 * UI Preferences
 ** Tweak window settings
 
-Hide the scroll, tool, and menu bars.
+Hide the scroll, tool, and menu bars. hello world.
 
 #+BEGIN_SRC emacs-lisp
   (if window-system (scroll-bar-mode -1))
@@ -178,7 +208,6 @@ Don't display the system load average.
   (setq display-time-default-load-average nil)
 #+END_SRC
 
-
 ** Use fancy symbols
 
 #+BEGIN_SRC emacs-lisp
@@ -289,6 +318,12 @@ Indent by two spaces.
   (setq-default indent-tabs-mode nil)
 #+END_SRC
 
+Automatically indent with the return key.
+
+#+BEGIN_SRC emacs-lisp
+  (define-key global-map (kbd "RET") 'newline-and-indent)
+#+END_SRC
+
 Show parenthesis highlighting.
 
 #+BEGIN_SRC emacs-lisp
@@ -382,6 +417,13 @@ Don't change the font height of headers.
       (set-face-attribute face nil :weight 'semi-bold :height 1.2)))
 
   (add-hook 'org-mode-hook 'my/org-mode-hook)
+  (setq solarized-scale-org-headlines nil)
+#+END_SRC
+
+Don't use variable pitch in the solarized colorscheme.
+
+#+BEGIN_SRC emacs-lisp
+  (setq solarized-use-variable-pitch nil)
 #+END_SRC
 
 ** Task Management

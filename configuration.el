@@ -21,6 +21,24 @@
   "j" 'evil-next-visual-line
   "k" 'evil-previous-visual-line)
 
+(setq sentence-end-double-space nil)
+(define-key evil-normal-state-map ")" 'forward-sentence)
+
+(use-package evil-leader
+  :commands (evil-leader-mode)
+  :ensure evil-leader
+  :demand evil-leader
+  :init
+  (setq evil-leader/in-all-states 1)
+  (global-evil-leader-mode)
+  :config
+  (evil-leader/set-leader ","))
+
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
+
 (if window-system (scroll-bar-mode -1))
 (tool-bar-mode 0)
 (menu-bar-mode 0)
@@ -167,6 +185,8 @@
 (setq-default tab-width 2)
 (setq-default indent-tabs-mode nil)
 
+(define-key global-map (kbd "RET") 'newline-and-indent)
+
 (show-paren-mode 1)
 
 (column-number-mode t)
@@ -204,6 +224,9 @@
     (set-face-attribute face nil :weight 'semi-bold :height 1.2)))
 
 (add-hook 'org-mode-hook 'my/org-mode-hook)
+(setq solarized-scale-org-headlines nil)
+
+(setq solarized-use-variable-pitch nil)
 
 (setq org-directory "~/Dropbox/org")
 
