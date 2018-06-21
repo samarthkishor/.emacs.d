@@ -256,10 +256,7 @@
 
 (setq org-html-postamble nil)
 
-(setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "firefox")
-
-(setenv "BROWSER" "firefox")
+(setq browse-url-browser-function 'browse-url-default-macosx-browser)
 
 (setq org-latex-pdf-process
       '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"

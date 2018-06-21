@@ -483,13 +483,10 @@ Don’t include a footer with my contact and publishing information at the botto
   (setq org-html-postamble nil)
 #+END_SRC
 
-Use Firefox when exporting to HTML.
+Set the Emacs browser to the default MacOS browser.
 
 #+BEGIN_SRC emacs-lisp
-  (setq browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "firefox")
-
-  (setenv "BROWSER" "firefox")
+  (setq browse-url-browser-function 'browse-url-default-macosx-browser)
 #+END_SRC
 
 Produce pdfs with syntax highlighting with =minted=.
