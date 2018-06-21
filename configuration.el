@@ -228,15 +228,29 @@
 
 (setq solarized-use-variable-pitch nil)
 
-(setq org-directory "~/Dropbox/org")
+(setq org-directory "~/Dropbox/org/")
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 (setq org-agenda-show-log t)
 
-(setq org-agenda-files (list "~/Dropbox/org/tasks.org"
-                             "~/Dropbox/org/beorg-local.org"))
-
 (setq org-log-done 'time)
+
+(defun set-org-agenda-files ()
+  "Set different org-files to be used in org-agenda"
+  (setq org-agenda-files (list (concat org-directory "tasks.org")
+                               (concat org-directory "refile-beorg.org"))))
+
+(set-org-agenda-files)
+
+(defun tasks ()
+  "Open main 'org-mode' file and start 'org-agenda' for today."
+  (interactive)
+  (find-file (concat org-directory "tasks.org"))
+  (set-org-agenda-files)
+  (org-agenda-list)
+  (org-agenda-day-view)
+  (shrink-window-if-larger-than-buffer)
+  (other-window 1))
 
 (setq org-export-with-smart-quotes t)
 

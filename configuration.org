@@ -431,7 +431,7 @@ Don't use variable pitch in the solarized colorscheme.
 Store org files in Dropbox.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-directory "~/Dropbox/org")
+  (setq org-directory "~/Dropbox/org/")
 #+END_SRC
 
 Setup the global TODO list.
@@ -439,15 +439,34 @@ Setup the global TODO list.
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-c a") 'org-agenda)
   (setq org-agenda-show-log t)
-
-  (setq org-agenda-files (list "~/Dropbox/org/tasks.org"
-                               "~/Dropbox/org/beorg-local.org"))
 #+END_SRC
 
 Record the time a TODO was archived.
 
 #+BEGIN_SRC emacs-lisp
   (setq org-log-done 'time)
+#+END_SRC
+
+Create a function to go to my tasks.org file. Called with =M-x RET tasks RET=.
+Source: [[https://github.com/munen/emacs.d/#general-configuration]]
+
+#+BEGIN_SRC emacs-lisp
+  (defun set-org-agenda-files ()
+    "Set different org-files to be used in org-agenda"
+    (setq org-agenda-files (list (concat org-directory "tasks.org")
+                                 (concat org-directory "refile-beorg.org"))))
+
+  (set-org-agenda-files)
+
+  (defun tasks ()
+    "Open main 'org-mode' file and start 'org-agenda' for today."
+    (interactive)
+    (find-file (concat org-directory "tasks.org"))
+    (set-org-agenda-files)
+    (org-agenda-list)
+    (org-agenda-day-view)
+    (shrink-window-if-larger-than-buffer)
+    (other-window 1))
 #+END_SRC
 
 ** Exporting
