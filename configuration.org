@@ -113,6 +113,13 @@ Set the theme as a "safe theme".
 #+BEGIN_SRC emacs-lisp
   (setq custom-safe-themes t)
 #+END_SRC
+** Remove startup screen
+
+It gets annoying after a while.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default inhibit-startup-screen t)
+#+END_SRC
 
 ** Mode line
 
@@ -224,10 +231,11 @@ Don't display the system load average.
         (global-pretty-mode t)))
 #+END_SRC
 
-** Use a visible bell instead
+** Disable the bell
 
 #+BEGIN_SRC emacs-lisp
-  (setq visible-bell t)
+  (setq visible-bell nil)
+  (setq ring-bell-function 'ignore)
 #+END_SRC
 
 ** Set the font to Fira Code
@@ -612,6 +620,18 @@ No explanation needed.
   (setq-default indent-tabs-mode nil)
 #+END_SRC
 
+** Code folding
+
+Enable code folding for programming modes.
+
+=zc= Fold
+=za= Unfold
+=zR= Unfold everything
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'prog-mode-hook #'hs-minor-mode)
+#+END_SRC
+
 ** Use =projectile= everywhere
 
 #+BEGIN_SRC emacs-lisp
@@ -641,8 +661,13 @@ Use =which-key= to offer suggestions for completing a command.
 #+END_SRC
 ** Whitespace
 
-Delete trailing whitespace after saving.
+Delete trailing whitespace after saving in all modes except markdown-mode and org-mode.
+Markdown uses two trailing blanks to signal a line break.
+Source: [[https://github.com/munen/emacs.d/#delete-trailing-whitespace]]
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  (add-hook 'before-save-hook '(lambda ()
+                                (when (not (or (derived-mode-p 'markdown-mode)
+                                               (derived-mode-p 'org-mode))
+                                  (delete-trailing-whitespace)))))
 #+END_SRC

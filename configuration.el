@@ -51,6 +51,8 @@
 
 (setq custom-safe-themes t)
 
+(setq-default inhibit-startup-screen t)
+
 (display-battery-mode 1)
 (display-time-mode 1)
 
@@ -134,7 +136,8 @@
       :config
       (global-pretty-mode t)))
 
-(setq visible-bell t)
+(setq visible-bell nil)
+(setq ring-bell-function 'ignore)
 
 (when (window-system)
   (set-frame-font "Fira Code 14" nil t))
@@ -321,6 +324,8 @@
 
 (setq-default indent-tabs-mode nil)
 
+(add-hook 'prog-mode-hook #'hs-minor-mode)
+
 (use-package projectile
   :ensure t
   :diminish projectile-mode
@@ -335,4 +340,7 @@
   :config
     (which-key-mode))
 
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'before-save-hook '(lambda ()
+                              (when (not (or (derived-mode-p 'markdown-mode)
+                                             (derived-mode-p 'org-mode))
+                                (delete-trailing-whitespace)))))
