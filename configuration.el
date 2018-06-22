@@ -206,6 +206,13 @@
   (add-hook 'git-commit-mode-hook 'turn-on-flyspell)
   (add-hook 'with-editor-mode-hook 'evil-insert-state))
 
+(setq dafny-verification-backend 'server)
+(setq flycheck-dafny-executable "/Users/samarth/dafny/dafny")
+(setq flycheck-boogie-executable "/Users/samarth/dafny/dafny-server")
+(setq flycheck-z3-smt2-executable "/Users/samarth/dafny/z3/bin/z3")
+(setq flycheck-inferior-dafny-executable "/Users/samarth/dafny/dafny-server") ;; Optional
+;; (setq boogie-friends-profile-analyzer-executable "PATH-TO-Z3-AXIOM-PROFILER") ;; Optional
+
 (use-package org-bullets
   :init
   (add-hook 'org-mode-hook #'org-bullets-mode))

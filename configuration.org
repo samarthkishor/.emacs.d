@@ -378,6 +378,20 @@ Start in insert mode when writing a commit message.
     (add-hook 'with-editor-mode-hook 'evil-insert-state))
 #+END_SRC
 
+** Dafny
+
+First, install the =boogie-friends= package.
+Indicate the paths to the Dafny and Boogie installations.
+
+#+BEGIN_SRC emacs-lisp
+  (setq dafny-verification-backend 'server)
+  (setq flycheck-dafny-executable "/Users/samarth/dafny/dafny")
+  (setq flycheck-boogie-executable "/Users/samarth/dafny/dafny-server")
+  (setq flycheck-z3-smt2-executable "/Users/samarth/dafny/z3/bin/z3")
+  (setq flycheck-inferior-dafny-executable "/Users/samarth/dafny/dafny-server") ;; Optional
+  ;; (setq boogie-friends-profile-analyzer-executable "PATH-TO-Z3-AXIOM-PROFILER") ;; Optional
+#+END_SRC
+
 * Org-mode
 ** Display Preferences
 
