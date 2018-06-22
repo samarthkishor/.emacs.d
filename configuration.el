@@ -214,6 +214,14 @@
   (add-hook 'git-commit-mode-hook 'turn-on-flyspell)
   (add-hook 'with-editor-mode-hook 'evil-insert-state))
 
+(use-package company
+  :diminish company-mode
+  :bind (:map company-active-map
+              ("M-j" . company-select-next)
+              ("M-k" . company-select-previous))
+  :init
+  (global-company-mode t))
+
 (setq dafny-verification-backend 'server)
 (setq flycheck-dafny-executable "/Users/samarth/dafny/dafny")
 (setq flycheck-boogie-executable "/Users/samarth/dafny/dafny-server")

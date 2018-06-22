@@ -391,6 +391,20 @@ Start in insert mode when writing a commit message.
     (add-hook 'with-editor-mode-hook 'evil-insert-state))
 #+END_SRC
 
+** Auto-complete
+
+Use =company= for auto-completion engine.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :diminish company-mode
+    :bind (:map company-active-map
+                ("M-j" . company-select-next)
+                ("M-k" . company-select-previous))
+    :init
+    (global-company-mode t))
+#+END_SRC
+
 ** Dafny
 
 First, install the =boogie-friends= package.
