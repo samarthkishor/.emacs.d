@@ -130,12 +130,6 @@
 
 (setq display-time-default-load-average nil)
 
-(when window-system
-      (use-package pretty-mode
-      :ensure t
-      :config
-      (global-pretty-mode t)))
-
 (setq visible-bell nil)
 (setq ring-bell-function 'ignore)
 

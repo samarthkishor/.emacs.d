@@ -221,16 +221,6 @@ Don't display the system load average.
   (setq display-time-default-load-average nil)
 #+END_SRC
 
-** Use fancy symbols
-
-#+BEGIN_SRC emacs-lisp
-  (when window-system
-        (use-package pretty-mode
-        :ensure t
-        :config
-        (global-pretty-mode t)))
-#+END_SRC
-
 ** Disable the bell
 
 #+BEGIN_SRC emacs-lisp
