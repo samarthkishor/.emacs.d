@@ -409,6 +409,18 @@ Indicate the paths to the Dafny and Boogie installations.
   ;; (setq boogie-friends-profile-analyzer-executable "PATH-TO-Z3-AXIOM-PROFILER") ;; Optional
 #+END_SRC
 
+** JavaScript
+
+Use =prettier-mode= for code formatting.
+Make sure =prettier= is installed globally.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package prettier-js
+    :ensure t
+    :hook
+    (js2-mode . prettier-js-mode))
+#+END_SRC
+
 * Org-mode
 ** Display Preferences
 

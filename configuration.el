@@ -223,6 +223,11 @@
 (setq flycheck-inferior-dafny-executable "/Users/samarth/dafny/dafny-server") ;; Optional
 ;; (setq boogie-friends-profile-analyzer-executable "PATH-TO-Z3-AXIOM-PROFILER") ;; Optional
 
+(use-package prettier-js
+  :ensure t
+  :hook
+  (js2-mode . prettier-js-mode))
+
 (use-package org-bullets
   :init
   (add-hook 'org-mode-hook #'org-bullets-mode))
