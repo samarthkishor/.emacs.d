@@ -53,57 +53,124 @@
 
 (setq-default inhibit-startup-screen t)
 
-(display-battery-mode 1)
-(display-time-mode 1)
+(display-time-mode t)
 
-(use-package all-the-icons
-  :demand
-  :init
-  (progn (defun -custom-modeline-github-vc ()
-           (let ((branch (mapconcat 'concat (cdr (split-string vc-mode "[:-]")) "-")))
-             (concat
-              (propertize (format " %s" (all-the-icons-octicon "git-branch"))
-                          'face `(:height 1 :family ,(all-the-icons-octicon-family))
-                          'display '(raise 0))
-              (propertize (format " %s" branch))
-              (propertize "  "))))
+;; Time format
+(customize-set-variable 'display-time-string-forms
+                        '((propertize (concat dayname
+                                              " " 12-hours ":" minutes " " (upcase am-pm))
+                                      'help-echo (format-time-string "%a, %b %e %Y" now))))
 
-         (defun -custom-modeline-svn-vc ()
-           (let ((revision (cadr (split-string vc-mode "-"))))
-             (concat
-              (propertize (format " %s" (all-the-icons-faicon "cloud"))
-                          'face `(:height 1)
-                          'display '(raise 0))
-              (propertize (format " %s" revision) 'face `(:height 0.9)))))
+;; Update display-time-string
+(display-time-update)
 
-         (defvar mode-line-my-vc
-           '(:propertize
-             (:eval (when vc-mode
-                      (cond
-                       ((string-match "Git[:-]" vc-mode) (-custom-modeline-github-vc))
-                       ((string-match "SVN-" vc-mode) (-custom-modeline-svn-vc))
-                       (t (format "%s" vc-mode)))))
-             face mode-line-directory)
-           "Formats the current directory's git information in the modeline."))
-  :config
-  (progn
-    (setq-default mode-line-format
-                  (list
-                   "("
-                   "%02l" "," "%02c"
-                   ") "
-                   mode-line-front-space
-                   " "
-                   mode-line-mule-info
-                   mode-line-modified
-                   mode-line-frame-identification
-                   mode-line-buffer-identification
-                   " %6 "
-                   mode-line-modes
-                   mode-line-my-vc
-                   '("  " battery-mode-line-string "  " display-time-string)
-                   ))
-    (concat evil-mode-line-tag)))
+;; Remove display-time-string from global-mode-string
+(setq global-mode-string (delq 'display-time-string global-mode-string))
+
+(display-battery-mode t)
+
+;; Remove battery-mode-line-string from global-mode-string
+(setq global-mode-string (delq 'battery-mode-line-string global-mode-string))
+
+(defun *-mode-line-fill (reserve)
+  "Return empty space using FACE and leaving RESERVE space on the right."
+  (unless reserve
+    (setq reserve 20))
+  (when (and window-system
+             (eq 'right (get-scroll-bar-mode)))
+    (setq reserve (- reserve 3)))
+  (propertize " "
+              'display `((space :align-to (- (+ right right-fringe right-margin) ,reserve)))))
+
+(customize-set-variable 'mode-line-format
+                        '("%e"
+                          mode-line-front-space
+                          mode-line-client
+                          mode-line-remote
+                          mode-line-mule-info
+                          mode-line-modified
+                          "  "
+                          ;; Buffer name
+                          (:propertize mode-line-buffer-identification
+                                       face font-lock-builtin-face)
+                          "  "
+                          ;; Position
+                          "%p (%l,%c)"
+                          "  "
+                          ;; Mode, recursive editing, and narrowing information
+                          "("
+                          (:propertize "%["
+                                       face font-lock-warning-face)
+                          mode-name
+                          (:propertize "%]"
+                                       face font-lock-warning-face)
+                          (:eval (if (buffer-narrowed-p)
+                                     (concat " "
+                                             (propertize "Narrow"
+                                                         'face 'font-lock-warning-face))))
+                          ")"
+                          ;; Version control
+                          (:eval (when vc-mode
+                                   (concat " "
+                                           vc-mode)))
+                          ;; Miscellaneous information
+                          "  "
+                          mode-line-misc-info
+                          (:eval (*-mode-line-fill (+ (length battery-mode-line-string)
+                                                      1
+                                                      (length display-time-string))))
+                          battery-mode-line-string
+                          " "
+                          display-time-string))
+
+;; (use-package all-the-icons
+;;   :demand
+;;   :init
+;;   (progn (defun -custom-modeline-github-vc ()
+;;            (let ((branch (mapconcat 'concat (cdr (split-string vc-mode "[:-]")) "-")))
+;;              (concat
+;;               (propertize (format " %s" (all-the-icons-octicon "git-branch"))
+;;                           'face `(:height 1 :family ,(all-the-icons-octicon-family))
+;;                           'display '(raise 0))
+;;               (propertize (format " %s" branch))
+;;               (propertize "  "))))
+
+;;          (defun -custom-modeline-svn-vc ()
+;;            (let ((revision (cadr (split-string vc-mode "-"))))
+;;              (concat
+;;               (propertize (format " %s" (all-the-icons-faicon "cloud"))
+;;                           'face `(:height 1)
+;;                           'display '(raise 0))
+;;               (propertize (format " %s" revision) 'face `(:height 0.9)))))
+
+;;          (defvar mode-line-my-vc
+;;            '(:propertize
+;;              (:eval (when vc-mode
+;;                       (cond
+;;                        ((string-match "Git[:-]" vc-mode) (-custom-modeline-github-vc))
+;;                        ((string-match "SVN-" vc-mode) (-custom-modeline-svn-vc))
+;;                        (t (format "%s" vc-mode)))))
+;;              face mode-line-directory)
+;;            "Formats the current directory's git information in the modeline."))
+;;   :config
+;;   (progn
+;;     (setq-default mode-line-format
+;;                   (list
+;;                    "("
+;;                    "%02l" "," "%02c"
+;;                    ") "
+;;                    mode-line-front-space
+;;                    " "
+;;                    mode-line-mule-info
+;;                    mode-line-modified
+;;                    mode-line-frame-identification
+;;                    mode-line-buffer-identification
+;;                    " %6 "
+;;                    mode-line-modes
+;;                    mode-line-my-vc
+;;                    '("  " battery-mode-line-string "  " display-time-string)
+;;                    ))
+;;     (concat evil-mode-line-tag)))
 
 ;; (require 'telephone-line)
 ;; (setq telephone-line-lhs
