@@ -64,64 +64,86 @@
 ;; Update display-time-string
 (display-time-update)
 
-;; Remove display-time-string from global-mode-string
-(setq global-mode-string (delq 'display-time-string global-mode-string))
+(use-package telephone-line
+  :config
+  (setq telephone-line-primary-left-separator 'telephone-line-utf-abs-left
+        telephone-line-secondary-left-separator 'telephone-line-utf-abs-hollow-left
+        telephone-line-primary-right-separator 'telephone-line-utf-abs-right
+        telephone-line-secondary-right-separator 'telephone-line-utf-abs-hollow-right)
+  (setq telephone-line-height 24
+        telephone-line-evil-use-short-tag t)
 
-(display-battery-mode t)
+  (setq telephone-line-lhs
+        '((evil   . (telephone-line-evil-tag-segment))
+          (accent . (telephone-line-airline-position-segment
+                     telephone-line-process-segment))
+          (nil    . (telephone-line-minor-mode-segment
+                     telephone-line-buffer-segment))))
+  (setq telephone-line-rhs
+        '((nil    . (telephone-line-misc-info-segment))
+          (evil   . (telephone-line-vc-segment))
+          (accent . (telephone-line-major-mode-segment
+                     telephone-line-flycheck-segment))))
 
-;; Remove battery-mode-line-string from global-mode-string
-(setq global-mode-string (delq 'battery-mode-line-string global-mode-string))
+  (telephone-line-mode t))
 
-(defun *-mode-line-fill (reserve)
-  "Return empty space using FACE and leaving RESERVE space on the right."
-  (unless reserve
-    (setq reserve 20))
-  (when (and window-system
-             (eq 'right (get-scroll-bar-mode)))
-    (setq reserve (- reserve 3)))
-  (propertize " "
-              'display `((space :align-to (- (+ right right-fringe right-margin) ,reserve)))))
+;; ;; Remove display-time-string from global-mode-string
+;; (setq global-mode-string (delq 'display-time-string global-mode-string))
 
-(customize-set-variable 'mode-line-format
-                        '("%e"
-                          mode-line-front-space
-                          mode-line-client
-                          mode-line-remote
-                          mode-line-mule-info
-                          mode-line-modified
-                          "  "
-                          ;; Buffer name
-                          (:propertize mode-line-buffer-identification
-                                       face font-lock-builtin-face)
-                          "  "
-                          ;; Position
-                          "%p (%l,%c)"
-                          "  "
-                          ;; Mode, recursive editing, and narrowing information
-                          "("
-                          (:propertize "%["
-                                       face font-lock-warning-face)
-                          mode-name
-                          (:propertize "%]"
-                                       face font-lock-warning-face)
-                          (:eval (if (buffer-narrowed-p)
-                                     (concat " "
-                                             (propertize "Narrow"
-                                                         'face 'font-lock-warning-face))))
-                          ")"
-                          ;; Version control
-                          (:eval (when vc-mode
-                                   (concat " "
-                                           vc-mode)))
-                          ;; Miscellaneous information
-                          "  "
-                          mode-line-misc-info
-                          (:eval (*-mode-line-fill (+ (length battery-mode-line-string)
-                                                      1
-                                                      (length display-time-string))))
-                          battery-mode-line-string
-                          " "
-                          display-time-string))
+;; ;; Remove battery-mode-line-string from global-mode-string
+;; (setq global-mode-string (delq 'battery-mode-line-string global-mode-string))
+
+;; (defun *-mode-line-fill (reserve)
+;;   "Return empty space using FACE and leaving RESERVE space on the right."
+;;   (unless reserve
+;;     (setq reserve 20))
+;;   (when (and window-system
+;;              (eq 'right (get-scroll-bar-mode)))
+;;     (setq reserve (- reserve 3)))
+;;   (propertize " "
+;;               'display `((space :align-to (- (+ right right-fringe right-margin), reserve)))))
+
+;; (setq-default mode-line-format
+;;               '("%e"
+;;                 mode-line-front-space
+;;                 mode-line-client
+;;                 mode-line-remote
+;;                 mode-line-mule-info
+;;                 mode-line-modified
+;;                 "  "
+;;                 ;; Buffer name
+;;                 (:propertize mode-line-buffer-identification
+;;                              face font-lock-builtin-face)
+;;                 "  "
+;;                 ;; Position
+;;                 "%p (%l,%c)"
+;;                 "  "
+;;                 ;; Mode, recursive editing, and narrowing information
+;;                 "("
+;;                 (:propertize "%["
+;;                              face font-lock-warning-face)
+;;                 mode-name
+;;                 (:propertize "%]"
+;;                              face font-lock-warning-face)
+;;                 (:eval (if (buffer-narrowed-p)
+;;                            (concat " "
+;;                                    (propertize "Narrow"
+;;                                                'face 'font-lock-warning-face))))
+;;                 ")"
+;;                 ;; Version control
+;;                 (:eval (when vc-mode
+;;                          (concat " "
+;;                                  vc-mode)))
+;;                 ;; Miscellaneous information
+;;                 "  "
+;;                 mode-line-misc-info
+;;                 (:eval (*-mode-line-fill (+ (length battery-mode-line-string)
+;;                                             1
+;;                                             (length display-time-string))))
+;;                 battery-mode-line-string
+;;                 " "
+;;                 display-time-string
+;;                 mode-line-end-spaces))
 
 ;; (use-package all-the-icons
 ;;   :demand
@@ -171,21 +193,6 @@
 ;;                    '("  " battery-mode-line-string "  " display-time-string)
 ;;                    ))
 ;;     (concat evil-mode-line-tag)))
-
-;; (require 'telephone-line)
-;; (setq telephone-line-lhs
-;;       '((evil   . (telephone-line-evil-tag-segment))
-;;         (accent . (telephone-line-vc-segment
-;;                    ;; telephone-line-erc-modified-channels-segment
-;;                    telephone-line-process-segment))
-;;         (nil    . (telephone-line-minor-mode-segment
-;;                    telephone-line-buffer-segment))))
-;; (setq telephone-line-rhs
-;;       '((nil    . (telephone-line-misc-info-segment))
-;;         (accent . (telephone-line-major-mode-segment
-;;                    telephone-line-flycheck-segment))
-;;         (evil   . (telephone-line-airline-position-segment))))
-;; (telephone-line-mode t)
 
 (use-package diminish
     :ensure t
