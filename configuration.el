@@ -344,12 +344,12 @@
 (set-org-agenda-files)
 
 (defun tasks ()
-  "Open main 'org-mode' file and start 'org-agenda' for today."
+  "Open main 'org-mode' file and start 'org-agenda' for this week."
   (interactive)
   (find-file (concat org-directory "tasks.org"))
   (set-org-agenda-files)
   (org-agenda-list)
-  (org-agenda-day-view)
+  (org-agenda-week-view)
   (shrink-window-if-larger-than-buffer)
   (other-window 1))
 
