@@ -554,13 +554,13 @@ Don't change the font height of headers.
                     org-level-3
                     org-level-4
                     org-level-5))
-      (set-face-attribute face nil :weight 'semi-bold :height 1.2)))
+      (set-face-attribute face nil :weight 'semi-bold :height 1.1)))
 
   (add-hook 'org-mode-hook 'my/org-mode-hook)
   (setq solarized-scale-org-headlines nil)
 #+END_SRC
 
-Don't use variable pitch in the solarized colorscheme.
+Don't use variable pitch in the solarized color-scheme.
 
 #+BEGIN_SRC emacs-lisp
   (setq solarized-use-variable-pitch nil)

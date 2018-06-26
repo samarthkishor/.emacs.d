@@ -322,7 +322,7 @@
                   org-level-3
                   org-level-4
                   org-level-5))
-    (set-face-attribute face nil :weight 'semi-bold :height 1.2)))
+    (set-face-attribute face nil :weight 'semi-bold :height 1.1)))
 
 (add-hook 'org-mode-hook 'my/org-mode-hook)
 (setq solarized-scale-org-headlines nil)
