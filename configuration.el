@@ -34,7 +34,12 @@
   (setq evil-leader/in-all-states 1)
   (global-evil-leader-mode)
   :config
-  (evil-leader/set-leader ","))
+  (evil-leader/set-leader ",")
+  (evil-leader/set-key
+    "h" 'evil-window-left
+    "n" 'evil-window-bottom
+    "e" 'evil-window-up
+    "i" 'evil-window-right))
 
 (use-package evil-surround
   :ensure t

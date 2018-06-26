@@ -67,6 +67,7 @@ Change sentence (marked by a period) ending from one space to two spaces. This m
 #+END_SRC
 
 Use =evil-leader= to emulate leader key functionality. Set , as the leader key.
+Note: the window movement keys correspond to hjkl in the Colemak layout.
 
 #+BEGIN_SRC emacs-lisp
   (use-package evil-leader
@@ -77,7 +78,12 @@ Use =evil-leader= to emulate leader key functionality. Set , as the leader key.
     (setq evil-leader/in-all-states 1)
     (global-evil-leader-mode)
     :config
-    (evil-leader/set-leader ","))
+    (evil-leader/set-leader ",")
+    (evil-leader/set-key
+      "h" 'evil-window-left
+      "n" 'evil-window-bottom
+      "e" 'evil-window-up
+      "i" 'evil-window-right))
 #+End_SRC
 
 Use =evil-surround= to emulate =surround.vim=.
