@@ -436,6 +436,11 @@
   :config
     (which-key-mode))
 
+(use-package undo-tree
+  :ensure t
+  :init
+  (global-undo-tree-mode))
+
 (add-hook 'before-save-hook '(lambda ()
                               (when (not (or (derived-mode-p 'markdown-mode)
                                              (derived-mode-p 'org-mode))
