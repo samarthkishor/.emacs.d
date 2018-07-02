@@ -307,6 +307,18 @@
   :hook
   (js2-mode . prettier-js-mode))
 
+(use-package cider
+  :ensure t)
+
+(use-package inf-clojure
+  :commands (inf-clojure))
+
+(defun cljs-node-repl ()
+  (interactive)
+  (run-clojure "lein trampoline run -m clojure.main repl.clj"))
+
+(add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
+
 (use-package org-bullets
   :init
   (add-hook 'org-mode-hook #'org-bullets-mode))
