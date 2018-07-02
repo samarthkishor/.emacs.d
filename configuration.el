@@ -474,3 +474,22 @@
                               (when (not (or (derived-mode-p 'markdown-mode)
                                              (derived-mode-p 'org-mode))
                                 (delete-trailing-whitespace)))))
+
+(setq exec-path (cons "/usr/local/bin" exec-path))
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+(require 'mu4e)
+
+(setq mu4e-maildir (expand-file-name "~/Maildir"))
+(setq mu4e-get-mail-command "mbsync -a")
+;; (setq mu4e-html2text-command "/usr/local/bin/w3m -T text/html") ;; use w3m for html to text rendering
+(setq mu4e-change-filenames-when-moving t) ;; fix for mbsync
+
+(setq mu4e-drafts-folder "/gmail/drafts")
+(setq mu4e-sent-folder "/gmail/sent")
+(setq mu4e-trash-folder "/gmail/trash")
+
+(setq message-send-mail-function 'message-send-mail-with-sendmail)
+(setq sendmail-program "/usr/local/bin/msmtp")
+; tell msmtp to choose the SMTP server according to the from field in the outgoing email
+(setq message-sendmail-extra-arguments '("--read-envelope-from"))
+(setq message-sendmail-f-is-evil 't)
