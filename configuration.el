@@ -13,7 +13,18 @@
 
 (setq evil-want-abbrev-expand-on-insert-exit nil)
 
-(evil-mode 1)
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-integration nil)
+  :config
+  (evil-mode 1))
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
 
 (global-set-key (kbd "M-x") 'execute-extended-command)
 
@@ -475,13 +486,11 @@
                                              (derived-mode-p 'org-mode))
                                 (delete-trailing-whitespace)))))
 
-(setq exec-path (cons "/usr/local/bin" exec-path))
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
 (require 'mu4e)
 
 (setq mu4e-maildir (expand-file-name "~/Maildir"))
 (setq mu4e-get-mail-command "mbsync -a")
-;; (setq mu4e-html2text-command "/usr/local/bin/w3m -T text/html") ;; use w3m for html to text rendering
 (setq mu4e-change-filenames-when-moving t) ;; fix for mbsync
 
 (setq mu4e-drafts-folder "/gmail/drafts")
