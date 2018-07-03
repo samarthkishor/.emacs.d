@@ -1,5 +1,7 @@
 _minted-configuration/
 elpa/
+eshell/
+bookmarks
 *.tex
 places
 projectile-bookmarks.eld
