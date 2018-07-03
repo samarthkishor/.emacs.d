@@ -878,6 +878,8 @@ Source: [[https://github.com/munen/emacs.d/#delete-trailing-whitespace]]
 
 Join the following line onto the current line with =M-j=.
 
+Source: [[http://whattheemacsd.com/key-bindings.el-03.html][What the emacs.d]]
+
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "M-j")
               (lambda ()
