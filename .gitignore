@@ -1,6 +1,7 @@
 _minted-configuration/
 elpa/
 eshell/
+backups/
 bookmarks
 *.tex
 places

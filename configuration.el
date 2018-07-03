@@ -274,7 +274,11 @@
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
-(setq make-backup-files nil)
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name
+                 (concat user-emacs-directory "backups")))))
+
+(setq vc-make-backup-files t)
 
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
