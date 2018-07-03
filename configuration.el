@@ -486,6 +486,11 @@
                                              (derived-mode-p 'org-mode))
                                 (delete-trailing-whitespace)))))
 
+(global-set-key (kbd "M-j")
+            (lambda ()
+                  (interactive)
+                  (join-line -1)))
+
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
 (require 'mu4e)
 

@@ -873,6 +873,18 @@ Source: [[https://github.com/munen/emacs.d/#delete-trailing-whitespace]]
                                                (derived-mode-p 'org-mode))
                                   (delete-trailing-whitespace)))))
 #+END_SRC
+
+** Random useful keybindings
+
+Join the following line onto the current line with =M-j=.
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-j")
+              (lambda ()
+                    (interactive)
+                    (join-line -1)))
+#+END_SRC
+
 * Email
 ** Use =mu4e=
 
