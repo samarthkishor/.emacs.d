@@ -130,6 +130,18 @@ Set the theme as a "safe theme".
 #+BEGIN_SRC emacs-lisp
   (setq custom-safe-themes t)
 #+END_SRC
+
+Make the titlebar dark on macOS.
+
+Source: [[https://huytd.github.io/emacs-from-scratch.html#orge3a802f][Emacs from scratch]]
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (setq ns-use-proxy-icon  nil)
+  (setq frame-title-format nil)
+#+END_SRC
+
 ** Remove startup screen
 
 It gets annoying after a while.
