@@ -738,7 +738,10 @@ Use Helm for incremental completions and narrowing selections.
     ("C-x C-b" . 'helm-buffers-list)
     ("M-x" . 'helm-M-x)
     :init
-    (helm-mode 1))
+    (helm-mode 1)
+    (add-hook 'helm-major-mode-hook
+            (lambda ()
+              (setq auto-composition-mode nil))))
 #+END_SRC
 
 * Prose
@@ -920,6 +923,17 @@ Source: [[http://whattheemacsd.com/key-bindings.el-03.html][What the emacs.d]]
   (setq mu4e-drafts-folder "/gmail/drafts")
   (setq mu4e-sent-folder "/gmail/sent")
   (setq mu4e-trash-folder "/gmail/trash")
+  (setq mu4e-refile-folder "/gmail/[Gmail].All Mail")
+#+END_SRC
+
+=mu4e= freezes in header mode sometimes because of font ligatures. This should fix that.
+
+Source: [[https://github.com/tonsky/FiraCode/issues/158][Fira Code Github issues]]
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'mu4e-headers-mode-hook
+            (lambda ()
+              (setq-local auto-composition-mode nil)))
 #+END_SRC
 
 ** Send mail with =msmtp=

@@ -424,7 +424,10 @@
   ("C-x C-b" . 'helm-buffers-list)
   ("M-x" . 'helm-M-x)
   :init
-  (helm-mode 1))
+  (helm-mode 1)
+  (add-hook 'helm-major-mode-hook
+          (lambda ()
+            (setq auto-composition-mode nil))))
 
 (require 'flycheck)
 
@@ -510,6 +513,11 @@
 (setq mu4e-drafts-folder "/gmail/drafts")
 (setq mu4e-sent-folder "/gmail/sent")
 (setq mu4e-trash-folder "/gmail/trash")
+(setq mu4e-refile-folder "/gmail/[Gmail].All Mail")
+
+(add-hook 'mu4e-headers-mode-hook
+          (lambda ()
+            (setq-local auto-composition-mode nil)))
 
 (setq message-send-mail-function 'message-send-mail-with-sendmail)
 (setq sendmail-program "/usr/local/bin/msmtp")
