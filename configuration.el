@@ -315,6 +315,19 @@
   :init
   (global-company-mode t))
 
+(use-package tablist :ensure t)
+
+(use-package pdf-tools
+  :pin manual ;; manually update
+  :magic ("%PDF" . pdf-view-mode)
+  :config
+  ;; initialise
+  (pdf-tools-install)
+  ;; open pdfs scaled to fit page
+  (setq-default pdf-view-display-size 'fit-page)
+  ;; automatically annotate highlights
+  (setq pdf-annot-activate-created-annotations t))
+
 (setq dafny-verification-backend 'server)
 (setq flycheck-dafny-executable "/Users/samarth/dafny/dafny")
 (setq flycheck-boogie-executable "/Users/samarth/dafny/dafny-server")

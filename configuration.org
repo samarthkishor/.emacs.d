@@ -348,7 +348,7 @@ Source: [[http://www.stefanom.org/prettify-my-emacs-symbols/]]
      "A friendlier visual bell effect."
      (invert-face 'mode-line)
      (run-with-timer 0.1 nil 'invert-face 'mode-line))
- 
+
    (setq visible-bell nil
          ring-bell-function 'my-terminal-visible-bell)
 #+END_SRC
@@ -512,6 +512,25 @@ Use =company= for auto-completion engine.
                 ("M-k" . company-select-previous))
     :init
     (global-company-mode t))
+#+END_SRC
+
+** LaTeX
+
+Use =pdftools= to view PDF files.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package tablist :ensure t)
+
+  (use-package pdf-tools
+    :pin manual ;; manually update
+    :magic ("%PDF" . pdf-view-mode)
+    :config
+    ;; initialise
+    (pdf-tools-install)
+    ;; open pdfs scaled to fit page
+    (setq-default pdf-view-display-size 'fit-page)
+    ;; automatically annotate highlights
+    (setq pdf-annot-activate-created-annotations t))
 #+END_SRC
 
 ** Dafny
