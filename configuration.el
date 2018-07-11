@@ -523,17 +523,66 @@
 (setq mu4e-get-mail-command "mbsync -a")
 (setq mu4e-change-filenames-when-moving t) ;; fix for mbsync
 
-(setq mu4e-drafts-folder "/gmail/drafts")
-(setq mu4e-sent-folder "/gmail/sent")
-(setq mu4e-trash-folder "/gmail/trash")
-(setq mu4e-refile-folder "/gmail/[Gmail].All Mail")
+(setq mu4e-drafts-folder
+      (lambda (msg)
+        (cond
+         ((or (and msg
+                   (string-prefix-p "/gmail/" (mu4e-message-field msg :maildir)))
+              (string= user-mail-address "samarthkishor1@gmail.com")) "/gmail/drafts")
+         (t "/uva/drafts")))
+
+      mu4e-sent-folder
+      (lambda (msg)
+        (cond
+         ((or (and msg
+                   (string-prefix-p "/gmail/" (mu4e-message-field msg :maildir)))
+              (string= user-mail-address "samarthkishor1@gmail.com")) "/gmail/sent")
+         (t "/uva/sent")))
+
+      mu4e-trash-folder
+      (lambda (msg)
+        (cond
+         ((or (and msg
+                   (string-prefix-p "/gmail/" (mu4e-message-field msg :maildir)))
+              (string= user-mail-address "samarthkishor1@gmail.com")) "/gmail/trash")
+         (t "/uva/trash")))
+
+      mu4e-refile-folder
+      (lambda (msg)
+        (cond
+         ((or (and msg
+                   (string-prefix-p "/gmail/" (mu4e-message-field msg :maildir)))
+              (string= user-mail-address "samarthkishor1@gmail.com")) "/gmail/[Gmail].All Mail")
+         (t "/uva/[Gmail].All Mail"))))
+
+(setq mu4e-contexts
+      `( ,(make-mu4e-context
+           :name "Gmail"
+           :match-func (lambda (msg) (when msg
+                                       (mu4e-message-contact-field-matches msg :to "samarthkishor1@gmail.com")))
+           :vars '((user-mail-address . "samarthkishor1@gmail.com")
+                   (user-full-name . "Samarth Kishor")
+                   (smtpmail-smtp-server .  "smtp.gmail.com")
+                   (smtpmail-smtp-service . 465)
+                   (smtpmail-smtp-user    . "samarthkishor1@gmail.com")
+                   (smtpmail-stream-type . ssl)))
+         ,(make-mu4e-context
+           :name "UVA"
+           :match-func (lambda (msg) (when msg
+                                       (mu4e-message-contact-field-matches msg :to "sk4gz@virginia.edu")))
+           :vars '((user-mail-address . "sk4gz@virgina.edu")
+                   (user-full-name . "Samarth Kishor")
+                   (smtpmail-smtp-server .  "smtp.gmail.com")
+                   (smtpmail-smtp-service . 465)
+                   (smtpmail-smtp-user    . "sk4gz@virginia.edu")
+                   (smtpmail-stream-type . ssl)))))
 
 (add-hook 'mu4e-headers-mode-hook
           (lambda ()
             (setq-local auto-composition-mode nil)))
 
-(setq message-send-mail-function 'message-send-mail-with-sendmail)
-(setq sendmail-program "/usr/local/bin/msmtp")
-; tell msmtp to choose the SMTP server according to the from field in the outgoing email
-(setq message-sendmail-extra-arguments '("--read-envelope-from"))
-(setq message-sendmail-f-is-evil 't)
+;; (setq message-send-mail-function 'message-send-mail-with-sendmail)
+;; (setq sendmail-program "/usr/local/bin/msmtp")
+;; ; tell msmtp to choose the SMTP server according to the from field in the outgoing email
+;; (setq message-sendmail-extra-arguments '("--read-envelope-from"))
+;; (setq message-sendmail-f-is-evil 't)
