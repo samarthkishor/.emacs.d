@@ -590,7 +590,7 @@ Recognize .boot files as valid Clojure code.
 #+END_SRC
 
 * Org-mode
-** Display Preferences
+** General Settings
 
 Use bullets instead of asterisks.
 
