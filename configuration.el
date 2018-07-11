@@ -522,6 +522,26 @@
 (setq mu4e-maildir (expand-file-name "~/Maildir"))
 (setq mu4e-get-mail-command "mbsync -a")
 (setq mu4e-change-filenames-when-moving t) ;; fix for mbsync
+;; Enable inline images.
+(setq mu4e-view-show-images t)
+;; Use imagemagick, if available.
+(when (fboundp 'imagemagick-register-types)
+  (imagemagick-register-types))
+
+(add-to-list 'mu4e-view-actions '("View in browser" . mu4e-action-view-in-browser) t)
+
+(setq w3m-default-desplay-inline-images t)
+(defun mu4e-action-view-in-w3m ()
+  "View the body of the message in emacs w3m."
+  (interactive)
+  (w3m-browse-url (concat "file://"
+                          (mu4e~write-body-to-html (mu4e-message-at-point t)))))
+
+(add-hook 'mu4e-mark-execute-pre-hook
+          (lambda (mark msg)
+            (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg "-\\Inbox"))
+                  ((equal mark 'flag) (mu4e-action-retag-message msg "\\Starred"))
+                  ((equal mark 'unflag) (mu4e-action-retag-message msg "-\\Starred")))))
 
 (defun mu4e-message-maildir-matches (msg rx)
   "Determine which account context I am in based on the maildir subfolder"

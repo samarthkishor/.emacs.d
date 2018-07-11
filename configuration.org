@@ -940,6 +940,40 @@ Source: [[http://whattheemacsd.com/key-bindings.el-03.html][What the emacs.d]]
   (setq mu4e-maildir (expand-file-name "~/Maildir"))
   (setq mu4e-get-mail-command "mbsync -a")
   (setq mu4e-change-filenames-when-moving t) ;; fix for mbsync
+  ;; Enable inline images.
+  (setq mu4e-view-show-images t)
+  ;; Use imagemagick, if available.
+  (when (fboundp 'imagemagick-register-types)
+    (imagemagick-register-types))
+#+END_SRC
+
+Open email in a browser if necessary.
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'mu4e-view-actions '("View in browser" . mu4e-action-view-in-browser) t)
+#+END_SRC
+
+Enable images in w3m.
+
+Source: [[https://emacs.stackexchange.com/questions/41691/mu4e-display-inline-images-in-html-emails][Emacs StackExchange]]
+
+#+BEGIN_SRC emacs-lisp
+  (setq w3m-default-desplay-inline-images t)
+  (defun mu4e-action-view-in-w3m ()
+    "View the body of the message in emacs w3m."
+    (interactive)
+    (w3m-browse-url (concat "file://"
+                            (mu4e~write-body-to-html (mu4e-message-at-point t)))))
+#+END_SRC
+
+This hook correctly modifies the \Inbox and \Starred flags on email when they are marked to trigger the appropriate Gmail actions.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'mu4e-mark-execute-pre-hook
+            (lambda (mark msg)
+              (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg "-\\Inbox"))
+                    ((equal mark 'flag) (mu4e-action-retag-message msg "\\Starred"))
+                    ((equal mark 'unflag) (mu4e-action-retag-message msg "-\\Starred")))))
 #+END_SRC
 
 Define helper functions.
