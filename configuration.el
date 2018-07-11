@@ -523,66 +523,73 @@
 (setq mu4e-get-mail-command "mbsync -a")
 (setq mu4e-change-filenames-when-moving t) ;; fix for mbsync
 
-(setq mu4e-drafts-folder
-      (lambda (msg)
-        (cond
-         ((or (and msg
-                   (string-prefix-p "/gmail/" (mu4e-message-field msg :maildir)))
-              (string= user-mail-address "samarthkishor1@gmail.com")) "/gmail/drafts")
-         (t "/uva/drafts")))
+(defun mu4e-message-maildir-matches (msg rx)
+  "Determine which account context I am in based on the maildir subfolder"
+  (when rx
+    (if (listp rx)
+        ;; If rx is a list, try each one for a match
+        (or (mu4e-message-maildir-matches msg (car rx))
+            (mu4e-message-maildir-matches msg (cdr rx)))
+      ;; Not a list, check rx
+      (string-match rx (mu4e-message-field msg :maildir)))))
 
-      mu4e-sent-folder
-      (lambda (msg)
-        (cond
-         ((or (and msg
-                   (string-prefix-p "/gmail/" (mu4e-message-field msg :maildir)))
-              (string= user-mail-address "samarthkishor1@gmail.com")) "/gmail/sent")
-         (t "/uva/sent")))
+(defun choose-msmtp-account ()
+  "Choose account label to feed msmtp -a option based on From header
+  in Message buffer; This function must be added to
+  message-send-mail-hook for on-the-fly change of From address before
+  sending message since message-send-mail-hook is processed right
+  before sending message."
+  (if (message-mail-p)
+      (save-excursion
+        (let*
+            ((from (save-restriction
+                     (message-narrow-to-headers)
+                     (message-fetch-field "from")))
+             (account
+              (cond
+               ((string-match "samarthkishor1@gmail.com" from) "gmail")
+               ((string-match "sk4gz@virginia.edu" from) "uva"))))
+          (setq message-sendmail-extra-arguments (list '"-a" account))))))
 
-      mu4e-trash-folder
-      (lambda (msg)
-        (cond
-         ((or (and msg
-                   (string-prefix-p "/gmail/" (mu4e-message-field msg :maildir)))
-              (string= user-mail-address "samarthkishor1@gmail.com")) "/gmail/trash")
-         (t "/uva/trash")))
-
-      mu4e-refile-folder
-      (lambda (msg)
-        (cond
-         ((or (and msg
-                   (string-prefix-p "/gmail/" (mu4e-message-field msg :maildir)))
-              (string= user-mail-address "samarthkishor1@gmail.com")) "/gmail/[Gmail].All Mail")
-         (t "/uva/[Gmail].All Mail"))))
+(add-hook 'mu4e-compose-mode-hook 'flyspell-mode)
 
 (setq mu4e-contexts
       `( ,(make-mu4e-context
-           :name "Gmail"
-           :match-func (lambda (msg) (when msg
-                                       (mu4e-message-contact-field-matches msg :to "samarthkishor1@gmail.com")))
-           :vars '((user-mail-address . "samarthkishor1@gmail.com")
-                   (user-full-name . "Samarth Kishor")
-                   (smtpmail-smtp-server .  "smtp.gmail.com")
-                   (smtpmail-smtp-service . 465)
-                   (smtpmail-smtp-user    . "samarthkishor1@gmail.com")
-                   (smtpmail-stream-type . ssl)))
+           :name "gmail"
+           :enter-func (lambda () (mu4e-message "Switch to the gmail context"))
+           :match-func (lambda (msg)
+                         (when msg
+                           (mu4e-message-maildir-matches msg "^/gmail")))
+           :leave-func (lambda () (mu4e-clear-caches))
+           :vars '((user-mail-address     . "samarthkishor1@gmail.com")
+                   (user-full-name        . "Samarth Kishor")
+                   (mu4e-sent-folder      . "/gmail/sent")
+                   (mu4e-drafts-folder    . "/gmail/drafts")
+                   (mu4e-trash-folder     . "/gmail/trash")
+                   (mu4e-refile-folder    . "/gmail/[Gmail].All Mail")))
          ,(make-mu4e-context
-           :name "UVA"
-           :match-func (lambda (msg) (when msg
-                                       (mu4e-message-contact-field-matches msg :to "sk4gz@virginia.edu")))
-           :vars '((user-mail-address . "sk4gz@virgina.edu")
-                   (user-full-name . "Samarth Kishor")
-                   (smtpmail-smtp-server .  "smtp.gmail.com")
-                   (smtpmail-smtp-service . 465)
-                   (smtpmail-smtp-user    . "sk4gz@virginia.edu")
-                   (smtpmail-stream-type . ssl)))))
+           :name "uva"
+           :enter-func (lambda () (mu4e-message "Switch to the UVA context"))
+           :match-func (lambda (msg)
+                         (when msg
+                           (mu4e-message-maildir-matches msg "^/uva")))
+           :leave-func (lambda () (mu4e-clear-caches))
+           :vars '((user-mail-address     . "sk4gz@virginia.edu")
+                   (user-full-name        . "Samarth Kishor")
+                   (mu4e-sent-folder      . "/uva/sent")
+                   (mu4e-drafts-folder    . "/uva/drafts")
+                   (mu4e-trash-folder     . "/uva/trash")
+                   (mu4e-refile-folder    . "/uva/[Gmail].All Mail")))))
 
 (add-hook 'mu4e-headers-mode-hook
           (lambda ()
             (setq-local auto-composition-mode nil)))
 
-;; (setq message-send-mail-function 'message-send-mail-with-sendmail)
-;; (setq sendmail-program "/usr/local/bin/msmtp")
-;; ; tell msmtp to choose the SMTP server according to the from field in the outgoing email
-;; (setq message-sendmail-extra-arguments '("--read-envelope-from"))
+(setq message-send-mail-function 'message-send-mail-with-sendmail)
+(setq sendmail-program "/usr/local/bin/msmtp")
+(setq user-full-name "Samarth Kishor")
+
+; tell msmtp to choose the SMTP server according to the "from" field in the outgoing email
+(setq message-sendmail-envelope-from 'header)
+(add-hook 'message-send-mail-hook 'choose-msmtp-account)
 ;; (setq message-sendmail-f-is-evil 't)
