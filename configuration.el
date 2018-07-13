@@ -403,6 +403,9 @@
   (shrink-window-if-larger-than-buffer)
   (other-window 1))
 
+(setq org-default-notes-file (concat org-directory "/tasks.org"))
+(define-key global-map "\C-cc" 'org-capture)
+
 (use-package evil-org
   :ensure t
   :after org
@@ -613,3 +616,10 @@
 (setq message-sendmail-envelope-from 'header)
 (add-hook 'message-send-mail-hook 'choose-msmtp-account)
 ;; (setq message-sendmail-f-is-evil 't)
+
+(require 'org-mu4e)
+(setq org-mu4e-link-query-in-headers-mode nil)
+
+(setq org-capture-templates
+      `(("t" "TODO" entry (file+headline "~/Dropbox/org/tasks.org" "Tasks")
+         "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")))

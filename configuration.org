@@ -694,6 +694,15 @@ Source: [[https://github.com/munen/emacs.d/#general-configuration]]
     (other-window 1))
 #+END_SRC
 
+** Capture
+
+Set up capture.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-default-notes-file (concat org-directory "/tasks.org"))
+  (define-key global-map "\C-cc" 'org-capture)
+#+END_SRC
+
 ** Evil mode bindings
 
 Use evil mode keybindings in org-mode.
@@ -1068,3 +1077,23 @@ Source: [[https://github.com/tonsky/FiraCode/issues/158][Fira Code Github issues
   (add-hook 'message-send-mail-hook 'choose-msmtp-account)
   ;; (setq message-sendmail-f-is-evil 't)
 #+END_SRC
+
+** Integrate with org-mode
+
+Use =org-mu4e= to store org-mode links to emails. Store a link to the message if in the header view.
+
+Source: [[http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/][Pragmatic Emacs]]
+
+#+BEGIN_SRC emacs-lisp
+  (require 'org-mu4e)
+  (setq org-mu4e-link-query-in-headers-mode nil)
+#+END_SRC
+
+Update the org-mode capture template to work with emails.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-capture-templates
+        `(("t" "TODO" entry (file+headline "~/Dropbox/org/tasks.org" "Tasks")
+           "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")))
+#+END_SRC
+
