@@ -286,6 +286,11 @@
 (when window-system
       (global-hl-line-mode))
 
+(use-package beacon
+  :ensure t
+  :init
+  (beacon-mode 1))
+
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 
 (setq-default indicate-empty-lines t)

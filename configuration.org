@@ -424,6 +424,15 @@ Highlight the current line.
         (global-hl-line-mode))
 #+END_SRC
 
+Never lose my cursor again.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package beacon
+    :ensure t
+    :init
+    (beacon-mode 1))
+#+END_SRC
+
 Show fringe indicators as curly arrows.
 
 #+BEGIN_SRC emacs-lisp
