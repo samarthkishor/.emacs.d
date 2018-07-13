@@ -37,7 +37,12 @@
 (setq sentence-end-double-space nil)
 (define-key evil-normal-state-map ")" 'forward-sentence)
 
+(use-package evil-nerd-commenter
+  :ensure t
+  :requires (evil))
+
 (use-package evil-leader
+  :after evil-nerd-commenter
   :commands (evil-leader-mode)
   :ensure evil-leader
   :demand evil-leader
@@ -47,10 +52,19 @@
   :config
   (evil-leader/set-leader ",")
   (evil-leader/set-key
-    "h" 'evil-window-left
-    "n" 'evil-window-bottom
-    "e" 'evil-window-up
-    "i" 'evil-window-right))
+    "h"  'evil-window-left
+    "n"  'evil-window-bottom
+    "e"  'evil-window-up
+    "i"  'evil-window-right
+    ","  'evilnc-comment-operator
+    "cc" 'evilnc-comment-or-uncomment-lines
+    "cl" 'evilnc-quick-comment-or-uncomment-to-the-line
+    "ll" 'evilnc-quick-comment-or-uncomment-to-the-line
+    "cy" 'evilnc-copy-and-comment-lines
+    "cp" 'evilnc-comment-or-uncomment-paragraphs
+    "cr" 'comment-or-uncomment-region
+    "cv" 'evilnc-toggle-invert-comment-line-by-line
+    "."  'evilnc-copy-and-comment-operator))
 
 (use-package evil-surround
   :ensure t
