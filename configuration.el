@@ -335,19 +335,6 @@
   :init
   (global-company-mode t))
 
-(use-package tablist :ensure t)
-
-(use-package pdf-tools
-  :pin manual ;; manually update
-  :magic ("%PDF" . pdf-view-mode)
-  :config
-  ;; initialise
-  (pdf-tools-install)
-  ;; open pdfs scaled to fit page
-  (setq-default pdf-view-display-size 'fit-page)
-  ;; automatically annotate highlights
-  (setq pdf-annot-activate-created-annotations t))
-
 (setq dafny-verification-backend 'server)
 (setq flycheck-dafny-executable "/Users/samarth/dafny/dafny")
 (setq flycheck-boogie-executable "/Users/samarth/dafny/dafny-server")
@@ -451,6 +438,55 @@
 
 (add-to-list 'org-latex-packages-alist '("" "minted"))
 (setq org-latex-listings 'minted)
+
+(use-package tablist
+  :ensure t)
+
+(use-package pdf-tools
+  :pin manual
+  :magic ("%PDF" . pdf-view-mode)
+  :init
+  (pdf-tools-install)
+  :config
+  (setq pdf-view-display-size 'fit-width
+        pdf-view-use-scaling t
+        pdf-view-resize-factor 1.25)
+  (setq pdf-annot-activate-created-annotations t)
+
+  (defun my/pdf-set-last-viewed-bookmark ()
+    (interactive)
+    (when (eq major-mode 'pdf-view-mode)
+      (bookmark-set (my/pdf-generate-bookmark-name))))
+
+  (defun my/pdf-jump-last-viewed-bookmark ()
+    (bookmark-set "fake")
+    (when
+        (my/pdf-has-last-viewed-bookmark)
+      (bookmark-jump (my/pdf-generate-bookmark-name))))
+
+  (defun my/pdf-has-last-viewed-bookmark ()
+    (assoc
+     (my/pdf-generate-bookmark-name) bookmark-alist))
+
+  (defun my/pdf-generate-bookmark-name ()
+    (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
+
+  (defun my/pdf-set-all-last-viewed-bookmarks ()
+    (dolist (buf (buffer-list))
+      (with-current-buffer (and (buffer-name buf) buf)
+        (my/pdf-set-last-viewed-bookmark))))
+
+  (add-hook 'kill-buffer-hook 'my/pdf-set-last-viewed-bookmark)
+  (add-hook 'pdf-view-mode-hook 'my/pdf-jump-last-viewed-bookmark)
+  (unless noninteractive  ; as `save-place-mode' does
+    (add-hook 'kill-emacs-hook #'my/pdf-set-all-last-viewed-bookmarks)))
+
+(use-package org-pdfview
+  :ensure t
+  :init
+  (org-link-set-parameters "pdfview" :export #'org-pdfview-export)
+  (add-to-list 'org-file-apps '("\\.pdf\\'" . (lambda (file link) (org-pdfview-open link))))
+  (add-to-list 'org-file-apps '("\\.pdf::\\([[:digit:]]+\\)\\'" . (lambda (file link) (org-pdfview-open link)))))
 
 (use-package helm
   :ensure t
