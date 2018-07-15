@@ -429,6 +429,7 @@ Never lose my cursor again.
 #+BEGIN_SRC emacs-lisp
   (use-package beacon
     :ensure t
+    :diminish beacon-mode
     :init
     (beacon-mode 1))
 #+END_SRC
