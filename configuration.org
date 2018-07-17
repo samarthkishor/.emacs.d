@@ -543,32 +543,6 @@ Use =company= for auto-completion engine.
     (global-company-mode t))
 #+END_SRC
 
-** Dafny
-
-First, install the =boogie-friends= package.
-Indicate the paths to the Dafny and Boogie installations.
-
-#+BEGIN_SRC emacs-lisp
-  (setq dafny-verification-backend 'server)
-  (setq flycheck-dafny-executable "/Users/samarth/dafny/dafny")
-  (setq flycheck-boogie-executable "/Users/samarth/dafny/dafny-server")
-  (setq flycheck-z3-smt2-executable "/Users/samarth/dafny/z3/bin/z3")
-  (setq flycheck-inferior-dafny-executable "/Users/samarth/dafny/dafny-server") ;; Optional
-  ;; (setq boogie-friends-profile-analyzer-executable "PATH-TO-Z3-AXIOM-PROFILER") ;; Optional
-#+END_SRC
-
-** JavaScript
-
-Use =prettier-mode= for code formatting.
-Make sure =prettier= is installed globally.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package prettier-js
-    :ensure t
-    :hook
-    (js2-mode . prettier-js-mode))
-#+END_SRC
-
 ** Clojure(script)
 
 Use CIDER as the "IDE".
@@ -597,6 +571,68 @@ Recognize .boot files as valid Clojure code.
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
+#+END_SRC
+
+** Dafny
+
+First, install the =boogie-friends= package.
+Indicate the paths to the Dafny and Boogie installations.
+
+#+BEGIN_SRC emacs-lisp
+  (setq dafny-verification-backend 'server)
+  (setq flycheck-dafny-executable "/Users/samarth/dafny/dafny")
+  (setq flycheck-boogie-executable "/Users/samarth/dafny/dafny-server")
+  (setq flycheck-z3-smt2-executable "/Users/samarth/dafny/z3/bin/z3")
+  (setq flycheck-inferior-dafny-executable "/Users/samarth/dafny/dafny-server") ;; Optional
+  ;; (setq boogie-friends-profile-analyzer-executable "PATH-TO-Z3-AXIOM-PROFILER") ;; Optional
+#+END_SRC
+
+** JavaScript
+
+Use =prettier-mode= for code formatting.
+Make sure =prettier= is installed globally.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package prettier-js
+    :ensure t
+    :hook
+    (js2-mode . prettier-js-mode))
+#+END_SRC
+
+** Lisps
+
+Enable =paredit=.
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package paredit
+  ;;   :ensure t
+  ;;   :commands (enable-paredit-mode paredit-mode)
+  ;;   :diminish paredit-mode
+  ;;   :init
+  ;;   (add-hook 'clojure-mode-hook #'paredit-mode)
+  ;;   (add-hook 'cider-mode-hook #'paredit-mode))
+#+END_SRC
+
+Use =evil-paredit= for =paredit= to work nicely with =evil-mode=.
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package evil-paredit
+  ;;   :ensure t
+  ;;   :commands (evil-paredit-mode))
+#+END_SRC
+
+Use =smartparens= and =evil-smartparens=.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+    :ensure t
+    :init
+    (smartparens-global-mode 1))
+
+  (use-package evil-smartparens
+    :ensure t
+    :config
+    (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode))
 #+END_SRC
 
 * Org-mode

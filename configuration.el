@@ -335,6 +335,18 @@
   :init
   (global-company-mode t))
 
+(use-package cider
+  :ensure t)
+
+(use-package inf-clojure
+  :commands (inf-clojure))
+
+(defun cljs-node-repl ()
+  (interactive)
+  (run-clojure "lein trampoline run -m clojure.main repl.clj"))
+
+(add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
+
 (setq dafny-verification-backend 'server)
 (setq flycheck-dafny-executable "/Users/samarth/dafny/dafny")
 (setq flycheck-boogie-executable "/Users/samarth/dafny/dafny-server")
@@ -347,17 +359,27 @@
   :hook
   (js2-mode . prettier-js-mode))
 
-(use-package cider
-  :ensure t)
+;; (use-package paredit
+;;   :ensure t
+;;   :commands (enable-paredit-mode paredit-mode)
+;;   :diminish paredit-mode
+;;   :init
+;;   (add-hook 'clojure-mode-hook #'paredit-mode)
+;;   (add-hook 'cider-mode-hook #'paredit-mode))
 
-(use-package inf-clojure
-  :commands (inf-clojure))
+;; (use-package evil-paredit
+;;   :ensure t
+;;   :commands (evil-paredit-mode))
 
-(defun cljs-node-repl ()
-  (interactive)
-  (run-clojure "lein trampoline run -m clojure.main repl.clj"))
+(use-package smartparens
+  :ensure t
+  :init
+  (smartparens-global-mode 1))
 
-(add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
+(use-package evil-smartparens
+  :ensure t
+  :config
+  (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode))
 
 (use-package org-bullets
   :init
