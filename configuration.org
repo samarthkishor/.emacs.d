@@ -507,6 +507,22 @@ Follow symlinks.
   (setq vc-follow-symlinks t)
 #+END_SRC
 
+Use =dumb-jump= to jump to definition in source code.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package dumb-jump
+    :ensure
+    :bind
+    (("M-g o" . dumb-jump-go-to-other-window)
+     ("M-g d" . dumb-jump-go)
+     ("M-g p" . dumb-jump-back)
+     ("M-g q" . dumb-jump-quick-look)
+     ("M-g i" . dumb-jump-go-prompt))
+    :config
+    (dumb-jump-mode)
+    (setq dumb-jump-selector 'helm))
+#+END_SRC
+
 ** Magit
 
 Bring up the status menu with =C-x g=.
@@ -906,7 +922,7 @@ Use =proselint=.
       (add-to-list 'flycheck-checkers 'proselint))
 #+END_SRC
 
-Use flycheck in the appropriate buffer.
+Use =flycheck= in the appropriate buffer.
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'markdown-mode-hook #'flycheck-mode)
@@ -919,6 +935,22 @@ Set spell checker to =aspell=.
 
 #+BEGIN_SRC emacs-lisp
   (setq ispell-program-name "/usr/local/bin/aspell")
+#+END_SRC
+
+** Thesaurus
+
+Use =synosaurus= as a nice interface to =wordnet=. I installed =wordnet= with =brew install wordnet=.
+The default bindings conflict with =org-mode= so I had to change them.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package synosaurus
+    :ensure t
+    :bind
+    (("C-c C-h l" . synosaurus-lookup)
+     ("C-c C-h r" . synosaurus-choose-and-replace))
+    :config
+    (setq synosaurus-backend 'synosaurus-backend-wordnet)
+    (setq synosaurus-choose-method 'default))
 #+END_SRC
 
 * Editing Settings

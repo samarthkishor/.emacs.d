@@ -319,6 +319,18 @@
 
 (setq vc-follow-symlinks t)
 
+(use-package dumb-jump
+  :ensure
+  :bind
+  (("M-g o" . dumb-jump-go-to-other-window)
+   ("M-g d" . dumb-jump-go)
+   ("M-g p" . dumb-jump-back)
+   ("M-g q" . dumb-jump-quick-look)
+   ("M-g i" . dumb-jump-go-prompt))
+  :config
+  (dumb-jump-mode)
+  (setq dumb-jump-selector 'helm))
+
 (use-package magit
   :bind ("C-x g" . magit-status)
   :config
@@ -547,6 +559,15 @@
 (add-hook 'org-mode-hook #'flycheck-mode)
 
 (setq ispell-program-name "/usr/local/bin/aspell")
+
+(use-package synosaurus
+  :ensure t
+  :bind
+  (("C-c C-h l" . synosaurus-lookup)
+   ("C-c C-h r" . synosaurus-choose-and-replace))
+  :config
+  (setq synosaurus-backend 'synosaurus-backend-wordnet)
+  (setq synosaurus-choose-method 'default))
 
 (defun visit-emacs-config ()
   (interactive)
