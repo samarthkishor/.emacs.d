@@ -373,11 +373,13 @@
 
 (use-package smartparens
   :ensure t
+  :diminish
   :init
   (smartparens-global-mode 1))
 
 (use-package evil-smartparens
   :ensure t
+  :diminish
   :config
   (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode))
 
@@ -523,27 +525,26 @@
           (lambda ()
             (setq auto-composition-mode nil))))
 
-(require 'flycheck)
-
-(flycheck-define-checker proselint
-  "A linter for prose."
-  :command ("proselint" source-inplace)
-  :error-patterns
-  ((warning line-start (file-name) ":" line ":" column ": "
-            (id (one-or-more (not (any " "))))
-            (message (one-or-more not-newline)
-                     (zero-or-more "\n" (any " ") (one-or-more not-newline)))
-            line-end))
-  :modes (text-mode markdown-mode gfm-mode org-mode))
-
-(add-to-list 'flycheck-checkers 'proselint)
+(use-package flycheck
+  :ensure t
+  :diminish
+  :config
+  (flycheck-define-checker proselint
+    "A linter for prose."
+    :command ("proselint" source-inplace)
+    :error-patterns
+    ((warning line-start (file-name) ":" line ":" column ": "
+              (id (one-or-more (not (any " "))))
+              (message (one-or-more not-newline)
+                       (zero-or-more "\n" (any " ") (one-or-more not-newline)))
+              line-end))
+    :modes (text-mode markdown-mode gfm-mode org-mode))
+    (add-to-list 'flycheck-checkers 'proselint))
 
 (add-hook 'markdown-mode-hook #'flycheck-mode)
 (add-hook 'gfm-mode-hook #'flycheck-mode)
 (add-hook 'text-mode-hook #'flycheck-mode)
 (add-hook 'org-mode-hook #'flycheck-mode)
-
-(diminish 'flycheck-mode)
 
 (setq ispell-program-name "/usr/local/bin/aspell")
 
@@ -686,6 +687,11 @@
           (lambda ()
             (setq-local auto-composition-mode nil)))
 
+(setq mu4e-sent-messages-behavior 'delete)
+
+(add-hook 'mu4e-view-mode-hook #'visual-line-mode) 
+(add-hook 'mu4e-compose-mode-hook #'visual-line-mode)
+
 (setq message-send-mail-function 'message-send-mail-with-sendmail)
 (setq sendmail-program "/usr/local/bin/msmtp")
 (setq user-full-name "Samarth Kishor")
@@ -697,6 +703,7 @@
 
 (require 'org-mu4e)
 (setq org-mu4e-link-query-in-headers-mode nil)
+(setq org-mu4e-convert-to-html t)
 
 (setq org-capture-templates
       `(("t" "TODO" entry (file+headline "~/Dropbox/org/tasks.org" "Tasks")
