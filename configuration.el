@@ -315,6 +315,11 @@
 
 (show-paren-mode 1)
 
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
 (column-number-mode t)
 
 (setq vc-follow-symlinks t)
