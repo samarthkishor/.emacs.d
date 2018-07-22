@@ -569,6 +569,12 @@
   (setq synosaurus-backend 'synosaurus-backend-wordnet)
   (setq synosaurus-choose-method 'default))
 
+(use-package typo
+  :ensure t
+  :config
+  (typo-global-mode 1)
+  (add-hook 'text-mode-hook 'typo-mode))
+
 (defun visit-emacs-config ()
   (interactive)
   (find-file "~/.emacs.d/configuration.org"))

@@ -953,6 +953,18 @@ The default bindings conflict with =org-mode= so I had to change them.
     (setq synosaurus-choose-method 'default))
 #+END_SRC
 
+** Typography
+
+Use =typo-mode= to easily type typographical symbols such as the em-dash.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package typo
+    :ensure t
+    :config
+    (typo-global-mode 1)
+    (add-hook 'text-mode-hook 'typo-mode))
+#+END_SRC
+
 * Editing Settings
 ** Visit Emacs configuration
 
