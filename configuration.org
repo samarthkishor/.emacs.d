@@ -429,7 +429,7 @@ Never lose my cursor again.
 
 #+BEGIN_SRC emacs-lisp
   (use-package beacon
-    :ensure t
+    :defer t
     :diminish beacon-mode
     :init
     (beacon-mode 1))
@@ -969,7 +969,8 @@ Use =typo-mode= to easily type typographical symbols such as the em-dash.
 
 #+BEGIN_SRC emacs-lisp
   (use-package typo
-    :ensure t
+    :defer t
+    :diminish
     :config
     (typo-global-mode 1)
     (add-hook 'text-mode-hook 'typo-mode))

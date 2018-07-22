@@ -288,7 +288,7 @@
       (global-hl-line-mode))
 
 (use-package beacon
-  :ensure t
+  :defer t
   :diminish beacon-mode
   :init
   (beacon-mode 1))
@@ -576,7 +576,8 @@
   (setq synosaurus-choose-method 'default))
 
 (use-package typo
-  :ensure t
+  :defer t
+  :diminish
   :config
   (typo-global-mode 1)
   (add-hook 'text-mode-hook 'typo-mode))
