@@ -17,6 +17,7 @@
   :ensure t
   :init
   (setq evil-want-integration nil)
+  (setq evil-want-fine-undo t)
   :config
   (evil-mode 1))
 
