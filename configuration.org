@@ -1094,6 +1094,12 @@ Source: [[http://whattheemacsd.com/key-bindings.el-03.html][What the emacs.d]]
     (imagemagick-register-types))
 #+END_SRC
 
+Show email addresses as well as names.
+
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-view-show-addresses t)
+#+END_SRC
+
 Open email in a browser if necessary.
 
 #+BEGIN_SRC emacs-lisp
@@ -1209,11 +1215,20 @@ Gmail already sends sent mail to the Sent folder.
   (setq mu4e-sent-messages-behavior 'delete)
 #+END_SRC
 
-View and compose email in =visual-line-mode= to have soft-wrapped lines.
+View and compose email in =visual-line-mode= and use the =visual-fill-column= package to have soft-wrapped lines.
 
 #+BEGIN_SRC emacs-lisp
+  (use-package visual-fill-column
+    :ensure t)
+
   (add-hook 'mu4e-view-mode-hook #'visual-line-mode) 
-  (add-hook 'mu4e-compose-mode-hook #'visual-line-mode) 
+  (add-hook 'mu4e-compose-mode-hook
+            (lambda ()
+              (set-fill-column 80)
+              (auto-fill-mode 0)
+              (visual-fill-column-mode)
+              (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+              (visual-line-mode)))
 #+END_SRC
 
 ** Send mail with =msmtp=

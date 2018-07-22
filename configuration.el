@@ -631,6 +631,8 @@
 (when (fboundp 'imagemagick-register-types)
   (imagemagick-register-types))
 
+(setq mu4e-view-show-addresses t)
+
 (add-to-list 'mu4e-view-actions '("View in browser" . mu4e-action-view-in-browser) t)
 
 (setq w3m-default-desplay-inline-images t)
@@ -710,8 +712,17 @@
 
 (setq mu4e-sent-messages-behavior 'delete)
 
+(use-package visual-fill-column
+  :ensure t)
+
 (add-hook 'mu4e-view-mode-hook #'visual-line-mode) 
-(add-hook 'mu4e-compose-mode-hook #'visual-line-mode)
+(add-hook 'mu4e-compose-mode-hook
+          (lambda ()
+            (set-fill-column 80)
+            (auto-fill-mode 0)
+            (visual-fill-column-mode)
+            (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+            (visual-line-mode)))
 
 (setq message-send-mail-function 'message-send-mail-with-sendmail)
 (setq sendmail-program "/usr/local/bin/msmtp")
