@@ -354,7 +354,8 @@
   (global-company-mode t))
 
 (use-package cider
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package inf-clojure
   :commands (inf-clojure))

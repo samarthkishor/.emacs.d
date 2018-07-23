@@ -575,7 +575,8 @@ Use CIDER as the "IDE".
 
 #+BEGIN_SRC emacs-lisp
   (use-package cider
-    :ensure t)
+    :ensure t
+    :defer t)
 #+END_SRC
 
 Also use inferior Clojure.
