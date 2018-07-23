@@ -401,6 +401,51 @@
   :config
   (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode))
 
+(use-package lsp-mode
+  :ensure t
+  :config
+  ;; make sure we have lsp-imenu everywhere we have LSP
+  (require 'lsp-imenu)
+  (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
+  ;; get lsp-python-enable defined
+  ;; NB: use either projectile-project-root or ffip-get-project-root-directory
+  ;;     or any other function that can be used to find the root directory of a project
+  (lsp-define-stdio-client lsp-python "python"
+                           #'projectile-project-root
+                           '("pyls"))
+
+  ;; make sure this is activated when python-mode is activated
+  ;; lsp-python-enable is created by macro above
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (lsp-python-enable)))
+
+  ;; lsp extras
+  (use-package lsp-ui
+    :ensure t
+    :config
+    (setq lsp-ui-sideline-ignore-duplicate t)
+    (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+  (use-package company-lsp
+    :config
+    (push 'company-lsp company-backends))
+
+  ;; format file on save
+  (add-hook 'before-save-hook 'lsp-format-buffer))
+
+;; (use-package pipenv
+;;   :hook (python-mode . pipenv-mode)
+;;   :init
+;;   (setq pipenv-projectile-after-switch-function #'pipenv-projectile-after-switch-extended))
+
+(use-package pyvenv
+  :ensure t
+  :commands
+  (pyvenv-activate pyvenv-workon))
+
+(setq python-shell-interpreter "ipython")
+
 (use-package org-bullets
   :init
   (add-hook 'org-mode-hook #'org-bullets-mode))
@@ -640,6 +685,7 @@
 (setq mu4e-change-filenames-when-moving t) ;; fix for mbsync
 ;; Enable inline images.
 (setq mu4e-view-show-images t)
+(setq mu4e-view-image-max-width 800)
 ;; Use imagemagick, if available.
 (when (fboundp 'imagemagick-register-types)
   (imagemagick-register-types))
