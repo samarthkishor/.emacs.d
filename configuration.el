@@ -372,10 +372,63 @@
 (setq flycheck-inferior-dafny-executable "/Users/samarth/dafny/dafny-server") ;; Optional
 ;; (setq boogie-friends-profile-analyzer-executable "PATH-TO-Z3-AXIOM-PROFILER") ;; Optional
 
+(use-package js2-mode
+  :mode ("\\.js" . js2-mode)
+  :interpreter ("node" . js2-mode)
+  :config
+  (setq js-basic-indent 2)
+  (setq-default js2-basic-indent 2
+                js2-basic-offset 2
+                js2-auto-indent-p t
+                js2-cleanup-whitespace t
+                js2-enter-indents-newline t
+                js2-indent-on-enter-key t)
+  (setq flycheck-javascript-eslint-executable "eslint")
+  (setq-default flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(javascript-jshint)))
+  ;; turn off all warnings in js2-mode because flycheck + eslint will handle them
+  (setq js2-mode-show-parse-errors t
+        js2-mode-show-strict-warnings nil
+        js2-strict-missing-semi-warning nil)
+  (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+  (add-hook 'js2-mode-hook
+            (lambda ()
+              (flycheck-mode)
+              (flycheck-select-checker "javascript-eslint"))))
+
+(use-package js2-refactor
+  :after js2-mode
+  :hook ((js2-mode . js2-refactor-mode))
+  :config
+  ;; js-mode (which js2 is based on) binds "M-." which conflicts with xref
+  (define-key js-mode-map (kbd "M-.") nil)
+  (js2r-add-keybindings-with-prefix "C-c C-r")
+
+  ;; xref-js2 supports things like jump to definition using ag instead of tags
+  (use-package xref-js2
+    :ensure t
+    :after js2-mode)
+
+  (add-hook 'js2-mode-hook (lambda ()
+                             (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))))
+
+(use-package tern
+  :ensure t
+  :after js2-mode
+  :init
+  (add-hook 'js2-mode-hook (lambda () (tern-mode)))
+  :config
+  (define-key tern-mode-keymap (kbd "M-.") nil)
+  (define-key tern-mode-keymap (kbd "M-,") nil)
+  (use-package company-tern
+    :ensure t
+    :init (add-to-list 'company-backends 'company-tern)))
+
 (use-package prettier-js
   :ensure t
-  :hook
-  (js2-mode . prettier-js-mode))
+  :after js2-mode
+  :hook ((js2-mode . prettier-js-mode)))
 
 ;; (use-package paredit
 ;;   :ensure t
