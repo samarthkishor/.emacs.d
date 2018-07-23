@@ -78,6 +78,12 @@ Change sentence (marked by a period) ending from one space to two spaces. This m
   (define-key evil-normal-state-map ")" 'forward-sentence)
 #+END_SRC
 
+Disable the q key in normal mode since Emacs quits things with q.
+
+#+BEGIN_SRC emacs-lisp
+  (define-key evil-normal-state-map (kbd "q") nil)
+#+END_SRC
+
 Use =evil-nerd-commenter= to make commenting lines easier.
 
 #+BEGIN_SRC emacs-lisp

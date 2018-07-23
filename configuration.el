@@ -38,6 +38,8 @@
 (setq sentence-end-double-space nil)
 (define-key evil-normal-state-map ")" 'forward-sentence)
 
+(define-key evil-normal-state-map (kbd "q") nil)
+
 (use-package evil-nerd-commenter
   :ensure t
   :requires (evil))
