@@ -65,6 +65,39 @@
   :config
   (global-evil-surround-mode 1))
 
+(use-package evil-mc
+  :ensure t
+  :after (evil)
+  :init
+  ;; To avoid conflicts with other packages, keep only the g*
+  ;; bindings:
+  (setq evil-mc-key-map
+        (let ((map (make-sparse-keymap))
+              (keys '(("grm" . evil-mc-make-all-cursors)
+                      ("gru" . evil-mc-undo-all-cursors)
+                      ("grs" . evil-mc-pause-cursors)
+                      ("grr" . evil-mc-resume-cursors)
+                      ("grf" . evil-mc-make-and-goto-first-cursor)
+                      ("grl" . evil-mc-make-and-goto-last-cursor)
+                      ("grh" . evil-mc-make-cursor-here)
+                      ("grj" . evil-mc-make-cursor-move-next-line)
+                      ("grk" . evil-mc-make-cursor-move-prev-line)
+                      ("M-n" . evil-mc-make-and-goto-next-cursor)
+                      ("grN" . evil-mc-skip-and-goto-next-cursor)
+                      ("grP" . evil-mc-skip-and-goto-prev-cursor)
+                      ("grn" . evil-mc-skip-and-goto-next-match)
+                      ("grp" . evil-mc-skip-and-goto-prev-match))))
+          (dolist (key-data keys)
+            (evil-define-key 'normal map (kbd (car key-data)) (cdr key-data))
+            (evil-define-key 'visual map (kbd (car key-data)) (cdr key-data)))
+          map))
+  :config
+  (setq-default evil-mc-enable-bar-cursor nil)
+  ;; Use a proper face for cursors
+  (setq evil-mc-cursor-current-face '(:reverse-video t))
+  ;; Enable globally to make vim-like binding (ie gr*) available
+  (global-evil-mc-mode 1))
+
 (if window-system (scroll-bar-mode -1))
 (tool-bar-mode 0)
 (menu-bar-mode 0)
