@@ -27,71 +27,6 @@ Name and email.
 
 * =evil-mode=
 
-Don't expand abbreviations when I hit escape.
-
-#+BEGIN_SRC emacs-lisp
-  (setq evil-want-abbrev-expand-on-insert-exit nil)
-#+END_SRC
-
-Use =evil=.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package evil
-    :ensure t
-    :init
-    (setq evil-want-integration nil)
-    (setq evil-want-fine-undo t)
-    :config
-    (evil-mode 1))
-
-  (use-package evil-collection
-    :after evil
-    :ensure t
-    :config
-    (evil-collection-init))
-#+END_SRC
-
-Enable =M-x= in evil-mode.
-
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "M-x") 'execute-extended-command)
-#+END_SRC
-
-Bind =C-p= to fuzzy-finding files in the current project.
-
-#+BEGIN_SRC emacs-lisp
-  (define-key evil-normal-state-map (kbd "C-p") 'projectile-find-file)
-#+END_SRC
-
-Scroll by visual line.
-
-#+BEGIN_SRC emacs-lisp
-  (evil-define-key nil evil-normal-state-map
-    "j" 'evil-next-visual-line
-    "k" 'evil-previous-visual-line)
-#+END_SRC
-
-Change sentence (marked by a period) ending from one space to two spaces. This mostly fixes evil-mode sentence motions.
-
-#+BEGIN_SRC emacs-lisp
-  (setq sentence-end-double-space nil)
-  (define-key evil-normal-state-map ")" 'forward-sentence)
-#+END_SRC
-
-Disable the q key in normal mode since Emacs quits things with q.
-
-#+BEGIN_SRC emacs-lisp
-  (define-key evil-normal-state-map (kbd "q") nil)
-#+END_SRC
-
-Use =evil-nerd-commenter= to make commenting lines easier.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package evil-nerd-commenter
-    :ensure t
-    :requires (evil))
-#+END_SRC
-
 Use =evil-leader= to emulate leader key functionality. Set , as the leader key.
 
 Note: the window movement keys correspond to hjkl in the Colemak layout.
@@ -99,13 +34,13 @@ Note: the window movement keys correspond to hjkl in the Colemak layout.
 #+BEGIN_SRC emacs-lisp
   (use-package evil-leader
     :after evil-nerd-commenter
-    :commands (evil-leader-mode)
+    :commands (evil-leader-mode global-evil-leader-mode)
     :ensure evil-leader
     :demand evil-leader
     :init
     (setq evil-leader/in-all-states 1)
-    (global-evil-leader-mode)
     :config
+    (global-evil-leader-mode t)
     (evil-leader/set-leader ",")
     (evil-leader/set-key
       "h"  'evil-window-left
@@ -123,6 +58,51 @@ Note: the window movement keys correspond to hjkl in the Colemak layout.
       "."  'evilnc-copy-and-comment-operator))
 #+End_SRC
 
+Use =evil=.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :ensure t
+    :init
+    (setq evil-want-integration nil)
+    (setq evil-want-fine-undo t)
+    :config
+    (setq evil-want-abbrev-expand-on-insert-exit nil)
+    (define-key evil-normal-state-map (kbd "C-p") 'projectile-find-file)
+    (define-key evil-normal-state-map (kbd "q") nil)
+    (evil-define-key nil evil-normal-state-map
+      "j" 'evil-next-visual-line
+      "k" 'evil-previous-visual-line)
+    (evil-mode 1))
+
+  (use-package evil-collection
+    :after evil
+    :ensure t
+    :config
+    (evil-collection-init))
+#+END_SRC
+
+Enable =M-x= in evil-mode.
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-x") 'execute-extended-command)
+#+END_SRC
+
+Change sentence (marked by a period) ending from one space to two spaces. This mostly fixes evil-mode sentence motions.
+
+#+BEGIN_SRC emacs-lisp
+  (setq sentence-end-double-space nil)
+  (define-key evil-normal-state-map ")" 'forward-sentence)
+#+END_SRC
+
+Use =evil-nerd-commenter= to make commenting lines easier.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-nerd-commenter
+    :ensure t
+    :requires (evil))
+#+END_SRC
+
 Use =evil-surround= to emulate =surround.vim=.
 
 #+BEGIN_SRC emacs-lisp
@@ -133,9 +113,10 @@ Use =evil-surround= to emulate =surround.vim=.
 #+END_SRC
 
 * UI Preferences
+
 ** Tweak window settings
 
-Hide the scroll, tool, and menu bars. hello world.
+Hide the scroll, tool, and menu bars.
 
 #+BEGIN_SRC emacs-lisp
   (if window-system (scroll-bar-mode -1))
@@ -1241,7 +1222,7 @@ Source: [[http://whattheemacsd.com/key-bindings.el-03.html][What the emacs.d]]
 
 * Email
 ** Use =mu4e=
-   
+
 [[https://notanumber.io/2016-10-03/better-email-with-mu4e/][This post]] was super helpful for setting everything up.
 
 #+BEGIN_SRC emacs-lisp
@@ -1386,7 +1367,7 @@ View and compose email in =visual-line-mode= and use the =visual-fill-column= pa
   (use-package visual-fill-column
     :ensure t)
 
-  (add-hook 'mu4e-view-mode-hook #'visual-line-mode) 
+  (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
   (add-hook 'mu4e-compose-mode-hook
             (lambda ()
               (set-fill-column 80)

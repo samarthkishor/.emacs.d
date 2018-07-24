@@ -11,48 +11,15 @@
 (setq user-full-name "Samarth Kishor"
       user-mail-address "samarthkishor1@gmail.com")
 
-(setq evil-want-abbrev-expand-on-insert-exit nil)
-
-(use-package evil
-  :ensure t
-  :init
-  (setq evil-want-integration nil)
-  (setq evil-want-fine-undo t)
-  :config
-  (evil-mode 1))
-
-(use-package evil-collection
-  :after evil
-  :ensure t
-  :config
-  (evil-collection-init))
-
-(global-set-key (kbd "M-x") 'execute-extended-command)
-
-(define-key evil-normal-state-map (kbd "C-p") 'projectile-find-file)
-
-(evil-define-key nil evil-normal-state-map
-  "j" 'evil-next-visual-line
-  "k" 'evil-previous-visual-line)
-
-(setq sentence-end-double-space nil)
-(define-key evil-normal-state-map ")" 'forward-sentence)
-
-(define-key evil-normal-state-map (kbd "q") nil)
-
-(use-package evil-nerd-commenter
-  :ensure t
-  :requires (evil))
-
 (use-package evil-leader
   :after evil-nerd-commenter
-  :commands (evil-leader-mode)
+  :commands (evil-leader-mode global-evil-leader-mode)
   :ensure evil-leader
   :demand evil-leader
   :init
   (setq evil-leader/in-all-states 1)
-  (global-evil-leader-mode)
   :config
+  (global-evil-leader-mode t)
   (evil-leader/set-leader ",")
   (evil-leader/set-key
     "h"  'evil-window-left
@@ -68,6 +35,35 @@
     "cr" 'comment-or-uncomment-region
     "cv" 'evilnc-toggle-invert-comment-line-by-line
     "."  'evilnc-copy-and-comment-operator))
+
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-integration nil)
+  (setq evil-want-fine-undo t)
+  :config
+  (setq evil-want-abbrev-expand-on-insert-exit nil)
+  (define-key evil-normal-state-map (kbd "C-p") 'projectile-find-file)
+  (define-key evil-normal-state-map (kbd "q") nil)
+  (evil-define-key nil evil-normal-state-map
+    "j" 'evil-next-visual-line
+    "k" 'evil-previous-visual-line)
+  (evil-mode 1))
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
+
+(global-set-key (kbd "M-x") 'execute-extended-command)
+
+(setq sentence-end-double-space nil)
+(define-key evil-normal-state-map ")" 'forward-sentence)
+
+(use-package evil-nerd-commenter
+  :ensure t
+  :requires (evil))
 
 (use-package evil-surround
   :ensure t
@@ -830,7 +826,7 @@
 (use-package visual-fill-column
   :ensure t)
 
-(add-hook 'mu4e-view-mode-hook #'visual-line-mode) 
+(add-hook 'mu4e-view-mode-hook #'visual-line-mode)
 (add-hook 'mu4e-compose-mode-hook
           (lambda ()
             (set-fill-column 80)
