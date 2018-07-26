@@ -40,6 +40,8 @@
   (setq evil-want-abbrev-expand-on-insert-exit nil)
   (define-key evil-normal-state-map (kbd "C-p") 'projectile-find-file)
   (define-key evil-normal-state-map (kbd "q") nil)
+  (define-key evil-normal-state-map (kbd "M-.") nil)
+  (define-key evil-normal-state-map (kbd "M-,") nil)
   (evil-define-key nil evil-normal-state-map
     "j" 'evil-next-visual-line
     "k" 'evil-previous-visual-line)
@@ -69,8 +71,7 @@
   :ensure t
   :after (evil)
   :init
-  ;; To avoid conflicts with other packages, keep only the g*
-  ;; bindings:
+  ;; To avoid conflicts with other packages, only keep the g* bindings
   (setq evil-mc-key-map
         (let ((map (make-sparse-keymap))
               (keys '(("grm" . evil-mc-make-all-cursors)
@@ -95,7 +96,7 @@
   (setq-default evil-mc-enable-bar-cursor nil)
   ;; Use a proper face for cursors
   (setq evil-mc-cursor-current-face '(:reverse-video t))
-  ;; Enable globally to make vim-like binding (ie gr*) available
+  ;; Enable globally to make vim-like bindings (ie gr*) available
   (global-evil-mc-mode 1))
 
 (if window-system (scroll-bar-mode -1))
@@ -433,12 +434,13 @@
   (js2r-add-keybindings-with-prefix "C-c C-r")
 
   ;; xref-js2 supports things like jump to definition using ag instead of tags
-  (use-package xref-js2
-    :ensure t
-    :after js2-mode)
+  ;; (use-package xref-js2
+  ;;   :ensure t
+  ;;   :after js2-mode)
 
-  (add-hook 'js2-mode-hook (lambda ()
-                             (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))))
+  ;; (add-hook 'js2-mode-hook (lambda ()
+  ;;                            (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+  )
 
 (use-package tern
   :ensure t
@@ -446,8 +448,8 @@
   :init
   (add-hook 'js2-mode-hook (lambda () (tern-mode)))
   :config
-  (define-key tern-mode-keymap (kbd "M-.") nil)
-  (define-key tern-mode-keymap (kbd "M-,") nil)
+  ;; (define-key tern-mode-keymap (kbd "M-.") nil)
+  ;; (define-key tern-mode-keymap (kbd "M-,") nil)
   (use-package company-tern
     :ensure t
     :init (add-to-list 'company-backends 'company-tern)))
