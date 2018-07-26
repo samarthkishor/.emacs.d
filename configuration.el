@@ -99,6 +99,12 @@
   ;; Enable globally to make vim-like bindings (ie gr*) available
   (global-evil-mc-mode 1))
 
+(use-package evil-lion
+  :ensure t
+  :after (evil)
+  :config
+  (evil-lion-mode))
+
 (if window-system (scroll-bar-mode -1))
 (tool-bar-mode 0)
 (menu-bar-mode 0)
@@ -431,7 +437,7 @@
   :config
   ;; js-mode (which js2 is based on) binds "M-." which conflicts with xref
   (define-key js-mode-map (kbd "M-.") nil)
-  (js2r-add-keybindings-with-prefix "C-c C-r")
+  (js2r-add-keybindings-with-prefix "C-c C-r"))
 
   ;; xref-js2 supports things like jump to definition using ag instead of tags
   ;; (use-package xref-js2
@@ -440,7 +446,6 @@
 
   ;; (add-hook 'js2-mode-hook (lambda ()
   ;;                            (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
-  )
 
 (use-package tern
   :ensure t

@@ -145,6 +145,16 @@ Multiple cursors!
     (global-evil-mc-mode 1))
 #+END_SRC
 
+Emulate vim's =lion= package for aligning text in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-lion
+    :ensure t
+    :after (evil)
+    :config
+    (evil-lion-mode))
+#+END_SRC
+
 * UI Preferences
 
 ** Tweak window settings
