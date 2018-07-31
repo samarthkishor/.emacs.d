@@ -114,6 +114,7 @@ Multiple cursors!
 #+BEGIN_SRC emacs-lisp
   (use-package evil-mc
     :ensure t
+    :diminish
     :after (evil)
     :init
     ;; To avoid conflicts with other packages, only keep the g* bindings
@@ -422,36 +423,174 @@ It's the best.
 
 Enable ligatures.
 
+[disabled because it causes too many problems]
+
 #+BEGIN_SRC emacs-lisp
-  (let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
-                 (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
-                 (36 . ".\\(?:>\\)")
-                 (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
-                 (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
-                 (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
-                 (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
-                 (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
-                 (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)")
-                 (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
-                 (48 . ".\\(?:x[a-zA-Z]\\)")
-                 (58 . ".\\(?:::\\|[:=]\\)")
-                 (59 . ".\\(?:;;\\|;\\)")
-                 (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
-                 (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
-                 (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
-                 (63 . ".\\(?:\\(\\?\\?\\)\\|[:=?]\\)")
-                 (91 . ".\\(?:]\\)")
-                 (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
-                 (94 . ".\\(?:=\\)")
-                 (119 . ".\\(?:ww\\)")
-                 (123 . ".\\(?:-\\)")
-                 (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
-                 (126 . ".\\(?:~>\\|~~\\|[>=@~-]\\)")
-                 )
-               ))
-    (dolist (char-regexp alist)
-      (set-char-table-range composition-function-table (car char-regexp)
-                            `([,(cdr char-regexp) 0 font-shape-gstring]))))
+  ;; (let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
+  ;;                (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
+  ;;                (36 . ".\\(?:>\\)")
+  ;;                (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
+  ;;                (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
+  ;;                (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
+  ;;                (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
+  ;;                (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
+  ;;                ;; (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)") commenting this line should fix a problem with CIDER
+  ;;                (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
+  ;;                (48 . ".\\(?:x[a-zA-Z]\\)")
+  ;;                (58 . ".\\(?:::\\|[:=]\\)")
+  ;;                (59 . ".\\(?:;;\\|;\\)")
+  ;;                (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
+  ;;                (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
+  ;;                (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
+  ;;                (63 . ".\\(?:\\(\\?\\?\\)\\|[:=?]\\)")
+  ;;                (91 . ".\\(?:]\\)")
+  ;;                (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
+  ;;                (94 . ".\\(?:=\\)")
+  ;;                (119 . ".\\(?:ww\\)")
+  ;;                (123 . ".\\(?:-\\)")
+  ;;                (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
+  ;;                (126 . ".\\(?:~>\\|~~\\|[>=@~-]\\)")
+  ;;                )
+  ;;              ))
+  ;;   (dolist (char-regexp alist)
+  ;;     (set-char-table-range composition-function-table (car char-regexp)
+  ;;                           `([,(cdr char-regexp) 0 font-shape-gstring]))))
+#+END_SRC
+
+Set the fallback font and ligatures. Make sure Fira Code Symbol is installed.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'after-make-frame-functions
+            (lambda (frame) (set-fontset-font t
+                                              '(#Xe100 . #Xe16f) "Fira Code Symbol")))
+  (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")
+
+  (defconst fira-code-font-lock-keywords-alist
+    (mapcar (lambda (regex-char-pair)
+              `(,(car regex-char-pair)
+                (0 (prog1 ()
+                     (compose-region (match-beginning 1)
+                                     (match-end 1)
+                                     ,(concat "	"
+                                              (list
+                                               (decode-char 'ucs
+                                                            (cadr regex-char-pair)))))))))
+            '(("\\(www\\)"                   #Xe100)
+              ("[^/]\\(\\*\\*\\)[^/]"        #Xe101)
+              ("\\(\\*\\*\\*\\)"             #Xe102)
+              ("\\(\\*\\*/\\)"               #Xe103)
+              ("\\(\\*>\\)"                  #Xe104)
+              ("[^*]\\(\\*/\\)"              #Xe105)
+              ("\\(\\\\\\\\\\)"              #Xe106)
+              ("\\(\\\\\\\\\\\\\\)"          #Xe107)
+              ("\\({-\\)"                    #Xe108)
+              ("\\(:::\\)"                   #Xe10b)
+              ("[^=]\\(:=\\)"                #Xe10c)
+              ;; ("\\(!!\\)"                    #Xe10d)
+              ;; this should be hooked to sml-mode only
+              ("\\(<>\\)"                    #Xe10e)
+              ("\\(!=\\)"                    #Xe10e)
+              ("\\(!==\\)"                   #Xe10f)
+              ("\\(-}\\)"                    #Xe110)
+              ("\\(--\\)"                    #Xe111)
+              ("\\(---\\)"                   #Xe112)
+              ("\\(-->\\)"                   #Xe113)
+              ("[^-]\\(->\\)"                #Xe114)
+              ("\\(->>\\)"                   #Xe115)
+              ("\\(-<\\)"                    #Xe116)
+              ("\\(-<<\\)"                   #Xe117)
+              ("\\(-~\\)"                    #Xe118)
+              ("\\(#{\\)"                    #Xe119)
+              ("\\(#\\[\\)"                  #Xe11a)
+              ("\\(##\\)"                    #Xe11b)
+              ("\\(###\\)"                   #Xe11c)
+              ("\\(####\\)"                  #Xe11d)
+              ("\\(#(\\)"                    #Xe11e)
+              ("\\(#\\?\\)"                  #Xe11f)
+              ("\\(#_\\)"                    #Xe120)
+              ("\\(#_(\\)"                   #Xe121)
+              ("\\(\\.-\\)"                  #Xe122)
+              ("\\(\\.=\\)"                  #Xe123)
+              ("\\(\\.\\.\\)"                #Xe124)
+              ("\\(\\.\\.<\\)"               #Xe125)
+              ("\\(\\.\\.\\.\\)"             #Xe126)
+              ("\\(\\?=\\)"                  #Xe127)
+              ("\\(\\?\\?\\)"                #Xe128)
+              ("\\(;;\\)"                    #Xe129)
+              ("\\(/\\*\\)"                  #Xe12a)
+              ("\\(/\\*\\*\\)"               #Xe12b)
+              ("\\(/=\\)"                    #Xe12c)
+              ("\\(/==\\)"                   #Xe12d)
+              ("\\(/>\\)"                    #Xe12e)
+              ("\\(//\\)"                    #Xe12f)
+              ("\\(///\\)"                   #Xe130)
+              ("\\(&&\\)"                    #Xe131)
+              ("\\(||\\)"                    #Xe132)
+              ("\\(||=\\)"                   #Xe133)
+              ("[^|]\\(|=\\)"                #Xe134)
+              ("\\(|>\\)"                    #Xe135)
+              ("\\(\\^=\\)"                  #Xe136)
+              ("\\(\\$>\\)"                  #Xe137)
+              ("\\(\\+\\+\\)"                #Xe138)
+              ("\\(\\+\\+\\+\\)"             #Xe139)
+              ("\\(\\+>\\)"                  #Xe13a)
+              ("\\(=:=\\)"                   #Xe13b)
+              ("[^!/]\\(==\\)[^>]"           #Xe13c)
+              ("\\(===\\)"                   #Xe13d)
+              ("\\(==>\\)"                   #Xe13e)
+              ("[^=]\\(=>\\)"                #Xe13f)
+              ("\\(=>>\\)"                   #Xe140)
+              ("\\(<=\\)"                    #Xe141)
+              ("\\(=<<\\)"                   #Xe142)
+              ("\\(=/=\\)"                   #Xe143)
+              ("\\(>-\\)"                    #Xe144)
+              ("\\(>=\\)"                    #Xe145)
+              ("\\(>=>\\)"                   #Xe146)
+              ("[^-=]\\(>>\\)"               #Xe147)
+              ("\\(>>-\\)"                   #Xe148)
+              ("\\(>>=\\)"                   #Xe149)
+              ("\\(>>>\\)"                   #Xe14a)
+              ("\\(<\\*\\)"                  #Xe14b)
+              ("\\(<\\*>\\)"                 #Xe14c)
+              ("\\(<|\\)"                    #Xe14d)
+              ("\\(<|>\\)"                   #Xe14e)
+              ("\\(<\\$\\)"                  #Xe14f)
+              ("\\(<\\$>\\)"                 #Xe150)
+              ("\\(<!--\\)"                  #Xe151)
+              ("\\(<-\\)"                    #Xe152)
+              ("\\(<--\\)"                   #Xe153)
+              ("\\(<->\\)"                   #Xe154)
+              ("\\(<\\+\\)"                  #Xe155)
+              ("\\(<\\+>\\)"                 #Xe156)
+              ("\\(<=\\)"                    #Xe157)
+              ("\\(<==\\)"                   #Xe158)
+              ("\\(<=>\\)"                   #Xe159)
+              ("\\(<=<\\)"                   #Xe15a)
+              ;; ("\\(<>\\)"                    #Xe15b)
+              ("[^-=]\\(<<\\)"               #Xe15c)
+              ("\\(<<-\\)"                   #Xe15d)
+              ("\\(<<=\\)"                   #Xe15e)
+              ("\\(<<<\\)"                   #Xe15f)
+              ("\\(<~\\)"                    #Xe160)
+              ("\\(<~~\\)"                   #Xe161)
+              ("\\(</\\)"                    #Xe162)
+              ("\\(</>\\)"                   #Xe163)
+              ("\\(~@\\)"                    #Xe164)
+              ("\\(~-\\)"                    #Xe165)
+              ("\\(~=\\)"                    #Xe166)
+              ("\\(~>\\)"                    #Xe167)
+              ("[^<]\\(~~\\)"                #Xe168)
+              ("\\(~~>\\)"                   #Xe169)
+              ("\\(%%\\)"                    #Xe16a)
+              ("[^:=]\\(:\\)[^:=]"           #Xe16c)
+              ("[^\\+<>]\\(\\+\\)[^\\+<>]"   #Xe16d)
+              ("[^\\*/<>]\\(\\*\\)[^\\*/<>]" #Xe16f))))
+
+  (defun add-fira-code-symbol-keywords ()
+    "Add the Fira Code ligatures from Fira Code Symbol to selected keywords."
+    (font-lock-add-keywords nil fira-code-font-lock-keywords-alist))
+
+  (add-hook 'prog-mode-hook #'add-fira-code-symbol-keywords)
 #+END_SRC
 
 ** Line settings
@@ -614,22 +753,30 @@ Use CIDER as the "IDE".
 #+BEGIN_SRC emacs-lisp
   (use-package cider
     :ensure t
-    :defer t)
+    :defer t
+    :init
+    (add-hook 'cider-repl-mode-hook #'company-mode)
+    (add-hook 'cider-mode-hook #'company-mode)
+    (add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
+    (add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
+    (add-hook 'cider-mode-hook (lambda () (setq auto-composition-mode nil))))
 #+END_SRC
 
-Also use inferior Clojure.
+Fancy refactoring stuff.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package inf-clojure
-    :commands (inf-clojure))
-#+END_SRC
-
-Run a ClojureScript REPL with Leiningen with =M-x cljs-node-repl RET=.
-
-#+BEGIN_SRC emacs-lisp
-  (defun cljs-node-repl ()
-    (interactive)
-    (run-clojure "lein trampoline run -m clojure.main repl.clj"))
+  (use-package clj-refactor
+    :ensure t
+    :defer t
+    :init
+    (add-hook 'clojure-mode-hook
+              (lambda ()
+                (clj-refactor-mode 1)
+                (setq cljr-warn-on-eval nil)
+                (yas-minor-mode 1)
+                (setq auto-composition-mode nil) ;; Fira Code causes CIDER to hang
+                ;; leaves cider-macroexpand-1 unbound
+                (cljr-add-keybindings-with-prefix "C-c C-m"))))
 #+END_SRC
 
 Recognize .boot files as valid Clojure code.
@@ -806,10 +953,7 @@ Source: this [[https://vxlabs.com/2018/06/08/python-language-server-with-emacs-a
 
     (use-package company-lsp
       :config
-      (push 'company-lsp company-backends))
-
-    ;; format file on save
-    (add-hook 'before-save-hook 'lsp-format-buffer))
+      (push 'company-lsp company-backends)))
 #+END_SRC
 
 Use =pipenv= to set up Python environments and replace =pip3=.
@@ -1254,8 +1398,8 @@ Source: [[https://github.com/munen/emacs.d/#delete-trailing-whitespace]]
 #+BEGIN_SRC emacs-lisp
   (add-hook 'before-save-hook '(lambda ()
                                 (when (not (or (derived-mode-p 'markdown-mode)
-                                               (derived-mode-p 'org-mode))
-                                  (delete-trailing-whitespace)))))
+                                               (derived-mode-p 'org-mode)))
+                                  (delete-trailing-whitespace))))
 #+END_SRC
 
 ** Random useful keybindingsI
