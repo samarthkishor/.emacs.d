@@ -886,3 +886,14 @@
 (setq org-capture-templates
       `(("t" "TODO" entry (file+headline "~/Dropbox/org/tasks.org" "Tasks")
          "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")))
+
+(use-package atomic-chrome
+  :ensure t
+  :config
+  (setq atomic-chrome-default-major-mode 'org-mode)
+  (setq atomic-chrome-buffer-open-style 'frame)
+  (add-hook 'atomic-chrome-edit-done-hook 'delete-frame)
+  ;; Handle if there is an Emacs instance running which has the server already started
+  (ignore-errors
+    ;; Start the server
+    (atomic-chrome-start-server)))
