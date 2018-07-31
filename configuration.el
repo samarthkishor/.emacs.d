@@ -274,6 +274,8 @@
     (diminish 'undo-tree-mode)
     (diminish 'auto-revert-mode)
     (diminish 'global-auto-revert-mode)
+    (diminish 'eldoc-mode)
+    (diminish 'hs-minor-mode)
     (diminish 'flyspell-mode))
 
 (setq display-time-default-load-average nil)
@@ -507,6 +509,14 @@
   (dumb-jump-mode)
   (setq dumb-jump-selector 'helm))
 
+(use-package yasnippet
+  :ensure t
+  :diminish yas-minor-mode
+  :config
+  (setq yas-snippet-dirs (append yas-snippet-dirs
+                                 '("~/.emacs.d/snippets/")))
+  (yas-global-mode 1))
+
 (use-package magit
   :bind ("C-x g" . magit-status)
   :config
@@ -531,11 +541,14 @@
   (add-hook 'cider-mode-hook #'company-mode)
   (add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
   (add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
-  (add-hook 'cider-mode-hook (lambda () (setq auto-composition-mode nil))))
+  :config
+  (setq cider-repl-use-pretty-printing t)
+  (setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))"))
 
 (use-package clj-refactor
   :ensure t
   :defer t
+  :diminish
   :init
   (add-hook 'clojure-mode-hook
             (lambda ()
@@ -629,6 +642,7 @@
   :ensure t
   :diminish
   :init
+  (require 'smartparens-config)
   (smartparens-global-mode 1))
 
 (use-package evil-smartparens
