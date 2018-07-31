@@ -155,6 +155,14 @@ Emulate vim's =lion= package for aligning text in Emacs.
     (evil-lion-mode))
 #+END_SRC
 
+Use =swiper= (with a Helm interface) instead of =isearch= for searching with =C-s=.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package swiper-helm
+    :ensure t
+    :bind ("C-s" . swiper-helm))
+#+END_SRC
+
 * UI Preferences
 
 ** Tweak window settings

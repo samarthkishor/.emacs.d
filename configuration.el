@@ -105,6 +105,10 @@
   :config
   (evil-lion-mode))
 
+(use-package swiper-helm
+  :ensure t
+  :bind ("C-s" . swiper-helm))
+
 (if window-system (scroll-bar-mode -1))
 (tool-bar-mode 0)
 (menu-bar-mode 0)
