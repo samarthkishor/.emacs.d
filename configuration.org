@@ -165,7 +165,6 @@ Use =swiper= (with a Helm interface) instead of =isearch= for searching with =C-
 #+END_SRC
 
 * UI Preferences
-
 ** Tweak window settings
 
 Hide the scroll, tool, and menu bars.
@@ -173,7 +172,6 @@ Hide the scroll, tool, and menu bars.
 #+BEGIN_SRC emacs-lisp
   (if window-system (scroll-bar-mode -1))
   (tool-bar-mode 0)
-  (menu-bar-mode 0)
 #+END_SRC
 
 Start in full-screen.
@@ -502,7 +500,7 @@ Set the fallback font and ligatures. Make sure Fira Code Symbol is installed.
               ("\\(-<\\)"                    #Xe116)
               ("\\(-<<\\)"                   #Xe117)
               ("\\(-~\\)"                    #Xe118)
-              ("\\(#{\\)"                    #Xe119)
+              ;; ("\\(#{\\)"                    #Xe119)
               ("\\(#\\[\\)"                  #Xe11a)
               ("\\(##\\)"                    #Xe11b)
               ("\\(###\\)"                   #Xe11c)
@@ -647,6 +645,12 @@ Source: [[http://whattheemacsd.com/init.el-02.html][What the .emacs.d]]
                    (concat user-emacs-directory "backups")))))
 
   (setq vc-make-backup-files t)
+#+END_SRC
+
+Don't create lockfiles (files that start with #).
+
+#+BEGIN_SRC emacs-lisp
+  (setq create-lockfiles nil)
 #+END_SRC
 
 Use UTF-8 encoding everywhere.

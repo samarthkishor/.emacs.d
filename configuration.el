@@ -112,7 +112,6 @@
 
 (if window-system (scroll-bar-mode -1))
 (tool-bar-mode 0)
-(menu-bar-mode 0)
 
 (if (eq window-system 'ns)
     (toggle-frame-maximized)
@@ -364,7 +363,7 @@
             ("\\(-<\\)"                    #Xe116)
             ("\\(-<<\\)"                   #Xe117)
             ("\\(-~\\)"                    #Xe118)
-            ("\\(#{\\)"                    #Xe119)
+            ;; ("\\(#{\\)"                    #Xe119)
             ("\\(#\\[\\)"                  #Xe11a)
             ("\\(##\\)"                    #Xe11b)
             ("\\(###\\)"                   #Xe11c)
@@ -477,6 +476,8 @@
                  (concat user-emacs-directory "backups")))))
 
 (setq vc-make-backup-files t)
+
+(setq create-lockfiles nil)
 
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
