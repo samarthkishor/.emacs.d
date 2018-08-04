@@ -27,6 +27,7 @@
     "e"  'evil-window-up
     "i"  'evil-window-right
     "b"  'ibuffer
+    "m"  'helm-imenu
     "cl" 'flycheck-list-errors
     ","  'evilnc-comment-operator
     "cc" 'evilnc-comment-or-uncomment-lines))
@@ -38,7 +39,7 @@
   (setq evil-want-fine-undo t)
   :config
   (setq evil-want-abbrev-expand-on-insert-exit nil)
-  (define-key evil-normal-state-map (kbd "C-p") 'projectile-find-file)
+  (define-key evil-normal-state-map (kbd "C-p") 'helm-projectile)
   (define-key evil-normal-state-map (kbd "q") nil)
   (define-key evil-normal-state-map (kbd "M-.") nil)
   (define-key evil-normal-state-map (kbd "M-,") nil)
@@ -829,12 +830,17 @@
   :bind
   ("C-x C-f" . 'helm-find-files)
   ("C-x C-b" . 'helm-buffers-list)
-  ("M-x" . 'helm-M-x)
+  ("C-x b"   . 'helm-mini)
+  ("M-x"     . 'helm-M-x)
   :init
   (helm-mode 1)
+  (setq helm-buffers-fuzzy-matching t
+        helm-recentf-fuzzy-match t
+        helm-projectile-fuzzy-match t
+        helm-imenu-fuzzy-match t)
   (add-hook 'helm-major-mode-hook
-          (lambda ()
-            (setq auto-composition-mode nil))))
+            (lambda ()
+              (setq auto-composition-mode nil))))
 
 (use-package flycheck
   :ensure t
@@ -900,7 +906,9 @@
   :ensure t
   :diminish projectile-mode
   :init
-    (projectile-mode 1))
+  (projectile-mode 1))
+
+(use-package helm-projectile :ensure t)
 
 (setq scroll-conservatively 100)
 
