@@ -127,146 +127,59 @@
 
 (setq-default inhibit-startup-screen t)
 
-(display-time-mode t)
+(use-package powerline
+  :if window-system
+  :config (setq-default powerline-default-separator 'nil))
 
-;; Time format
-(customize-set-variable 'display-time-string-forms
-                        '((propertize (concat dayname
-                                              " " 12-hours ":" minutes " " (upcase am-pm))
-                                      'help-echo (format-time-string "%a, %b %e %Y" now))))
-
-;; Update display-time-string
-(display-time-update)
-
-(use-package telephone-line
+(use-package spaceline
+  :after powerline
+  :ensure t
   :config
-  (setq telephone-line-primary-left-separator 'telephone-line-utf-abs-left
-        telephone-line-secondary-left-separator 'telephone-line-utf-abs-hollow-left
-        telephone-line-primary-right-separator 'telephone-line-utf-abs-right
-        telephone-line-secondary-right-separator 'telephone-line-utf-abs-hollow-right)
-  (setq telephone-line-height 24
-        telephone-line-evil-use-short-tag t)
+  (setq spaceline-responsive nil))
 
-  (setq telephone-line-lhs
-        '((evil   . (telephone-line-evil-tag-segment))
-          (accent . (telephone-line-airline-position-segment
-                     telephone-line-process-segment))
-          (nil    . (telephone-line-minor-mode-segment
-                     telephone-line-buffer-segment))))
-  (setq telephone-line-rhs
-        '((nil    . (telephone-line-misc-info-segment))
-          (evil   . (telephone-line-vc-segment))
-          (accent . (telephone-line-major-mode-segment
-                     telephone-line-flycheck-segment))))
+(use-package spaceline-all-the-icons
+  :after spaceline
+  :config
+  (setq spaceline-all-the-icons-icon-set-modified 'circle
+        spaceline-all-the-icons-icon-set-flycheck-slim 'dots
+        spaceline-all-the-icons-separator-type 'none
+        spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
+        spaceline-all-the-icons-flycheck-alternate t)
+  (spaceline-all-the-icons-theme)
+  (spaceline-toggle-all-the-icons-projectile-on)
+  (spaceline-toggle-all-the-icons-buffer-position-on)
+  (spaceline-helm-mode)
+  (spaceline-toggle-all-the-icons-minor-modes-off))
 
-  (telephone-line-mode t))
+(defun remove-mode-line-box ()
+  (set-face-attribute 'mode-line nil :box nil :underline nil)
+  (set-face-attribute 'mode-line-inactive nil :box nil :underline nil))
 
-;; ;; Remove display-time-string from global-mode-string
-;; (setq global-mode-string (delq 'display-time-string global-mode-string))
+(when (window-system)
+  (remove-mode-line-box))
 
-;; ;; Remove battery-mode-line-string from global-mode-string
-;; (setq global-mode-string (delq 'battery-mode-line-string global-mode-string))
-
-;; (defun *-mode-line-fill (reserve)
-;;   "Return empty space using FACE and leaving RESERVE space on the right."
-;;   (unless reserve
-;;     (setq reserve 20))
-;;   (when (and window-system
-;;              (eq 'right (get-scroll-bar-mode)))
-;;     (setq reserve (- reserve 3)))
-;;   (propertize " "
-;;               'display `((space :align-to (- (+ right right-fringe right-margin), reserve)))))
-
-;; (setq-default mode-line-format
-;;               '("%e"
-;;                 mode-line-front-space
-;;                 mode-line-client
-;;                 mode-line-remote
-;;                 mode-line-mule-info
-;;                 mode-line-modified
-;;                 "  "
-;;                 ;; Buffer name
-;;                 (:propertize mode-line-buffer-identification
-;;                              face font-lock-builtin-face)
-;;                 "  "
-;;                 ;; Position
-;;                 "%p (%l,%c)"
-;;                 "  "
-;;                 ;; Mode, recursive editing, and narrowing information
-;;                 "("
-;;                 (:propertize "%["
-;;                              face font-lock-warning-face)
-;;                 mode-name
-;;                 (:propertize "%]"
-;;                              face font-lock-warning-face)
-;;                 (:eval (if (buffer-narrowed-p)
-;;                            (concat " "
-;;                                    (propertize "Narrow"
-;;                                                'face 'font-lock-warning-face))))
-;;                 ")"
-;;                 ;; Version control
-;;                 (:eval (when vc-mode
-;;                          (concat " "
-;;                                  vc-mode)))
-;;                 ;; Miscellaneous information
-;;                 "  "
-;;                 mode-line-misc-info
-;;                 (:eval (*-mode-line-fill (+ (length battery-mode-line-string)
-;;                                             1
-;;                                             (length display-time-string))))
-;;                 battery-mode-line-string
-;;                 " "
-;;                 display-time-string
-;;                 mode-line-end-spaces))
-
-;; (use-package all-the-icons
-;;   :demand
-;;   :init
-;;   (progn (defun -custom-modeline-github-vc ()
-;;            (let ((branch (mapconcat 'concat (cdr (split-string vc-mode "[:-]")) "-")))
-;;              (concat
-;;               (propertize (format " %s" (all-the-icons-octicon "git-branch"))
-;;                           'face `(:height 1 :family ,(all-the-icons-octicon-family))
-;;                           'display '(raise 0))
-;;               (propertize (format " %s" branch))
-;;               (propertize "  "))))
-
-;;          (defun -custom-modeline-svn-vc ()
-;;            (let ((revision (cadr (split-string vc-mode "-"))))
-;;              (concat
-;;               (propertize (format " %s" (all-the-icons-faicon "cloud"))
-;;                           'face `(:height 1)
-;;                           'display '(raise 0))
-;;               (propertize (format " %s" revision) 'face `(:height 0.9)))))
-
-;;          (defvar mode-line-my-vc
-;;            '(:propertize
-;;              (:eval (when vc-mode
-;;                       (cond
-;;                        ((string-match "Git[:-]" vc-mode) (-custom-modeline-github-vc))
-;;                        ((string-match "SVN-" vc-mode) (-custom-modeline-svn-vc))
-;;                        (t (format "%s" vc-mode)))))
-;;              face mode-line-directory)
-;;            "Formats the current directory's git information in the modeline."))
+;; (use-package telephone-line
 ;;   :config
-;;   (progn
-;;     (setq-default mode-line-format
-;;                   (list
-;;                    "("
-;;                    "%02l" "," "%02c"
-;;                    ") "
-;;                    mode-line-front-space
-;;                    " "
-;;                    mode-line-mule-info
-;;                    mode-line-modified
-;;                    mode-line-frame-identification
-;;                    mode-line-buffer-identification
-;;                    " %6 "
-;;                    mode-line-modes
-;;                    mode-line-my-vc
-;;                    '("  " battery-mode-line-string "  " display-time-string)
-;;                    ))
-;;     (concat evil-mode-line-tag)))
+;;   (setq telephone-line-primary-left-separator 'telephone-line-utf-abs-left
+;;         telephone-line-secondary-left-separator 'telephone-line-utf-abs-hollow-left
+;;         telephone-line-primary-right-separator 'telephone-line-utf-abs-right
+;;         telephone-line-secondary-right-separator 'telephone-line-utf-abs-hollow-right)
+;;   (setq telephone-line-height 24
+;;         telephone-line-evil-use-short-tag t)
+
+;;   (setq telephone-line-lhs
+;;         '((evil   . (telephone-line-evil-tag-segment))
+;;           (accent . (telephone-line-airline-position-segment
+;;                      telephone-line-process-segment))
+;;           (nil    . (telephone-line-minor-mode-segment
+;;                      telephone-line-buffer-segment))))
+;;   (setq telephone-line-rhs
+;;         '((nil    . (telephone-line-misc-info-segment))
+;;           (evil   . (telephone-line-vc-segment))
+;;           (accent . (telephone-line-major-mode-segment
+;;                      telephone-line-flycheck-segment))))
+
+;;   (telephone-line-mode t))
 
 (use-package diminish
     :ensure t
