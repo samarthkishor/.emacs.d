@@ -1340,17 +1340,28 @@ Source: [[https://github.com/munen/emacs.d/#delete-trailing-whitespace]]
                                   (delete-trailing-whitespace))))
 #+END_SRC
 
-** Random useful keybindingsI
-
-Join the following line onto the current line with =M-j=.
+** Random useful keybindings
 
 Source: [[http://whattheemacsd.com/key-bindings.el-03.html][What the emacs.d]]
+
+Join the following line onto the current line with =M-j=.
 
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "M-j")
               (lambda ()
                     (interactive)
                     (join-line -1)))
+#+END_SRC
+
+** Avy
+
+=avy= is a package that enhances navigation in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :bind (("s-." . avy-goto-word-or-subword-1)
+           ("s-," . avy-goto-char)))
 #+END_SRC
 
 * Email
