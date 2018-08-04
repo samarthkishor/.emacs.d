@@ -451,6 +451,7 @@
 (use-package cider
   :ensure t
   :defer t
+  :commands (cider cider-connect cider-jack-in)
   :init
   (add-hook 'cider-repl-mode-hook #'company-mode)
   (add-hook 'cider-mode-hook #'company-mode)
@@ -458,7 +459,8 @@
   (add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
   :config
   (setq cider-repl-use-pretty-printing t)
-  (setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))"))
+  (setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))")
+  (setq cider-boot-parameters "dev"))
 
 (use-package clj-refactor
   :ensure t
