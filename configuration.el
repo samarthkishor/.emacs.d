@@ -36,8 +36,8 @@
   :ensure t
   :init
   (setq evil-want-integration nil)
-  (setq evil-want-fine-undo t)
   :config
+  (setq evil-want-fine-undo t)
   (setq evil-want-abbrev-expand-on-insert-exit nil)
   (define-key evil-normal-state-map (kbd "C-p") 'helm-projectile)
   (define-key evil-normal-state-map (kbd "q") nil)
@@ -50,7 +50,7 @@
 
 (use-package evil-collection
   :after evil
-  :ensure t
+  :defer t
   :config
   (evil-collection-init))
 
@@ -110,6 +110,10 @@
 (use-package swiper-helm
   :ensure t
   :bind ("C-s" . swiper-helm))
+
+(use-package solarized-theme
+  :ensure t
+  :config (load-theme 'solarized-dark t))
 
 (if window-system (scroll-bar-mode -1))
 (tool-bar-mode 0)
@@ -382,7 +386,10 @@
 
 (setq-default indicate-empty-lines t)
 
-(when (memq window-system '(mac ns x))
+(use-package exec-path-from-shell
+  :if (memq window-system '(mac ns))
+  :ensure t
+  :config
   (exec-path-from-shell-initialize))
 
 (setq backup-directory-alist
@@ -449,7 +456,6 @@
   (global-company-mode t))
 
 (use-package cider
-  :ensure t
   :defer t
   :commands (cider cider-connect cider-jack-in)
   :init
@@ -475,6 +481,18 @@
               (setq auto-composition-mode nil) ;; Fira Code causes CIDER to hang
               ;; leaves cider-macroexpand-1 unbound
               (cljr-add-keybindings-with-prefix "C-c C-m"))))
+
+(use-package inf-clojure
+  :ensure t
+  :config
+  (defun my/lumo ()
+    (when (bound-and-true-p cider-mode)
+      (cider-mode -1))
+    (setq inf-clojure-program     "lumo -d"
+          inf-clojure-generic-cmd "lumo -d"
+          inf-clojure-lein-cmd    "lumo -d"))
+  (add-hook 'inf-clojure-mode-hook 'my/lumo)
+  (add-hook 'inf-clojure-minor-mode-hook 'my/lumo))
 
 (add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
 
@@ -694,11 +712,15 @@
   :ensure t)
 
 (use-package pdf-tools
+  :load-path (lambda () (expand-file-name "bin/pdf-tools-20180428.827/"))
   :pin manual
   :magic ("%PDF" . pdf-view-mode)
   :init
   (pdf-tools-install)
   :config
+  (custom-set-variables
+   '(pdf-tools-handle-upgrades nil)) ; Use brew upgrade pdf-tools instead.
+  (setq pdf-info-epdfinfo-program "/usr/local/bin/epdfinfo")
   (setq pdf-view-display-size 'fit-width
         pdf-view-use-scaling t
         pdf-view-resize-factor 1.25)

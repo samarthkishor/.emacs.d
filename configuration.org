@@ -61,8 +61,8 @@ Use =evil=.
     :ensure t
     :init
     (setq evil-want-integration nil)
-    (setq evil-want-fine-undo t)
     :config
+    (setq evil-want-fine-undo t)
     (setq evil-want-abbrev-expand-on-insert-exit nil)
     (define-key evil-normal-state-map (kbd "C-p") 'helm-projectile)
     (define-key evil-normal-state-map (kbd "q") nil)
@@ -75,7 +75,7 @@ Use =evil=.
 
   (use-package evil-collection
     :after evil
-    :ensure t
+    :defer t
     :config
     (evil-collection-init))
 #+END_SRC
@@ -166,6 +166,16 @@ Use =swiper= (with a Helm interface) instead of =isearch= for searching with =C-
 #+END_SRC
 
 * UI Preferences
+** Theme
+
+I prefer Solarized Dark.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package solarized-theme
+    :ensure t
+    :config (load-theme 'solarized-dark t))
+#+END_SRC
+
 ** Tweak window settings
 
 Hide the scroll, tool, and menu bars.
@@ -536,7 +546,10 @@ Indicate empty lines.
 Add =homebrew= to Emacs path.
 
 #+BEGIN_SRC emacs-lisp
-  (when (memq window-system '(mac ns x))
+  (use-package exec-path-from-shell
+    :if (memq window-system '(mac ns))
+    :ensure t
+    :config
     (exec-path-from-shell-initialize))
 #+END_SRC
 
@@ -676,7 +689,6 @@ Use CIDER as the "IDE".
 
 #+BEGIN_SRC emacs-lisp
   (use-package cider
-    :ensure t
     :defer t
     :commands (cider cider-connect cider-jack-in)
     :init
@@ -706,6 +718,24 @@ Fancy refactoring stuff.
                 (setq auto-composition-mode nil) ;; Fira Code causes CIDER to hang
                 ;; leaves cider-macroexpand-1 unbound
                 (cljr-add-keybindings-with-prefix "C-c C-m"))))
+#+END_SRC
+
+Since CIDER doesn't work with the =lumo= repl, use =inf-clojure= mode when needed.
+
+Note: =inf-clojure= and CIDER are incompatible, so invoke the mode with =M-x=.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package inf-clojure
+    :ensure t
+    :config
+    (defun my/lumo ()
+      (when (bound-and-true-p cider-mode)
+        (cider-mode -1))
+      (setq inf-clojure-program     "lumo -d"
+            inf-clojure-generic-cmd "lumo -d"
+            inf-clojure-lein-cmd    "lumo -d"))
+    (add-hook 'inf-clojure-mode-hook 'my/lumo)
+    (add-hook 'inf-clojure-minor-mode-hook 'my/lumo))
 #+END_SRC
 
 Recognize .boot files as valid Clojure code.
@@ -1085,11 +1115,15 @@ Found this [[https://github.com/politza/pdf-tools/issues/18#issuecomment-3044295
     :ensure t)
 
   (use-package pdf-tools
+    :load-path (lambda () (expand-file-name "bin/pdf-tools-20180428.827/"))
     :pin manual
     :magic ("%PDF" . pdf-view-mode)
     :init
     (pdf-tools-install)
     :config
+    (custom-set-variables
+     '(pdf-tools-handle-upgrades nil)) ; Use brew upgrade pdf-tools instead.
+    (setq pdf-info-epdfinfo-program "/usr/local/bin/epdfinfo")
     (setq pdf-view-display-size 'fit-width
           pdf-view-use-scaling t
           pdf-view-resize-factor 1.25)
