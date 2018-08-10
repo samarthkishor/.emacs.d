@@ -934,10 +934,23 @@ Use =pyvenv= for virtual environments. This package has to be enabled for =lsp-m
     (pyvenv-activate pyvenv-workon))
 #+END_SRC
 
-When running python files with =M-x run-python=, make sure the shell is set to Python3.
+When running python files with =M-x run-python=, make sure the shell is set to iPython.
 
 #+BEGIN_SRC emacs-lisp
   (setq python-shell-interpreter "ipython")
+#+END_SRC
+
+** Hy
+
+Lisp + Python? Seems legit.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package hy-mode
+    :ensure t
+    :mode ("\\.hy\\'" . hy-mode)
+    :config
+    (define-key hy-mode-map "\C-x\C-e" 'hy-shell-eval-last-sexp)
+    (setq hy-mode-inferior-lisp-command "hy"))
 #+END_SRC
 
 * Org-mode

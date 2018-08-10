@@ -628,6 +628,12 @@
 
 (setq python-shell-interpreter "ipython")
 
+(use-package hy-mode
+  :ensure t
+  :mode ("\\.hy\\'" . hy-mode)
+  :config
+  (setq hy-mode-inferior-lisp-command "hy"))
+
 (use-package org-bullets
   :init
   (add-hook 'org-mode-hook #'org-bullets-mode))
