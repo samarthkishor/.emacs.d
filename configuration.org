@@ -839,6 +839,23 @@ Use =prettier-js= for code formatting. Make sure =prettier= is installed globall
     :hook ((js2-mode . prettier-js-mode)))
 #+END_SRC
 
+** Lean
+
+Support for the Lean theorem prover.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package lean-mode
+    :defer t
+    :custom
+    (lean-rootdir "~/lean-3.4.0-darwin"))
+
+  (use-package company-lean
+    :ensure t)
+
+  (use-package helm-lean
+    :ensure t)
+#+END_SRC
+
 ** Lisps
 
 Enable =paredit=.

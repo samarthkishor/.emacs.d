@@ -561,6 +561,17 @@
   :after js2-mode
   :hook ((js2-mode . prettier-js-mode)))
 
+(use-package lean-mode
+  :defer t
+  :custom
+  (lean-rootdir "~/lean-3.4.0-darwin"))
+
+(use-package company-lean
+  :ensure t)
+
+(use-package helm-lean
+  :ensure t)
+
 ;; (use-package paredit
 ;;   :ensure t
 ;;   :commands (enable-paredit-mode paredit-mode)
