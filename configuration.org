@@ -1417,15 +1417,28 @@ Join the following line onto the current line with =M-j=.
                     (join-line -1)))
 #+END_SRC
 
-** Avy
+** Jump to words
 
 =avy= is a package that enhances navigation in Emacs.
 
 #+BEGIN_SRC emacs-lisp
   (use-package avy
     :ensure t
-    :bind (("s-." . avy-goto-word-or-subword-1)
-           ("s-," . avy-goto-char)))
+    :bind (("s-," . avy-goto-word-or-subword-1)
+           ("s-." . avy-goto-char)))
+#+END_SRC
+
+** Mac-specific modifier keys
+
+Make Emacs easier to use with MacOS.
+
+#+BEGIN_SRC emacs-lisp
+  (when (eq system-type 'darwin)
+    (setq mac-option-modifier 'meta
+          mac-command-modifier 'control
+          mac-control-modifier 'super
+          mac-right-command-modifier 'super
+          mac-right-option-modifier 'none))
 #+END_SRC
 
 * Email

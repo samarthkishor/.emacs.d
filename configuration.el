@@ -890,8 +890,15 @@
 
 (use-package avy
   :ensure t
-  :bind (("s-." . avy-goto-word-or-subword-1)
-         ("s-," . avy-goto-char)))
+  :bind (("s-," . avy-goto-word-or-subword-1)
+         ("s-." . avy-goto-char)))
+
+(when (eq system-type 'darwin)
+  (setq mac-option-modifier 'meta
+        mac-command-modifier 'control
+        mac-control-modifier 'super
+        mac-right-command-modifier 'super
+        mac-right-option-modifier 'none))
 
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
 (require 'mu4e)
