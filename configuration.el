@@ -632,6 +632,7 @@
   :ensure t
   :mode ("\\.hy\\'" . hy-mode)
   :config
+  (define-key hy-mode-map "\C-x\C-e" 'hy-shell-eval-last-sexp)
   (setq hy-mode-inferior-lisp-command "hy"))
 
 (use-package org-bullets
@@ -1014,3 +1015,21 @@
   (ignore-errors
     ;; Start the server
     (atomic-chrome-start-server)))
+
+(use-package ledger-mode
+  :mode ("\\.dat\\'"
+         "\\.ledger\\'")
+  :bind (:map ledger-mode-map
+              ("C-x C-s" . my/ledger-save))
+  :preface
+  (defun my/ledger-save ()
+    "Automatically clean the ledger buffer at each save."
+    (interactive)
+    (save-excursion
+      (when (buffer-modified-p)
+        (with-demoted-errors (ledger-mode-clean-buffer))
+        (save-buffer))))
+  :custom (ledger-clear-whole-transactions t))
+
+(use-package flycheck-ledger
+  :after ledger-mode)
