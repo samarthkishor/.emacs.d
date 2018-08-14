@@ -1746,3 +1746,11 @@ Source: [[https://gist.github.com/Schroedingberg/ef59e71e21bd1e18f13c21d0ba4b5ce
         ("C-<left>" sp-backward-barf-sexp)
         ("C-<right>" sp-backward-slurp-sexp))))
 #+END_SRC
+* Music
+
+Control Spotify through Emacs (you need Spotify Premium).
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-spotify-plus
+    :ensure t)
+#+END_SRC

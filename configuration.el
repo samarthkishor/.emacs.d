@@ -1108,3 +1108,6 @@ _k_: kill        _S_: split                   _{_: wrap with { }
       ("<left>" sp-forward-barf-sexp)
       ("C-<left>" sp-backward-barf-sexp)
       ("C-<right>" sp-backward-slurp-sexp))))
+
+(use-package helm-spotify-plus
+  :ensure t)
