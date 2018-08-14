@@ -386,6 +386,70 @@
 
 (setq-default indicate-empty-lines t)
 
+(defun visit-emacs-config ()
+  (interactive)
+  (find-file "~/.emacs.d/configuration.org"))
+
+(global-set-key (kbd "C-c e") 'visit-emacs-config)
+
+(defun config-reload ()
+  "Reloads ~/.emacs.d/configuration.org at runtime"
+  (interactive)
+  (org-babel-load-file (expand-file-name "~/.emacs.d/configuration.org")))
+
+(global-set-key (kbd "C-c r") 'config-reload)
+
+(save-place-mode t)
+
+(global-auto-revert-mode t)
+
+(setq-default indent-tabs-mode nil)
+
+(add-hook 'prog-mode-hook #'hs-minor-mode)
+
+(use-package projectile
+  :ensure t
+  :diminish projectile-mode
+  :init
+  (projectile-mode 1))
+
+(use-package helm-projectile :ensure t)
+
+(setq scroll-conservatively 100)
+
+(use-package which-key
+  :ensure t
+  :diminish which-key-mode
+  :config
+    (which-key-mode))
+
+(use-package undo-tree
+  :ensure t
+  :init
+  (global-undo-tree-mode))
+
+(add-hook 'before-save-hook '(lambda ()
+                              (when (not (or (derived-mode-p 'markdown-mode)
+                                             (derived-mode-p 'org-mode)))
+                                (delete-trailing-whitespace))))
+
+(global-set-key (kbd "M-j")
+            (lambda ()
+                  (interactive)
+                  (join-line -1)))
+
+(use-package avy
+  :ensure t
+  :bind (("s-," . avy-goto-word-or-subword-1)
+         ("s-." . avy-goto-char)))
+
+(when (eq system-type 'darwin)
+  (setq mac-option-modifier 'meta
+        mac-command-modifier 'control
+        mac-control-modifier 'super
+        mac-right-command-modifier 'super
+        mac-right-option-modifier 'none))
+
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
   :ensure t
@@ -797,6 +861,87 @@
             (lambda ()
               (setq auto-composition-mode nil))))
 
+(use-package hydra
+  :ensure t
+  :after evil-leader
+  :init
+  (evil-leader/set-key (kbd "s")
+    (defhydra hydra-smartparens (:hint nil)
+      "
+      ^Nav^            ^Barf/Slurp^                 ^Depth^
+      ^───^────────────^──────────^─────────────────^─────^────────────────
+      _f_: forward     _→_:          slurp forward   _s_: splice
+      _b_: backward    _←_:          barf forward    _R_: raise
+      _u_: backward ↑  _C-<right>_:  slurp backward  _↑_: raise backward
+      _d_: forward ↓   _C-<left>_:   barf backward   _↓_: raise forward
+      _p_: backward ↓
+      _n_: forward ↑
+
+      ^Kill^           ^Misc^                       ^Wrap^
+      ^────^───────────^────^───────────────────────^────^─────────────────
+      _w_: copy        _j_: join                    _(_: wrap with ( )
+      _k_: kill        _S_: split                   _{_: wrap with { }
+      ^^               _t_: transpose               _'_: wrap with ' '
+      ^^               _c_: convolute               _\"_: wrap with \" \"
+      ^^               _i_: indent defun            _r_: rewrap
+      "
+      ("q" nil)
+      ;; Wrapping
+      ("(" (lambda (_) (interactive "P") (sp-wrap-with-pair "(")))
+      ("{" (lambda (_) (interactive "P") (sp-wrap-with-pair "{")))
+      ("'" (lambda (_) (interactive "P") (sp-wrap-with-pair "'")))
+      ("\"" (lambda (_) (interactive "P") (sp-wrap-with-pair "\"")))
+      ("r" sp-rewrap-sexp)
+      ;; Navigation
+      ("f" sp-forward-sexp )
+      ("b" sp-backward-sexp)
+      ("u" sp-backward-up-sexp)
+      ("d" sp-down-sexp)
+      ("p" sp-backward-down-sexp)
+      ("n" sp-up-sexp)
+      ;; Kill/copy
+      ("w" sp-copy-sexp)
+      ("k" sp-kill-sexp)
+      ;; Misc
+      ("t" sp-transpose-sexp)
+      ("j" sp-join-sexp)
+      ("S" sp-split-sexp)
+      ("c" sp-convolute-sexp)
+      ("i" sp-indent-defun)
+      ;; Depth changing
+      ("s" sp-splice-sexp)
+      ("R" sp-splice-sexp-killing-around)
+      ("<up>" sp-splice-sexp-killing-backward)
+      ("<down>" sp-splice-sexp-killing-forward)
+      ;; Barfing/slurping
+      ("<right>" sp-forward-slurp-sexp)
+      ("<left>" sp-forward-barf-sexp)
+      ("C-<left>" sp-backward-barf-sexp)
+      ("C-<right>" sp-backward-slurp-sexp)))
+  (evil-leader/set-key (kbd "f")
+    (defhydra hydra-flycheck (:color blue :hint nil)
+      "
+      ^
+      ^Flycheck^          ^Errors^            ^Checker^
+      ^────────^──────────^──────^────────────^───────^─────
+      _q_ quit            _<_ previous        _?_ describe
+      _M_ manual          _>_ next            _d_ disable
+      _v_ verify setup    _f_ check           _m_ mode
+      ^^                  _l_ list            _s_ select
+      ^^                  ^^                  ^^
+      "
+      ("q" nil)
+      ("<" flycheck-previous-error :color pink)
+      (">" flycheck-next-error :color pink)
+      ("?" flycheck-describe-checker)
+      ("M" flycheck-manual)
+      ("d" flycheck-disable-checker)
+      ("f" flycheck-buffer)
+      ("l" flycheck-list-errors)
+      ("m" flycheck-mode)
+      ("s" flycheck-select-checker)
+      ("v" flycheck-verify-setup))))
+
 (use-package flycheck
   :ensure t
   :diminish
@@ -835,70 +980,6 @@
   :config
   (typo-global-mode 1)
   (add-hook 'text-mode-hook 'typo-mode))
-
-(defun visit-emacs-config ()
-  (interactive)
-  (find-file "~/.emacs.d/configuration.org"))
-
-(global-set-key (kbd "C-c e") 'visit-emacs-config)
-
-(defun config-reload ()
-  "Reloads ~/.emacs.d/configuration.org at runtime"
-  (interactive)
-  (org-babel-load-file (expand-file-name "~/.emacs.d/configuration.org")))
-
-(global-set-key (kbd "C-c r") 'config-reload)
-
-(save-place-mode t)
-
-(global-auto-revert-mode t)
-
-(setq-default indent-tabs-mode nil)
-
-(add-hook 'prog-mode-hook #'hs-minor-mode)
-
-(use-package projectile
-  :ensure t
-  :diminish projectile-mode
-  :init
-  (projectile-mode 1))
-
-(use-package helm-projectile :ensure t)
-
-(setq scroll-conservatively 100)
-
-(use-package which-key
-  :ensure t
-  :diminish which-key-mode
-  :config
-    (which-key-mode))
-
-(use-package undo-tree
-  :ensure t
-  :init
-  (global-undo-tree-mode))
-
-(add-hook 'before-save-hook '(lambda ()
-                              (when (not (or (derived-mode-p 'markdown-mode)
-                                             (derived-mode-p 'org-mode)))
-                                (delete-trailing-whitespace))))
-
-(global-set-key (kbd "M-j")
-            (lambda ()
-                  (interactive)
-                  (join-line -1)))
-
-(use-package avy
-  :ensure t
-  :bind (("s-," . avy-goto-word-or-subword-1)
-         ("s-." . avy-goto-char)))
-
-(when (eq system-type 'darwin)
-  (setq mac-option-modifier 'meta
-        mac-command-modifier 'control
-        mac-control-modifier 'super
-        mac-right-command-modifier 'super
-        mac-right-option-modifier 'none))
 
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
 (require 'mu4e)
@@ -1051,63 +1132,6 @@
 
 (use-package flycheck-ledger
   :after ledger-mode)
-
-(use-package hydra
-  :ensure t
-  :after evil-leader
-  :init
-  (evil-leader/set-key (kbd "s")
-    (defhydra hydra-smartparens (:hint nil)
-      "
-Sexps (quit with _q_)
-^Nav^            ^Barf/Slurp^                 ^Depth^
-^---^------------^----------^-----------------^-----^-----------------
-_f_: forward     _→_:          slurp forward   _s_: splice
-_b_: backward    _←_:          barf forward    _R_: raise
-_u_: backward ↑  _C-<right>_:  slurp backward  _↑_: raise backward
-_d_: forward ↓   _C-<left>_:   barf backward   _↓_: raise forward
-_p_: backward ↓
-_n_: forward ↑
-^Kill^           ^Misc^                       ^Wrap^
-^----^-----------^----^-----------------------^----^------------------
-_w_: copy        _j_: join                    _(_: wrap with ( )
-_k_: kill        _S_: split                   _{_: wrap with { }
-^^               _t_: transpose               _'_: wrap with ' '
-^^               _c_: convolute               _\"_: wrap with \" \"
-^^               _i_: indent defun           _r_: rewrap"
-      ("q" nil)
-      ;; Wrapping
-      ("(" (lambda (_) (interactive "P") (sp-wrap-with-pair "(")))
-      ("{" (lambda (_) (interactive "P") (sp-wrap-with-pair "{")))
-      ("'" (lambda (_) (interactive "P") (sp-wrap-with-pair "'")))
-      ("\"" (lambda (_) (interactive "P") (sp-wrap-with-pair "\"")))
-      ("r" sp-rewrap-sexp)
-      ;; Navigation
-      ("f" sp-forward-sexp )
-      ("b" sp-backward-sexp)
-      ("u" sp-backward-up-sexp)
-      ("d" sp-down-sexp)
-      ("p" sp-backward-down-sexp)
-      ("n" sp-up-sexp)
-      ;; Kill/copy
-      ("w" sp-copy-sexp)
-      ("k" sp-kill-sexp)
-      ;; Misc
-      ("t" sp-transpose-sexp)
-      ("j" sp-join-sexp)
-      ("S" sp-split-sexp)
-      ("c" sp-convolute-sexp)
-      ("i" sp-indent-defun)
-      ;; Depth changing
-      ("s" sp-splice-sexp)
-      ("R" sp-splice-sexp-killing-around)
-      ("<up>" sp-splice-sexp-killing-backward)
-      ("<down>" sp-splice-sexp-killing-forward)
-      ;; Barfing/slurping
-      ("<right>" sp-forward-slurp-sexp)
-      ("<left>" sp-forward-barf-sexp)
-      ("C-<left>" sp-backward-barf-sexp)
-      ("C-<right>" sp-backward-slurp-sexp))))
 
 (use-package helm-spotify-plus
   :ensure t)

@@ -540,6 +540,155 @@ Indicate empty lines.
   (setq-default indicate-empty-lines t)
 #+END_SRC
 
+* Editing Settings
+** Visit Emacs configuration
+
+Bind C-c e to open Emacs configuration file.
+
+#+BEGIN_SRC emacs-lisp
+  (defun visit-emacs-config ()
+    (interactive)
+    (find-file "~/.emacs.d/configuration.org"))
+
+  (global-set-key (kbd "C-c e") 'visit-emacs-config)
+#+END_SRC
+
+** Reload Emacs configuration
+
+#+BEGIN_SRC emacs-lisp
+  (defun config-reload ()
+    "Reloads ~/.emacs.d/configuration.org at runtime"
+    (interactive)
+    (org-babel-load-file (expand-file-name "~/.emacs.d/configuration.org")))
+
+  (global-set-key (kbd "C-c r") 'config-reload)
+#+END_SRC
+** Save location within a file
+
+If I close the file and open it later, I will return to the place I left off.
+
+#+BEGIN_SRC emacs-lisp
+  (save-place-mode t)
+#+END_SRC
+** Auto revert files on change
+
+When something changes a file, automatically refresh the buffer containing that file so they can’t get out of sync.
+
+#+BEGIN_SRC emacs-lisp
+  (global-auto-revert-mode t)
+#+END_SRC
+
+** Always indent with spaces
+
+No explanation needed.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
+#+END_SRC
+
+** Code folding
+
+Enable code folding for programming modes.
+
+=zc= Fold
+=za= Unfold
+=zR= Unfold everything
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'prog-mode-hook #'hs-minor-mode)
+#+END_SRC
+
+** Use =projectile= everywhere
+
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :diminish projectile-mode
+    :init
+    (projectile-mode 1))
+
+  (use-package helm-projectile :ensure t)
+#+END_SRC
+
+** Smooth scrolling
+
+Makes scrolling a whole lot nicer.
+
+#+BEGIN_SRC emacs-lisp
+  (setq scroll-conservatively 100)
+#+END_SRC
+** Command completion
+
+Use =which-key= to offer suggestions for completing a command.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :ensure t
+    :diminish which-key-mode
+    :config
+      (which-key-mode))
+#+END_SRC
+** Undo tree
+
+Use =undo-tree= for better undo history.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package undo-tree
+    :ensure t
+    :init
+    (global-undo-tree-mode))
+#+END_SRC
+
+** Whitespace
+
+Delete trailing whitespace after saving in all modes except markdown-mode and org-mode.
+Markdown uses two trailing blanks to signal a line break.
+Source: [[https://github.com/munen/emacs.d/#delete-trailing-whitespace]]
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'before-save-hook '(lambda ()
+                                (when (not (or (derived-mode-p 'markdown-mode)
+                                               (derived-mode-p 'org-mode)))
+                                  (delete-trailing-whitespace))))
+#+END_SRC
+
+** Random useful keybindings
+
+Source: [[http://whattheemacsd.com/key-bindings.el-03.html][What the emacs.d]]
+
+Join the following line onto the current line with =M-j=.
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-j")
+              (lambda ()
+                    (interactive)
+                    (join-line -1)))
+#+END_SRC
+
+** Jump to words
+
+=avy= is a package that enhances navigation in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :bind (("s-," . avy-goto-word-or-subword-1)
+           ("s-." . avy-goto-char)))
+#+END_SRC
+
+** Mac-specific modifier keys
+
+Make Emacs easier to use with MacOS.
+
+#+BEGIN_SRC emacs-lisp
+  (when (eq system-type 'darwin)
+    (setq mac-option-modifier 'meta
+          mac-command-modifier 'control
+          mac-control-modifier 'super
+          mac-right-command-modifier 'super
+          mac-right-option-modifier 'none))
+#+END_SRC
+
 * Programming Environments
 ** General settings
 
@@ -969,7 +1118,6 @@ Lisp + Python? Seems legit.
     (define-key hy-mode-map "\C-x\C-e" 'hy-shell-eval-last-sexp)
     (setq hy-mode-inferior-lisp-command "hy"))
 #+END_SRC
-
 * Org-mode
 ** General Settings
 
@@ -1200,7 +1348,6 @@ Source: [[https://github.com/stardiviner/emacs.d/blob/199597132ef58ff6b260f6d6c3
     (add-to-list 'org-file-apps '("\\.pdf\\'" . (lambda (file link) (org-pdfview-open link))))
     (add-to-list 'org-file-apps '("\\.pdf::\\([[:digit:]]+\\)\\'" . (lambda (file link) (org-pdfview-open link)))))
 #+END_SRC
-
 * Helm
 
 Use Helm for incremental completions and narrowing selections.
@@ -1223,6 +1370,94 @@ Use Helm for incremental completions and narrowing selections.
     (add-hook 'helm-major-mode-hook
               (lambda ()
                 (setq auto-composition-mode nil))))
+#+END_SRC
+* Hydra
+  
+Use hydras in combination with evil-mode for modal editing on steroids.
+
+Source: [[https://gist.github.com/Schroedingberg/ef59e71e21bd1e18f13c21d0ba4b5ce0][this Github Gist]] and [[https://www.reddit.com/r/emacs/comments/931la6/tip_how_to_adopt_flycheck_as_your_new_best_friend/][this Reddit post]]
+ 
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :ensure t
+    :after evil-leader
+    :init
+    (evil-leader/set-key (kbd "s")
+      (defhydra hydra-smartparens (:hint nil)
+        "
+        ^Nav^            ^Barf/Slurp^                 ^Depth^
+        ^───^────────────^──────────^─────────────────^─────^────────────────
+        _f_: forward     _→_:          slurp forward   _s_: splice
+        _b_: backward    _←_:          barf forward    _R_: raise
+        _u_: backward ↑  _C-<right>_:  slurp backward  _↑_: raise backward
+        _d_: forward ↓   _C-<left>_:   barf backward   _↓_: raise forward
+        _p_: backward ↓
+        _n_: forward ↑
+
+        ^Kill^           ^Misc^                       ^Wrap^
+        ^────^───────────^────^───────────────────────^────^─────────────────
+        _w_: copy        _j_: join                    _(_: wrap with ( )
+        _k_: kill        _S_: split                   _{_: wrap with { }
+        ^^               _t_: transpose               _'_: wrap with ' '
+        ^^               _c_: convolute               _\"_: wrap with \" \"
+        ^^               _i_: indent defun            _r_: rewrap
+        "
+        ("q" nil)
+        ;; Wrapping
+        ("(" (lambda (_) (interactive "P") (sp-wrap-with-pair "(")))
+        ("{" (lambda (_) (interactive "P") (sp-wrap-with-pair "{")))
+        ("'" (lambda (_) (interactive "P") (sp-wrap-with-pair "'")))
+        ("\"" (lambda (_) (interactive "P") (sp-wrap-with-pair "\"")))
+        ("r" sp-rewrap-sexp)
+        ;; Navigation
+        ("f" sp-forward-sexp )
+        ("b" sp-backward-sexp)
+        ("u" sp-backward-up-sexp)
+        ("d" sp-down-sexp)
+        ("p" sp-backward-down-sexp)
+        ("n" sp-up-sexp)
+        ;; Kill/copy
+        ("w" sp-copy-sexp)
+        ("k" sp-kill-sexp)
+        ;; Misc
+        ("t" sp-transpose-sexp)
+        ("j" sp-join-sexp)
+        ("S" sp-split-sexp)
+        ("c" sp-convolute-sexp)
+        ("i" sp-indent-defun)
+        ;; Depth changing
+        ("s" sp-splice-sexp)
+        ("R" sp-splice-sexp-killing-around)
+        ("<up>" sp-splice-sexp-killing-backward)
+        ("<down>" sp-splice-sexp-killing-forward)
+        ;; Barfing/slurping
+        ("<right>" sp-forward-slurp-sexp)
+        ("<left>" sp-forward-barf-sexp)
+        ("C-<left>" sp-backward-barf-sexp)
+        ("C-<right>" sp-backward-slurp-sexp)))
+    (evil-leader/set-key (kbd "f")
+      (defhydra hydra-flycheck (:color blue :hint nil)
+        "
+        ^
+        ^Flycheck^          ^Errors^            ^Checker^
+        ^────────^──────────^──────^────────────^───────^─────
+        _q_ quit            _<_ previous        _?_ describe
+        _M_ manual          _>_ next            _d_ disable
+        _v_ verify setup    _f_ check           _m_ mode
+        ^^                  _l_ list            _s_ select
+        ^^                  ^^                  ^^
+        "
+        ("q" nil)
+        ("<" flycheck-previous-error :color pink)
+        (">" flycheck-next-error :color pink)
+        ("?" flycheck-describe-checker)
+        ("M" flycheck-manual)
+        ("d" flycheck-disable-checker)
+        ("f" flycheck-buffer)
+        ("l" flycheck-list-errors)
+        ("m" flycheck-mode)
+        ("s" flycheck-select-checker)
+        ("v" flycheck-verify-setup))))
 #+END_SRC
 
 * Prose
@@ -1291,156 +1526,6 @@ Use =typo-mode= to easily type typographical symbols such as the em-dash.
     (typo-global-mode 1)
     (add-hook 'text-mode-hook 'typo-mode))
 #+END_SRC
-
-* Editing Settings
-** Visit Emacs configuration
-
-Bind C-c e to open Emacs configuration file.
-
-#+BEGIN_SRC emacs-lisp
-  (defun visit-emacs-config ()
-    (interactive)
-    (find-file "~/.emacs.d/configuration.org"))
-
-  (global-set-key (kbd "C-c e") 'visit-emacs-config)
-#+END_SRC
-
-** Reload Emacs configuration
-
-#+BEGIN_SRC emacs-lisp
-  (defun config-reload ()
-    "Reloads ~/.emacs.d/configuration.org at runtime"
-    (interactive)
-    (org-babel-load-file (expand-file-name "~/.emacs.d/configuration.org")))
-
-  (global-set-key (kbd "C-c r") 'config-reload)
-#+END_SRC
-** Save location within a file
-
-If I close the file and open it later, I will return to the place I left off.
-
-#+BEGIN_SRC emacs-lisp
-  (save-place-mode t)
-#+END_SRC
-** Auto revert files on change
-
-When something changes a file, automatically refresh the buffer containing that file so they can’t get out of sync.
-
-#+BEGIN_SRC emacs-lisp
-  (global-auto-revert-mode t)
-#+END_SRC
-
-** Always indent with spaces
-
-No explanation needed.
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default indent-tabs-mode nil)
-#+END_SRC
-
-** Code folding
-
-Enable code folding for programming modes.
-
-=zc= Fold
-=za= Unfold
-=zR= Unfold everything
-
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'prog-mode-hook #'hs-minor-mode)
-#+END_SRC
-
-** Use =projectile= everywhere
-
-#+BEGIN_SRC emacs-lisp
-  (use-package projectile
-    :ensure t
-    :diminish projectile-mode
-    :init
-    (projectile-mode 1))
-
-  (use-package helm-projectile :ensure t)
-#+END_SRC
-
-** Smooth scrolling
-
-Makes scrolling a whole lot nicer.
-
-#+BEGIN_SRC emacs-lisp
-  (setq scroll-conservatively 100)
-#+END_SRC
-** Command completion
-
-Use =which-key= to offer suggestions for completing a command.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package which-key
-    :ensure t
-    :diminish which-key-mode
-    :config
-      (which-key-mode))
-#+END_SRC
-** Undo tree
-
-Use =undo-tree= for better undo history.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package undo-tree
-    :ensure t
-    :init
-    (global-undo-tree-mode))
-#+END_SRC
-
-** Whitespace
-
-Delete trailing whitespace after saving in all modes except markdown-mode and org-mode.
-Markdown uses two trailing blanks to signal a line break.
-Source: [[https://github.com/munen/emacs.d/#delete-trailing-whitespace]]
-
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'before-save-hook '(lambda ()
-                                (when (not (or (derived-mode-p 'markdown-mode)
-                                               (derived-mode-p 'org-mode)))
-                                  (delete-trailing-whitespace))))
-#+END_SRC
-
-** Random useful keybindings
-
-Source: [[http://whattheemacsd.com/key-bindings.el-03.html][What the emacs.d]]
-
-Join the following line onto the current line with =M-j=.
-
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "M-j")
-              (lambda ()
-                    (interactive)
-                    (join-line -1)))
-#+END_SRC
-
-** Jump to words
-
-=avy= is a package that enhances navigation in Emacs.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package avy
-    :ensure t
-    :bind (("s-," . avy-goto-word-or-subword-1)
-           ("s-." . avy-goto-char)))
-#+END_SRC
-
-** Mac-specific modifier keys
-
-Make Emacs easier to use with MacOS.
-
-#+BEGIN_SRC emacs-lisp
-  (when (eq system-type 'darwin)
-    (setq mac-option-modifier 'meta
-          mac-command-modifier 'control
-          mac-control-modifier 'super
-          mac-right-command-modifier 'super
-          mac-right-option-modifier 'none))
-#+END_SRC
-
 * Email
 ** Use =mu4e=
 
@@ -1631,7 +1716,6 @@ Update the org-mode capture template to work with emails.
         `(("t" "TODO" entry (file+headline "~/Dropbox/org/tasks.org" "Tasks")
            "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")))
 #+END_SRC
-
 * Web Browsing
 
 Because why not
@@ -1681,70 +1765,6 @@ Use company for auto-completion.
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck-ledger
     :after ledger-mode)
-#+END_SRC
-* Hydra
-  
-Use hydras in combination with evil-mode for modal editing on steroids.
-
-Source: [[https://gist.github.com/Schroedingberg/ef59e71e21bd1e18f13c21d0ba4b5ce0][this Github Gist]]
- 
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra
-    :ensure t
-    :after evil-leader
-    :init
-    (evil-leader/set-key (kbd "s")
-      (defhydra hydra-smartparens (:hint nil)
-        "
-  Sexps (quit with _q_)
-  ^Nav^            ^Barf/Slurp^                 ^Depth^
-  ^---^------------^----------^-----------------^-----^-----------------
-  _f_: forward     _→_:          slurp forward   _s_: splice
-  _b_: backward    _←_:          barf forward    _R_: raise
-  _u_: backward ↑  _C-<right>_:  slurp backward  _↑_: raise backward
-  _d_: forward ↓   _C-<left>_:   barf backward   _↓_: raise forward
-  _p_: backward ↓
-  _n_: forward ↑
-  ^Kill^           ^Misc^                       ^Wrap^
-  ^----^-----------^----^-----------------------^----^------------------
-  _w_: copy        _j_: join                    _(_: wrap with ( )
-  _k_: kill        _S_: split                   _{_: wrap with { }
-  ^^               _t_: transpose               _'_: wrap with ' '
-  ^^               _c_: convolute               _\"_: wrap with \" \"
-  ^^               _i_: indent defun           _r_: rewrap"
-        ("q" nil)
-        ;; Wrapping
-        ("(" (lambda (_) (interactive "P") (sp-wrap-with-pair "(")))
-        ("{" (lambda (_) (interactive "P") (sp-wrap-with-pair "{")))
-        ("'" (lambda (_) (interactive "P") (sp-wrap-with-pair "'")))
-        ("\"" (lambda (_) (interactive "P") (sp-wrap-with-pair "\"")))
-        ("r" sp-rewrap-sexp)
-        ;; Navigation
-        ("f" sp-forward-sexp )
-        ("b" sp-backward-sexp)
-        ("u" sp-backward-up-sexp)
-        ("d" sp-down-sexp)
-        ("p" sp-backward-down-sexp)
-        ("n" sp-up-sexp)
-        ;; Kill/copy
-        ("w" sp-copy-sexp)
-        ("k" sp-kill-sexp)
-        ;; Misc
-        ("t" sp-transpose-sexp)
-        ("j" sp-join-sexp)
-        ("S" sp-split-sexp)
-        ("c" sp-convolute-sexp)
-        ("i" sp-indent-defun)
-        ;; Depth changing
-        ("s" sp-splice-sexp)
-        ("R" sp-splice-sexp-killing-around)
-        ("<up>" sp-splice-sexp-killing-backward)
-        ("<down>" sp-splice-sexp-killing-forward)
-        ;; Barfing/slurping
-        ("<right>" sp-forward-slurp-sexp)
-        ("<left>" sp-forward-barf-sexp)
-        ("C-<left>" sp-backward-barf-sexp)
-        ("C-<right>" sp-backward-slurp-sexp))))
 #+END_SRC
 * Music
 
