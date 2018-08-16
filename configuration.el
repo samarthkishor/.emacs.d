@@ -26,7 +26,7 @@
     "n"  'evil-window-bottom
     "e"  'evil-window-up
     "i"  'evil-window-right
-    "b"  'helm-buffers-list
+    "b"  'helm-mini
     "m"  'helm-imenu
     "x"  'helm-M-x
     "cl" 'flycheck-list-errors
