@@ -732,6 +732,17 @@ Make Emacs easier to use with MacOS.
           mac-right-option-modifier 'none))
 #+END_SRC
 
+** Expand region
+
+Make it easy to select regions (if visual mode keybindings aren't enough).
+
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure t
+    :bind (("C-=" . er/expand-region)
+           ("M-=" . er/contract-region)))
+#+END_SRC
+
 * Programming Environments
 ** General settings
 

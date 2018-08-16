@@ -487,6 +487,11 @@
         mac-right-command-modifier 'super
         mac-right-option-modifier 'none))
 
+(use-package expand-region
+  :ensure t
+  :bind (("C-=" . er/expand-region)
+         ("M-=" . er/contract-region)))
+
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
   :ensure t
