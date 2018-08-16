@@ -888,12 +888,13 @@
   ("C-x C-b" . 'helm-buffers-list)
   ("C-x b"   . 'helm-mini)
   ("M-x"     . 'helm-M-x)
+  :custom
+  (helm-buffers-fuzzy-matching t)
+  (helm-recentf-fuzzy-match t)
+  (helm-projectile-fuzzy-match t)
+  (helm-imenu-fuzzy-match t)
   :init
   (helm-mode 1)
-  (setq helm-buffers-fuzzy-matching t
-        helm-recentf-fuzzy-match t
-        helm-projectile-fuzzy-match t
-        helm-imenu-fuzzy-match t)
   (add-hook 'helm-major-mode-hook
             (lambda ()
               (setq auto-composition-mode nil))))
