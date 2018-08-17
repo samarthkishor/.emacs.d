@@ -144,9 +144,11 @@
   :config
   (evil-lion-mode))
 
-(use-package swiper-helm
-  :ensure t
-  :bind ("C-s" . swiper-helm))
+(mapc (lambda (mode)
+        (evil-set-initial-state mode 'emacs)) '(dired-mode
+                                                image-dired-mode
+                                                image-dired-thumbnail-mode
+                                                eww-mode))
 
 (use-package solarized-theme
   :ensure t
@@ -903,6 +905,10 @@
   (add-hook 'helm-major-mode-hook
             (lambda ()
               (setq auto-composition-mode nil))))
+
+(use-package swiper-helm
+  :ensure t
+  :bind ("C-s" . swiper-helm))
 
 (use-package hydra
   :ensure t

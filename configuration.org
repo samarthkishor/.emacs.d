@@ -200,12 +200,16 @@ Emulate vim's =lion= package for aligning text in Emacs.
     (evil-lion-mode))
 #+END_SRC
 
-Use =swiper= (with a Helm interface) instead of =isearch= for searching with =C-s=.
+Disable evil-mode for some modes.
+
+Source: [[https://github.com/munen/emacs.d/][Munen's .emacs.d]]
 
 #+BEGIN_SRC emacs-lisp
-  (use-package swiper-helm
-    :ensure t
-    :bind ("C-s" . swiper-helm))
+  (mapc (lambda (mode)
+          (evil-set-initial-state mode 'emacs)) '(dired-mode
+                                                  image-dired-mode
+                                                  image-dired-thumbnail-mode
+                                                  eww-mode))
 #+END_SRC
 
 * UI Preferences
@@ -1426,6 +1430,15 @@ Use Helm for incremental completions and narrowing selections.
               (lambda ()
                 (setq auto-composition-mode nil))))
 #+END_SRC
+
+Use =swiper= (with a Helm interface) instead of =isearch= for searching with =C-s=.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package swiper-helm
+    :ensure t
+    :bind ("C-s" . swiper-helm))
+#+END_SRC
+
 * Hydra
   
 Use hydras in combination with evil-mode for modal editing on steroids.
