@@ -29,11 +29,11 @@
       (quote help-echo)
       (format-time-string "%a, %b %e %Y" now)))))
  '(helm-buffers-fuzzy-matching t)
- '(helm-imenu-fuzzy-match t)
+ '(helm-imenu-fuzzy-match t t)
  '(helm-projectile-fuzzy-match t)
  '(helm-recentf-fuzzy-match t)
  '(lean-rootdir "~/lean-3.4.0-darwin" t)
- '(ledger-clear-whole-transactions t t)
+ '(ledger-clear-whole-transactions t)
  '(magit-pull-arguments nil)
  '(org-agenda-files (quote ("~/Dropbox/org/beorg-local.org")))
  '(org-capture-templates
@@ -51,7 +51,7 @@
   Assets:Cash:Wallet" :empty-lines 1 :immediate-finish t))) t)
  '(package-selected-packages
    (quote
-    (expand-region evil-numbers dashboard helm-spotify-plus helm-lean company-lean lean-mode flycheck-ledger ledger-mode hy-mode helm-projectile helm-projectie clj-refactor atomic-chrome swiper-helm evil-lion evil-mc xref-js2 company-tern tern js2-refactor js2-mode pipenv elpy rainbow-delimiters typo visual-fill-column synosaurus dumb-jump evil-paredit paredit org-pdfview beacon beacon-mode evil-nerd-commenter mu4e-conversation tablist pdf-tools evil-collection evil-mu4e inf-clojure cider evil-org org-mode feebleline doom-modeline eldoc-eval shrink-path prettier-js boogie-friends evil-surround evil-leader helm telephone-line minions which-key pretty-mode smart-mode-line spaceline-all-the-icons all-the-icons diminish nlinum-hl fancy-battery spaceline exec-path-from-shell flycheck ox-pandoc evil-magit melpa-upstream-visit magit org-bullets evil-visual-mark-mode)))
+    (elfeed-org elfeed-goodies elfeed expand-region evil-numbers dashboard helm-spotify-plus helm-lean company-lean lean-mode flycheck-ledger ledger-mode hy-mode helm-projectile helm-projectie clj-refactor atomic-chrome swiper-helm evil-lion evil-mc xref-js2 company-tern tern js2-refactor js2-mode pipenv elpy rainbow-delimiters typo visual-fill-column synosaurus dumb-jump evil-paredit paredit org-pdfview beacon beacon-mode evil-nerd-commenter mu4e-conversation tablist pdf-tools evil-collection evil-mu4e inf-clojure cider evil-org org-mode feebleline doom-modeline eldoc-eval shrink-path prettier-js boogie-friends evil-surround evil-leader helm telephone-line minions which-key pretty-mode smart-mode-line spaceline-all-the-icons all-the-icons diminish nlinum-hl fancy-battery spaceline exec-path-from-shell flycheck ox-pandoc evil-magit melpa-upstream-visit magit org-bullets evil-visual-mark-mode)))
  '(pdf-tools-handle-upgrades nil)
  '(send-mail-function (quote smtpmail-send-it)))
 (custom-set-faces

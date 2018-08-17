@@ -1842,3 +1842,65 @@ Control Spotify through Emacs (you need Spotify Premium).
   (use-package helm-spotify-plus
     :ensure t)
 #+END_SRC
+* RSS Feeds
+
+=elfeed= is a good RSS feed reader. I used to use =newsboat= but this might be a bit more powerful.
+
+Source: [[http://cestlaz.github.io/posts/using-emacs-31-elfeed-3/][Using Emacs]]
+
+#+BEGIN_SRC emacs-lisp
+  (use-package elfeed
+    :ensure t
+    :after hydra
+    :bind (:map elfeed-search-mode-map
+                ("j" . mz/make-and-run-elfeed-hydra))
+    :config
+    (add-to-list 'evil-emacs-state-modes 'elfeed-search-mode)
+    (add-to-list 'evil-emacs-state-modes 'elfeed-show-mode)
+    (defun z/hasCap (s) ""
+           (let ((case-fold-search nil))
+             (string-match-p "[[:upper:]]" s)))
+    (defun z/get-hydra-option-key (s)
+      "Return single upper case letter (converted to lower) or first"
+      (interactive)
+      (let ((loc (z/hasCap s)))
+        (if loc
+            (downcase (substring s loc (+ loc 1)))
+          (substring s 0 1))))
+    (defun mz/make-elfeed-cats (tags)
+      "Return a list of lists. Each one is line for the hydra configuration in the form
+       (c function hint)"
+      (interactive)
+      (mapcar (lambda (tag)
+                (let* ((tagstring (symbol-name tag))
+                       (c (z/get-hydra-option-key tagstring)))
+                  (list c (append '(elfeed-search-set-filter) (list (format "@6-months-ago +%s" tagstring)))
+                        tagstring)))
+              tags))
+    (defmacro mz/make-elfeed-hydra ()
+      `(defhydra mz/hydra-elfeed ()
+         "filter"
+         ,@(mz/make-elfeed-cats (elfeed-db-get-all-tags))
+         ("*" (elfeed-search-set-filter "@6-months-ago +star") "Starred")
+         ("M" elfeed-toggle-star "Mark")
+         ("A" (elfeed-search-set-filter "@6-months-ago") "All")
+         ("T" (elfeed-search-set-filter "@1-day-ago") "Today")
+         ("q" nil "quit" :color blue)))
+    (defun mz/make-and-run-elfeed-hydra ()
+      "Redefine the hydra whenever needed"
+      (interactive)
+      (mz/make-elfeed-hydra)
+      (mz/hydra-elfeed/body)))
+
+  (use-package elfeed-goodies
+    :ensure t
+    :config
+    (elfeed-goodies/setup))
+
+  (use-package elfeed-org
+    :ensure t
+    :init
+    (elfeed-org)
+    :config
+    (setq rmh-elfeed-org-files (list "~/.emacs.d/feeds.org")))
+#+END_SRC
