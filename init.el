@@ -31,9 +31,9 @@
  '(helm-buffers-fuzzy-matching t)
  '(helm-imenu-fuzzy-match t t)
  '(helm-projectile-fuzzy-match t)
- '(helm-recentf-fuzzy-match t)
+ '(helm-recentf-fuzzy-match t t)
  '(lean-rootdir "~/lean-3.4.0-darwin" t)
- '(ledger-clear-whole-transactions t)
+ '(ledger-clear-whole-transactions t t)
  '(magit-pull-arguments nil)
  '(org-agenda-files (quote ("~/Dropbox/org/beorg-local.org")))
  '(org-capture-templates

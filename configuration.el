@@ -801,16 +801,16 @@
 
 (add-hook 'org-mode-hook 'flyspell-mode)
 
-(defun my/org-mode-hook ()
-  (dolist (face '(org-level-1
-                  org-level-2
-                  org-level-3
-                  org-level-4
-                  org-level-5))
-    (set-face-attribute face nil :weight 'semi-bold :height 1.1)))
+;; (defun my/org-mode-hook ()
+;;   (dolist (face '(org-level-1
+;;                   org-level-2
+;;                   org-level-3
+;;                   org-level-4
+;;                   org-level-5))
+;;     (set-face-attribute face nil :weight 'semi-bold :height 1.1)))
 
-(add-hook 'org-mode-hook 'my/org-mode-hook)
-(setq solarized-scale-org-headlines nil)
+;; (add-hook 'org-mode-hook 'my/org-mode-hook)
+(setq solarized-scale-org-headlines t)
 
 (setq solarized-use-variable-pitch nil)
 
@@ -824,7 +824,8 @@
 (defun set-org-agenda-files ()
   "Set different org-files to be used in org-agenda"
   (setq org-agenda-files (list (concat org-directory "tasks.org")
-                               (concat org-directory "refile-beorg.org"))))
+                               (concat org-directory "refile-beorg.org")
+                               (concat org-directory "homework.org"))))
 
 (set-org-agenda-files)
 
@@ -1169,6 +1170,14 @@
             (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
             (visual-line-mode)))
 
+(require 'mu4e-contrib)
+(setq mu4e-html2text-command 'mu4e-shr2text)
+(add-hook 'mu4e-view-mode-hook
+          (lambda()
+            ;; try to emulate some of the eww key-bindings
+            (local-set-key (kbd "<tab>") 'shr-next-link)
+            (local-set-key (kbd "<backtab>") 'shr-previous-link)))
+
 (setq message-send-mail-function 'message-send-mail-with-sendmail)
 (setq sendmail-program "/usr/local/bin/msmtp")
 (setq user-full-name "Samarth Kishor")
@@ -1222,8 +1231,9 @@
   :ensure t
   :after hydra
   :bind (:map elfeed-search-mode-map
-              ("j" . mz/make-and-run-elfeed-hydra))
+              ("h" . mz/make-and-run-elfeed-hydra))
   :config
+  (setq shr-max-image-proportion 0.6)
   (add-to-list 'evil-emacs-state-modes 'elfeed-search-mode)
   (add-to-list 'evil-emacs-state-modes 'elfeed-show-mode)
   (defun z/hasCap (s) ""
@@ -1238,21 +1248,21 @@
         (substring s 0 1))))
   (defun mz/make-elfeed-cats (tags)
     "Return a list of lists. Each one is line for the hydra configuration in the form
-     (c function hint)"
+       (c function hint)"
     (interactive)
     (mapcar (lambda (tag)
               (let* ((tagstring (symbol-name tag))
                      (c (z/get-hydra-option-key tagstring)))
-                (list c (append '(elfeed-search-set-filter) (list (format "@6-months-ago +%s" tagstring)))
+                (list c (append '(elfeed-search-set-filter) (list (format "@3-weeks-ago +%s" tagstring)))
                       tagstring)))
             tags))
   (defmacro mz/make-elfeed-hydra ()
     `(defhydra mz/hydra-elfeed ()
        "filter"
        ,@(mz/make-elfeed-cats (elfeed-db-get-all-tags))
-       ("*" (elfeed-search-set-filter "@6-months-ago +star") "Starred")
+       ("*" (elfeed-search-set-filter "@3-weeks-ago +star") "Starred")
        ("M" elfeed-toggle-star "Mark")
-       ("A" (elfeed-search-set-filter "@6-months-ago") "All")
+       ("A" (elfeed-search-set-filter "@3-weeks-ago") "All")
        ("T" (elfeed-search-set-filter "@1-day-ago") "Today")
        ("q" nil "quit" :color blue)))
   (defun mz/make-and-run-elfeed-hydra ()
@@ -1268,7 +1278,6 @@
 
 (use-package elfeed-org
   :ensure t
-  :init
-  (elfeed-org)
   :config
+  (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/.emacs.d/feeds.org")))
