@@ -890,6 +890,43 @@ Use =company= for auto-completion engine.
     (global-company-mode t))
 #+END_SRC
 
+** C/C++
+
+Use the =cquery= language server to make Emacs a C/C++ IDE.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package cquery
+    :ensure t
+    :commands (lsp-cquery-enable)
+    :hook (c-mode-common . lsp-cquery-enable)
+    :config
+    (setq-default c-basic-offset 4)
+    (setq cquery-executable "/usr/local/bin/cquery"))
+#+END_SRC
+
+Use =astyle= to format code.
+
+Source: [[https://chriszheng.science/2015/04/01/Add-astyle-support-for-Emacs/][this blog post]]
+
+#+BEGIN_SRC emacs-lisp
+  (defvar astyle-command "astyle -A2 -s4 -S")
+
+  (defun astyle-buffer (start end)
+    "Run astyle on region or buffer"
+    (interactive (if mark-active
+                     (list (region-beginning) (region-end))
+                   (list (point-min) (point-max))))
+    (save-restriction
+      (shell-command-on-region start end
+                               astyle-command
+                               (current-buffer) t
+                               (get-buffer-create "*Astyle Errors*") t)))
+
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (add-hook 'before-save-hook 'astyle-buffer)))
+#+END_SRC
+
 ** Clojure(script)
 
 Use CIDER as the "IDE".
@@ -1093,7 +1130,15 @@ Use =smartparens= and =evil-smartparens=.
     :diminish
     :init
     (require 'smartparens-config)
-    (smartparens-global-mode 1))
+    (smartparens-global-mode 1)
+    :config
+    (defun my-create-newline-and-enter-sexp (&rest _ignored)
+      "Open a new brace or bracket expression, with relevant newlines and indent. "
+      (newline)
+      (indent-according-to-mode)
+      (forward-line -1)
+      (indent-according-to-mode))
+    (sp-local-pair 'c++-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET"))))
 
   (use-package evil-smartparens
     :ensure t

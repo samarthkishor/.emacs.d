@@ -563,6 +563,31 @@
   :init
   (global-company-mode t))
 
+(use-package cquery
+  :ensure t
+  :commands (lsp-cquery-enable)
+  :hook (c-mode-common . lsp-cquery-enable)
+  :config
+  (setq-default c-basic-offset 4)
+  (setq cquery-executable "/usr/local/bin/cquery"))
+
+(defvar astyle-command "astyle -A2 -s4 -S")
+
+(defun astyle-buffer (start end)
+  "Run astyle on region or buffer"
+  (interactive (if mark-active
+                   (list (region-beginning) (region-end))
+                 (list (point-min) (point-max))))
+  (save-restriction
+    (shell-command-on-region start end
+                             astyle-command
+                             (current-buffer) t
+                             (get-buffer-create "*Astyle Errors*") t)))
+
+(add-hook 'c++-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'astyle-buffer)))
+
 (use-package cider
   :defer t
   :commands (cider cider-connect cider-jack-in)
@@ -697,7 +722,15 @@
   :diminish
   :init
   (require 'smartparens-config)
-  (smartparens-global-mode 1))
+  (smartparens-global-mode 1)
+  :config
+  (defun my-create-newline-and-enter-sexp (&rest _ignored)
+    "Open a new brace or bracket expression, with relevant newlines and indent. "
+    (newline)
+    (indent-according-to-mode)
+    (forward-line -1)
+    (indent-according-to-mode))
+  (sp-local-pair 'c++-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET"))))
 
 (use-package evil-smartparens
   :ensure t
