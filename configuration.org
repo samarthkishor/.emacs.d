@@ -1283,6 +1283,13 @@ Don't use variable pitch in the solarized color-scheme.
   (setq solarized-use-variable-pitch nil)
 #+END_SRC
 
+Set up refile targets.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-refile-targets '((nil :maxlevel . 1)
+                             (org-agenda-files :maxlevel . 1)))
+#+END_SRC
+
 ** Task Management
 
 Store org files in Dropbox.

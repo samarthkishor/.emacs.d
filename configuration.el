@@ -814,6 +814,9 @@
 
 (setq solarized-use-variable-pitch nil)
 
+(setq org-refile-targets '((nil :maxlevel . 1)
+                           (org-agenda-files :maxlevel . 1)))
+
 (setq org-directory "~/Dropbox/org/")
 
 (global-set-key (kbd "C-c a") 'org-agenda)
