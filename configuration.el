@@ -450,7 +450,11 @@
   :ensure t
   :diminish projectile-mode
   :init
-  (projectile-mode 1))
+  (projectile-mode 1)
+  :config
+  (setq projectile-enable-caching nil)
+  (add-to-list 'projectile-globally-ignored-directories "*.cquery_cached_index")
+  (add-to-list 'projectile-globally-ignored-directories "*node_modules"))
 
 (use-package helm-projectile :ensure t)
 
@@ -584,9 +588,18 @@
                              (current-buffer) t
                              (get-buffer-create "*Astyle Errors*") t)))
 
-(add-hook 'c++-mode-hook
+(add-hook 'c-mode-common-hook
           (lambda ()
-            (add-hook 'before-save-hook 'astyle-buffer)))
+              (add-hook 'before-save-hook 'astyle-buffer)))
+
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (unless (file-exists-p "Makefile")
+              (set (make-local-variable 'compile-command)
+                   (let ((file (file-name-nondirectory buffer-file-name)))
+                     (concat "clang++ -Wall -g -o "
+                             (file-name-sans-extension file)
+                             " " file))))))
 
 (use-package cider
   :defer t
