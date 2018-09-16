@@ -551,6 +551,8 @@
                                  '("~/.emacs.d/snippets/")))
   (yas-global-mode 1))
 
+(use-package yasnippet-snippets :ensure t)
+
 (use-package magit
   :bind ("C-x g" . magit-status)
   :config
@@ -597,7 +599,7 @@
             (unless (file-exists-p "Makefile")
               (set (make-local-variable 'compile-command)
                    (let ((file (file-name-nondirectory buffer-file-name)))
-                     (concat "clang++ -Wall -g -o "
+                     (concat "clang++ -Wall -o " 
                              (file-name-sans-extension file)
                              " " file))))))
 
