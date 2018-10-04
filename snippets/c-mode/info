@@ -1,0 +1,9 @@
+#key : info
+#name : Insert comment header for CS 2150 lab files
+#contributor : Samarth Kishor
+# --
+
+// `(file-relative-name (buffer-file-name))`
+// Samarth Kishor
+// sk4gz
+// `(format-time-string "%B %d, %Y")`

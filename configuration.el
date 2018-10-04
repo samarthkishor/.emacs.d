@@ -574,9 +574,9 @@
   :commands (lsp-cquery-enable)
   :hook (c-mode-common . lsp-cquery-enable)
   :config
-  (setq-default c-basic-offset 4)
   (setq cquery-executable "/usr/local/bin/cquery"))
 
+(setq-default c-basic-offset 4)
 (defvar astyle-command "astyle -A2 -s4 -S")
 
 (defun astyle-buffer (start end)
@@ -599,7 +599,7 @@
             (unless (file-exists-p "Makefile")
               (set (make-local-variable 'compile-command)
                    (let ((file (file-name-nondirectory buffer-file-name)))
-                     (concat "clang++ -Wall -o " 
+                     (concat "clang++ -Wall -g -o " 
                              (file-name-sans-extension file)
                              " " file))))))
 
@@ -745,7 +745,8 @@
     (indent-according-to-mode)
     (forward-line -1)
     (indent-according-to-mode))
-  (sp-local-pair 'c++-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET"))))
+  (sp-local-pair 'c++-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
+  (sp-local-pair 'c-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET"))))
 
 (use-package evil-smartparens
   :ensure t
