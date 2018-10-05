@@ -879,13 +879,15 @@
 
 (setq browse-url-browser-function 'browse-url-default-macosx-browser)
 
-(setq org-latex-pdf-process
-      '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-        "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-        "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-
-(add-to-list 'org-latex-packages-alist '("" "minted"))
-(setq org-latex-listings 'minted)
+;; (setq org-latex-pdf-process
+  ;;       '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+  ;;         "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+  ;;         "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+(setq  org-latex-pdf-process
+       '("pdflatex -shell-escape %f" "biber %b" "pdflatex -shell-escape %f" "pdflatex -shell-escape %f"))
+  (setq bibtex-dialect 'biblatex)
+  (add-to-list 'org-latex-packages-alist '("" "minted"))
+  (setq org-latex-listings 'minted)
 
 (use-package tablist
   :ensure t)
@@ -939,6 +941,13 @@
   (org-link-set-parameters "pdfview" :export #'org-pdfview-export)
   (add-to-list 'org-file-apps '("\\.pdf\\'" . (lambda (file link) (org-pdfview-open link))))
   (add-to-list 'org-file-apps '("\\.pdf::\\([[:digit:]]+\\)\\'" . (lambda (file link) (org-pdfview-open link)))))
+
+(use-package org-ref
+  :ensure t
+  :defer t
+  :config
+  (setq reftex-default-bibliography '("~/Documents/Second_Year/RELG3559/paper1/bibliography.bib"))
+  (setq bibtex-completion-bibliography "~/Documents/Second_Year/RELG3559/paper1/bibliography.bib"))
 
 (use-package helm
   :ensure t

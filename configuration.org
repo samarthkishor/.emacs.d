@@ -937,7 +937,7 @@ Source: [[https://chriszheng.science/2015/04/01/Add-astyle-support-for-Emacs/][t
               (unless (file-exists-p "Makefile")
                 (set (make-local-variable 'compile-command)
                      (let ((file (file-name-nondirectory buffer-file-name)))
-                       (concat "clang++ -Wall -g -o " 
+                       (concat "clang++ -Wall -g -o "
                                (file-name-sans-extension file)
                                " " file))))))
 #+END_SRC
@@ -1404,7 +1404,8 @@ Produce pdfs with syntax highlighting with =minted=.
         '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
           "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
           "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-
+  ;; (setq org-latex-pdf-process '("xelatex -shell-escape %f" "biber %b" "xelatex -shell-escape %f" "xelatex -shell-escape %f"))
+  (setq bibtex-dialect 'biblatex)
   (add-to-list 'org-latex-packages-alist '("" "minted"))
   (setq org-latex-listings 'minted)
 #+END_SRC
@@ -1475,6 +1476,19 @@ Source: [[https://github.com/stardiviner/emacs.d/blob/199597132ef58ff6b260f6d6c3
     (add-to-list 'org-file-apps '("\\.pdf\\'" . (lambda (file link) (org-pdfview-open link))))
     (add-to-list 'org-file-apps '("\\.pdf::\\([[:digit:]]+\\)\\'" . (lambda (file link) (org-pdfview-open link)))))
 #+END_SRC
+** Org-ref
+
+   Manage citations in org-mode.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-ref
+    :ensure t
+    :defer t
+    :config
+    (setq reftex-default-bibliography '("~/Documents/Second_Year/RELG3559/paper1/bibliography.bib"))
+    (setq bibtex-completion-bibliography "~/Documents/Second_Year/RELG3559/paper1/bibliography.bib"))
+#+END_SRC
+
 * Helm
 
 Use Helm for incremental completions and narrowing selections.
@@ -1509,11 +1523,11 @@ Use =swiper= (with a Helm interface) instead of =isearch= for searching with =C-
 #+END_SRC
 
 * Hydra
-  
+
 Use hydras in combination with evil-mode for modal editing on steroids.
 
 Source: [[https://gist.github.com/Schroedingberg/ef59e71e21bd1e18f13c21d0ba4b5ce0][this Github Gist]] and [[https://www.reddit.com/r/emacs/comments/931la6/tip_how_to_adopt_flycheck_as_your_new_best_friend/][this Reddit post]]
- 
+
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
     :ensure t
