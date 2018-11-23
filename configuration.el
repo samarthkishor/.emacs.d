@@ -476,6 +476,13 @@
                                              (derived-mode-p 'org-mode)))
                                 (delete-trailing-whitespace))))
 
+(defun my/normalize-buffer ()
+  "Delete extra whitespace, tabs -> spaces, and indent buffer"
+  (interactive)
+  (delete-trailing-whitespace)
+  (untabify (point-min) (point-max))
+  (indent-region (point-min) (point-max)))
+
 (global-set-key (kbd "M-j")
             (lambda ()
                   (interactive)
@@ -497,6 +504,12 @@
   :ensure t
   :bind (("C-=" . er/expand-region)
          ("M-=" . er/contract-region)))
+
+(defun my/insert-date ()
+  "Function to insert date into buffer."
+  (interactive)
+  (insert (format-time-string
+           "%m/%m/%Y" (current-time))))
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
@@ -577,7 +590,7 @@
   (setq cquery-executable "/usr/local/bin/cquery"))
 
 (setq-default c-basic-offset 4)
-(defvar astyle-command "astyle -A2 -s4 -S")
+(defvar astyle-command "astyle --align-pointer=type -A2 -s4 -S")
 
 (defun astyle-buffer (start end)
   "Run astyle on region or buffer"
@@ -599,7 +612,7 @@
             (unless (file-exists-p "Makefile")
               (set (make-local-variable 'compile-command)
                    (let ((file (file-name-nondirectory buffer-file-name)))
-                     (concat "clang++ -Wall -g -o " 
+                     (concat "clang++ -Wall -g -o "
                              (file-name-sans-extension file)
                              " " file))))))
 
@@ -745,6 +758,7 @@
     (indent-according-to-mode)
     (forward-line -1)
     (indent-according-to-mode))
+  (setq sp-escape-quotes-after-insert nil)
   (sp-local-pair 'c++-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
   (sp-local-pair 'c-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET"))))
 
@@ -880,14 +894,13 @@
 (setq browse-url-browser-function 'browse-url-default-macosx-browser)
 
 ;; (setq org-latex-pdf-process
-  ;;       '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-  ;;         "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-  ;;         "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-(setq  org-latex-pdf-process
-       '("pdflatex -shell-escape %f" "biber %b" "pdflatex -shell-escape %f" "pdflatex -shell-escape %f"))
-  (setq bibtex-dialect 'biblatex)
-  (add-to-list 'org-latex-packages-alist '("" "minted"))
-  (setq org-latex-listings 'minted)
+;;       '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+;;         "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+;;         "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+(setq org-latex-pdf-process '("xelatex -shell-escape %f" "biber %b" "xelatex -shell-escape %f" "xelatex -shell-escape %f"))
+(setq bibtex-dialect 'biblatex)
+(add-to-list 'org-latex-packages-alist '("" "minted"))
+(setq org-latex-listings 'minted)
 
 (use-package tablist
   :ensure t)
@@ -948,6 +961,12 @@
   :config
   (setq reftex-default-bibliography '("~/Documents/Second_Year/RELG3559/paper1/bibliography.bib"))
   (setq bibtex-completion-bibliography "~/Documents/Second_Year/RELG3559/paper1/bibliography.bib"))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((python . t)
+   (emacs-lisp . t)
+   (C . t)))
 
 (use-package helm
   :ensure t
@@ -1197,6 +1216,8 @@
             (visual-fill-column-mode)
             (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
             (visual-line-mode)))
+
+(setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
 
 (require 'mu4e-contrib)
 (setq mu4e-html2text-command 'mu4e-shr2text)

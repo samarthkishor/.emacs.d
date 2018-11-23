@@ -694,6 +694,7 @@ Use =undo-tree= for better undo history.
 
 Delete trailing whitespace after saving in all modes except markdown-mode and org-mode.
 Markdown uses two trailing blanks to signal a line break.
+
 Source: [[https://github.com/munen/emacs.d/#delete-trailing-whitespace]]
 
 #+BEGIN_SRC emacs-lisp
@@ -701,6 +702,19 @@ Source: [[https://github.com/munen/emacs.d/#delete-trailing-whitespace]]
                                 (when (not (or (derived-mode-p 'markdown-mode)
                                                (derived-mode-p 'org-mode)))
                                   (delete-trailing-whitespace))))
+#+END_SRC
+
+Declare an interactive function to clean whitespace and indent the buffer.
+
+Source: https://github.com/wandersoncferreira/dotfiles/blob/min/emacs/conf.org#editing-mode
+
+#+BEGIN_SRC emacs-lisp
+  (defun my/normalize-buffer ()
+    "Delete extra whitespace, tabs -> spaces, and indent buffer"
+    (interactive)
+    (delete-trailing-whitespace)
+    (untabify (point-min) (point-max))
+    (indent-region (point-min) (point-max)))
 #+END_SRC
 
 ** Random useful keybindings
@@ -749,6 +763,20 @@ Make it easy to select regions (if visual mode keybindings aren't enough).
     :ensure t
     :bind (("C-=" . er/expand-region)
            ("M-=" . er/contract-region)))
+#+END_SRC
+
+** Date
+
+Declare an interactive function to insert the date.
+
+Source: https://github.com/wandersoncferreira/dotfiles/blob/min/emacs/conf.org#date-management
+
+#+BEGIN_SRC emacs-lisp
+(defun my/insert-date ()
+  "Function to insert date into buffer."
+  (interactive)
+  (insert (format-time-string
+           "%m/%m/%Y" (current-time))))
 #+END_SRC
 
 * Programming Environments
@@ -915,7 +943,7 @@ Source: [[https://chriszheng.science/2015/04/01/Add-astyle-support-for-Emacs/][t
 
 #+BEGIN_SRC emacs-lisp
   (setq-default c-basic-offset 4)
-  (defvar astyle-command "astyle -A2 -s4 -S")
+  (defvar astyle-command "astyle --align-pointer=type -A2 -s4 -S")
 
   (defun astyle-buffer (start end)
     "Run astyle on region or buffer"
@@ -1153,6 +1181,7 @@ Use =smartparens= and =evil-smartparens=.
       (indent-according-to-mode)
       (forward-line -1)
       (indent-according-to-mode))
+    (setq sp-escape-quotes-after-insert nil)
     (sp-local-pair 'c++-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
     (sp-local-pair 'c-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET"))))
 
@@ -1400,11 +1429,11 @@ Set the Emacs browser to the default MacOS browser.
 Produce pdfs with syntax highlighting with =minted=.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-latex-pdf-process
-        '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-  ;; (setq org-latex-pdf-process '("xelatex -shell-escape %f" "biber %b" "xelatex -shell-escape %f" "xelatex -shell-escape %f"))
+  ;; (setq org-latex-pdf-process
+  ;;       '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+  ;;         "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+  ;;         "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+  (setq org-latex-pdf-process '("xelatex -shell-escape %f" "biber %b" "xelatex -shell-escape %f" "xelatex -shell-escape %f"))
   (setq bibtex-dialect 'biblatex)
   (add-to-list 'org-latex-packages-alist '("" "minted"))
   (setq org-latex-listings 'minted)
@@ -1487,6 +1516,17 @@ Source: [[https://github.com/stardiviner/emacs.d/blob/199597132ef58ff6b260f6d6c3
     :config
     (setq reftex-default-bibliography '("~/Documents/Second_Year/RELG3559/paper1/bibliography.bib"))
     (setq bibtex-completion-bibliography "~/Documents/Second_Year/RELG3559/paper1/bibliography.bib"))
+#+END_SRC
+** Org Babel
+
+   Execute code in org-mode.
+
+#+BEGIN_SRC emacs-lisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t)
+     (emacs-lisp . t)
+     (C . t)))
 #+END_SRC
 
 * Helm
@@ -1837,6 +1877,8 @@ View and compose email in =visual-line-mode= and use the =visual-fill-column= pa
 Handle html emails and preserve links.
 
 #+BEGIN_SRC emacs-lisp
+  (setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
+ 
   (require 'mu4e-contrib)
   (setq mu4e-html2text-command 'mu4e-shr2text)
   (add-hook 'mu4e-view-mode-hook
