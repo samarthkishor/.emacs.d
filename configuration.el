@@ -170,29 +170,38 @@
 
 (setq-default inhibit-startup-screen t)
 
-(use-package powerline
-  :if window-system
-  :config (setq-default powerline-default-separator 'nil))
+;; (use-package powerline
+;;   :if window-system
+;;   :config (setq-default powerline-default-separator 'nil))
 
-(use-package spaceline
-  :after powerline
+;; (use-package spaceline
+;;   :after powerline
+;;   :ensure t
+;;   :config
+;;   (setq spaceline-responsive nil))
+
+;; (use-package spaceline-all-the-icons
+;;   :after spaceline
+;;   :config
+;;   (setq spaceline-all-the-icons-icon-set-modified 'circle
+;;         spaceline-all-the-icons-icon-set-flycheck-slim 'dots
+;;         spaceline-all-the-icons-separator-type 'none
+;;         spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
+;;         spaceline-all-the-icons-flycheck-alternate t)
+;;   (spaceline-all-the-icons-theme)
+;;   (spaceline-toggle-all-the-icons-projectile-on)
+;;   (spaceline-toggle-all-the-icons-buffer-position-on)
+;;   (spaceline-helm-mode)
+;;   (spaceline-toggle-all-the-icons-minor-modes-off))
+
+(use-package doom-modeline
   :ensure t
+  :defer t
+  :hook (after-init . doom-modeline-init)
   :config
-  (setq spaceline-responsive nil))
-
-(use-package spaceline-all-the-icons
-  :after spaceline
-  :config
-  (setq spaceline-all-the-icons-icon-set-modified 'circle
-        spaceline-all-the-icons-icon-set-flycheck-slim 'dots
-        spaceline-all-the-icons-separator-type 'none
-        spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
-        spaceline-all-the-icons-flycheck-alternate t)
-  (spaceline-all-the-icons-theme)
-  (spaceline-toggle-all-the-icons-projectile-on)
-  (spaceline-toggle-all-the-icons-buffer-position-on)
-  (spaceline-helm-mode)
-  (spaceline-toggle-all-the-icons-minor-modes-off))
+  (setq doom-modeline-height 20)
+  (setq doom-modeline-major-mode-icon t)
+  (setq doom-modeline-buffer-file-name-style 'truncate-upto-project))
 
 (defun remove-mode-line-box ()
   (set-face-attribute 'mode-line nil :box nil :underline nil)

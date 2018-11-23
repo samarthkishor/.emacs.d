@@ -269,30 +269,41 @@ It gets annoying after a while.
 
 Spaceline might be a bit too much for my needs but it looks great so it's worth it.
 
+Update: switched to doom-modeline because it's faster.
+
 #+BEGIN_SRC emacs-lisp
-  (use-package powerline
-    :if window-system
-    :config (setq-default powerline-default-separator 'nil))
+  ;; (use-package powerline
+  ;;   :if window-system
+  ;;   :config (setq-default powerline-default-separator 'nil))
 
-  (use-package spaceline
-    :after powerline
+  ;; (use-package spaceline
+  ;;   :after powerline
+  ;;   :ensure t
+  ;;   :config
+  ;;   (setq spaceline-responsive nil))
+
+  ;; (use-package spaceline-all-the-icons
+  ;;   :after spaceline
+  ;;   :config
+  ;;   (setq spaceline-all-the-icons-icon-set-modified 'circle
+  ;;         spaceline-all-the-icons-icon-set-flycheck-slim 'dots
+  ;;         spaceline-all-the-icons-separator-type 'none
+  ;;         spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
+  ;;         spaceline-all-the-icons-flycheck-alternate t)
+  ;;   (spaceline-all-the-icons-theme)
+  ;;   (spaceline-toggle-all-the-icons-projectile-on)
+  ;;   (spaceline-toggle-all-the-icons-buffer-position-on)
+  ;;   (spaceline-helm-mode)
+  ;;   (spaceline-toggle-all-the-icons-minor-modes-off))
+
+  (use-package doom-modeline
     :ensure t
+    :defer t
+    :hook (after-init . doom-modeline-init)
     :config
-    (setq spaceline-responsive nil))
-
-  (use-package spaceline-all-the-icons
-    :after spaceline
-    :config
-    (setq spaceline-all-the-icons-icon-set-modified 'circle
-          spaceline-all-the-icons-icon-set-flycheck-slim 'dots
-          spaceline-all-the-icons-separator-type 'none
-          spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
-          spaceline-all-the-icons-flycheck-alternate t)
-    (spaceline-all-the-icons-theme)
-    (spaceline-toggle-all-the-icons-projectile-on)
-    (spaceline-toggle-all-the-icons-buffer-position-on)
-    (spaceline-helm-mode)
-    (spaceline-toggle-all-the-icons-minor-modes-off))
+    (setq doom-modeline-height 20)
+    (setq doom-modeline-major-mode-icon t)
+    (setq doom-modeline-buffer-file-name-style 'truncate-upto-project))
 #+END_SRC
 
 Remove the weird lines below the mode-line. Need to reload with =C-c r= after starting Emacs for this to work (not sure why).
@@ -1979,6 +1990,7 @@ Control Spotify through Emacs (you need Spotify Premium).
   (use-package helm-spotify-plus
     :ensure t)
 #+END_SRC
+
 * RSS Feeds
 
 =elfeed= is a good RSS feed reader. I used to use =newsboat= but this might be a bit more powerful.
