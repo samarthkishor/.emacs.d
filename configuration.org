@@ -756,6 +756,28 @@
                 "%m/%m/%Y" (current-time))))
    #+END_SRC
 
+** Line wrapping
+
+   Use visual-line-mode to soft wrap lines whenever possible.
+
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'prog-mode-hook #'visual-line-mode)
+     (add-hook 'org-mode #'visual-line-mode)
+   #+END_SRC
+
+** Iedit
+
+   This package is similar to multiple-cursors but it's a bit easier to use for editing multiple regions at the same time.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package iedit
+       :ensure t
+       :defer t
+       :after evil-leader
+       :config
+       (evil-leader/set-key "r" 'iedit-mode))
+   #+END_SRC
+
 * Programming Environments
 ** General settings
 
