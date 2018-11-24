@@ -1,12 +1,12 @@
 (unless (package-installed-p 'use-package)
-        (package-refresh-contents)
-        (package-install 'use-package))
+  (package-refresh-contents)
+  (package-install 'use-package))
 
 (setq use-package-verbose t)
 (setq use-package-always-ensure t)
 
 (eval-when-compile
-    (require 'use-package))
+  (require 'use-package))
 
 (setq user-full-name "Samarth Kishor"
       user-mail-address "samarthkishor1@gmail.com")
@@ -107,6 +107,7 @@
 
 (use-package evil-mc
   :ensure t
+  :defer t
   :diminish
   :after (evil)
   :init
@@ -145,10 +146,11 @@
   (evil-lion-mode))
 
 (mapc (lambda (mode)
-        (evil-set-initial-state mode 'emacs)) '(dired-mode
-                                                image-dired-mode
-                                                image-dired-thumbnail-mode
-                                                eww-mode))
+        (evil-set-initial-state mode 'emacs))
+      '(dired-mode
+        image-dired-mode
+        image-dired-thumbnail-mode
+        eww-mode))
 
 (use-package solarized-theme
   :ensure t
@@ -210,38 +212,15 @@
 (when (window-system)
   (remove-mode-line-box))
 
-;; (use-package telephone-line
-;;   :config
-;;   (setq telephone-line-primary-left-separator 'telephone-line-utf-abs-left
-;;         telephone-line-secondary-left-separator 'telephone-line-utf-abs-hollow-left
-;;         telephone-line-primary-right-separator 'telephone-line-utf-abs-right
-;;         telephone-line-secondary-right-separator 'telephone-line-utf-abs-hollow-right)
-;;   (setq telephone-line-height 24
-;;         telephone-line-evil-use-short-tag t)
-
-;;   (setq telephone-line-lhs
-;;         '((evil   . (telephone-line-evil-tag-segment))
-;;           (accent . (telephone-line-airline-position-segment
-;;                      telephone-line-process-segment))
-;;           (nil    . (telephone-line-minor-mode-segment
-;;                      telephone-line-buffer-segment))))
-;;   (setq telephone-line-rhs
-;;         '((nil    . (telephone-line-misc-info-segment))
-;;           (evil   . (telephone-line-vc-segment))
-;;           (accent . (telephone-line-major-mode-segment
-;;                      telephone-line-flycheck-segment))))
-
-;;   (telephone-line-mode t))
-
 (use-package diminish
-    :ensure t
-    :init
-    (diminish 'undo-tree-mode)
-    (diminish 'auto-revert-mode)
-    (diminish 'global-auto-revert-mode)
-    (diminish 'eldoc-mode)
-    (diminish 'hs-minor-mode)
-    (diminish 'flyspell-mode))
+  :ensure t
+  :init
+  (diminish 'undo-tree-mode)
+  (diminish 'auto-revert-mode)
+  (diminish 'global-auto-revert-mode)
+  (diminish 'eldoc-mode)
+  (diminish 'hs-minor-mode)
+  (diminish 'flyspell-mode))
 
 (setq display-time-default-load-average nil)
 
@@ -249,12 +228,12 @@
 (setq ring-bell-function 'ignore)
 
 (defun my-terminal-visible-bell ()
-   "A friendlier visual bell effect."
-   (invert-face 'mode-line)
-   (run-with-timer 0.1 nil 'invert-face 'mode-line))
+  "A friendlier visual bell effect."
+  (invert-face 'mode-line)
+  (run-with-timer 0.1 nil 'invert-face 'mode-line))
 
- (setq visible-bell nil
-       ring-bell-function 'my-terminal-visible-bell)
+(setq visible-bell nil
+      ring-bell-function 'my-terminal-visible-bell)
 
 (when (window-system)
   (set-frame-font "Fira Code 14" nil t))
@@ -300,7 +279,7 @@
               (0 (prog1 ()
                    (compose-region (match-beginning 1)
                                    (match-end 1)
-                                   ,(concat "	"
+                                   ,(concat "  "
                                             (list
                                              (decode-char 'ucs
                                                           (cadr regex-char-pair)))))))))
@@ -422,9 +401,10 @@
 (add-hook 'prog-mode-hook #'add-fira-code-symbol-keywords)
 
 (when window-system
-      (global-hl-line-mode))
+  (global-hl-line-mode))
 
 (use-package beacon
+  :ensure t
   :defer t
   :diminish beacon-mode
   :init
@@ -473,7 +453,7 @@
   :ensure t
   :diminish which-key-mode
   :config
-    (which-key-mode))
+  (which-key-mode))
 
 (use-package undo-tree
   :ensure t
@@ -481,9 +461,9 @@
   (global-undo-tree-mode))
 
 (add-hook 'before-save-hook '(lambda ()
-                              (when (not (or (derived-mode-p 'markdown-mode)
-                                             (derived-mode-p 'org-mode)))
-                                (delete-trailing-whitespace))))
+                               (when (not (or (derived-mode-p 'markdown-mode)
+                                              (derived-mode-p 'org-mode)))
+                                 (delete-trailing-whitespace))))
 
 (defun my/normalize-buffer ()
   "Delete extra whitespace, tabs -> spaces, and indent buffer"
@@ -491,11 +471,6 @@
   (delete-trailing-whitespace)
   (untabify (point-min) (point-max))
   (indent-region (point-min) (point-max)))
-
-(global-set-key (kbd "M-j")
-            (lambda ()
-                  (interactive)
-                  (join-line -1)))
 
 (use-package avy
   :ensure t
@@ -519,6 +494,16 @@
   (interactive)
   (insert (format-time-string
            "%m/%m/%Y" (current-time))))
+
+(add-hook 'prog-mode-hook #'visual-line-mode)
+(add-hook 'org-mode #'visual-line-mode)
+
+(use-package iedit
+  :ensure t
+  :defer t
+  :after evil-leader
+  :config
+  (evil-leader/set-key "r" 'iedit-mode))
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
@@ -553,18 +538,6 @@
 
 (setq vc-follow-symlinks t)
 
-(use-package dumb-jump
-  :ensure
-  :bind
-  (("M-g o" . dumb-jump-go-to-other-window)
-   ("M-g d" . dumb-jump-go)
-   ("M-g p" . dumb-jump-back)
-   ("M-g q" . dumb-jump-quick-look)
-   ("M-g i" . dumb-jump-go-prompt))
-  :config
-  (dumb-jump-mode)
-  (setq dumb-jump-selector 'helm))
-
 (use-package yasnippet
   :ensure t
   :diminish yas-minor-mode
@@ -576,6 +549,7 @@
 (use-package yasnippet-snippets :ensure t)
 
 (use-package magit
+  :ensure t
   :bind ("C-x g" . magit-status)
   :config
   (use-package evil-magit)
@@ -584,6 +558,7 @@
   (add-hook 'with-editor-mode-hook 'evil-insert-state))
 
 (use-package company
+  :ensure t
   :diminish company-mode
   :bind (:map company-active-map
               ("M-j" . company-select-next)
@@ -593,6 +568,7 @@
 
 (use-package cquery
   :ensure t
+  :defer t
   :commands (lsp-cquery-enable)
   :hook (c-mode-common . lsp-cquery-enable)
   :config
@@ -614,7 +590,7 @@
 
 (add-hook 'c-mode-common-hook
           (lambda ()
-              (add-hook 'before-save-hook 'astyle-buffer)))
+            (add-hook 'before-save-hook 'astyle-buffer)))
 
 (add-hook 'c-mode-common-hook
           (lambda ()
@@ -626,6 +602,7 @@
                              " " file))))))
 
 (use-package cider
+  :ensure t
   :defer t
   :commands (cider cider-connect cider-jack-in)
   :init
@@ -654,6 +631,7 @@
 
 (use-package inf-clojure
   :ensure t
+  :defer t
   :config
   (defun my/lumo ()
     (when (bound-and-true-p cider-mode)
@@ -674,6 +652,8 @@
 ;; (setq boogie-friends-profile-analyzer-executable "PATH-TO-Z3-AXIOM-PROFILER") ;; Optional
 
 (use-package js2-mode
+  :ensure t
+  :defer t
   :mode ("\\.js" . js2-mode)
   :interpreter ("node" . js2-mode)
   :config
@@ -706,13 +686,13 @@
   (define-key js-mode-map (kbd "M-.") nil)
   (js2r-add-keybindings-with-prefix "C-c C-r"))
 
-  ;; xref-js2 supports things like jump to definition using ag instead of tags
-  ;; (use-package xref-js2
-  ;;   :ensure t
-  ;;   :after js2-mode)
+;; xref-js2 supports things like jump to definition using ag instead of tags
+;; (use-package xref-js2
+;;   :ensure t
+;;   :after js2-mode)
 
-  ;; (add-hook 'js2-mode-hook (lambda ()
-  ;;                            (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+;; (add-hook 'js2-mode-hook (lambda ()
+;;                            (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
 
 (use-package tern
   :ensure t
@@ -732,15 +712,18 @@
   :hook ((js2-mode . prettier-js-mode)))
 
 (use-package lean-mode
+  :ensure t
   :defer t
   :custom
   (lean-rootdir "~/lean-3.4.0-darwin"))
 
 (use-package company-lean
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package helm-lean
-  :ensure t)
+  :ensure t
+  :defer t)
 
 ;; (use-package paredit
 ;;   :ensure t
@@ -779,6 +762,7 @@
 
 (use-package lsp-mode
   :ensure t
+  :defer t
   :config
   ;; make sure we have lsp-imenu everywhere we have LSP
   (require 'lsp-imenu)
@@ -799,11 +783,14 @@
   ;; lsp extras
   (use-package lsp-ui
     :ensure t
+    :defer t
     :config
     (setq lsp-ui-sideline-ignore-duplicate t)
     (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
   (use-package company-lsp
+    :ensure t
+    :defer t
     :config
     (push 'company-lsp company-backends)))
 
@@ -814,6 +801,7 @@
 
 (use-package pyvenv
   :ensure t
+  :defer t
   :commands
   (pyvenv-activate pyvenv-workon))
 
@@ -821,12 +809,15 @@
 
 (use-package hy-mode
   :ensure t
+  :defer t
   :mode ("\\.hy\\'" . hy-mode)
   :config
   (define-key hy-mode-map "\C-x\C-e" 'hy-shell-eval-last-sexp)
   (setq hy-mode-inferior-lisp-command "hy"))
 
 (use-package org-bullets
+  :ensure t
+  :defer t
   :init
   (add-hook 'org-mode-hook #'org-bullets-mode))
 
@@ -959,6 +950,7 @@
 
 (use-package org-pdfview
   :ensure t
+  :defer t
   :init
   (org-link-set-parameters "pdfview" :export #'org-pdfview-export)
   (add-to-list 'org-file-apps '("\\.pdf\\'" . (lambda (file link) (org-pdfview-open link))))
@@ -1095,7 +1087,7 @@
                        (zero-or-more "\n" (any " ") (one-or-more not-newline)))
               line-end))
     :modes (text-mode markdown-mode gfm-mode org-mode))
-    (add-to-list 'flycheck-checkers 'proselint))
+  (add-to-list 'flycheck-checkers 'proselint))
 
 (add-hook 'markdown-mode-hook #'flycheck-mode)
 (add-hook 'gfm-mode-hook #'flycheck-mode)
@@ -1106,6 +1098,7 @@
 
 (use-package synosaurus
   :ensure t
+  :defer t
   :bind
   (("C-c C-h l" . synosaurus-lookup)
    ("C-c C-h r" . synosaurus-choose-and-replace))
@@ -1240,7 +1233,7 @@
 (setq sendmail-program "/usr/local/bin/msmtp")
 (setq user-full-name "Samarth Kishor")
 
-; tell msmtp to choose the SMTP server according to the "from" field in the outgoing email
+                                        ; tell msmtp to choose the SMTP server according to the "from" field in the outgoing email
 (setq message-sendmail-envelope-from 'header)
 (add-hook 'message-send-mail-hook 'choose-msmtp-account)
 ;; (setq message-sendmail-f-is-evil 't)
