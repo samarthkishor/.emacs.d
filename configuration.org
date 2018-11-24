@@ -158,6 +158,7 @@
   #+BEGIN_SRC emacs-lisp
     (use-package evil-mc
       :ensure t
+      :defer t
       :diminish
       :after (evil)
       :init
@@ -206,7 +207,8 @@
 
   #+BEGIN_SRC emacs-lisp
     (mapc (lambda (mode)
-            (evil-set-initial-state mode 'emacs)) '(dired-mode
+            (evil-set-initial-state mode 'emacs))
+          '(dired-mode
             image-dired-mode
             image-dired-thumbnail-mode
             eww-mode))
@@ -553,6 +555,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package beacon
+       :ensure t
        :defer t
        :diminish beacon-mode
        :init
@@ -831,22 +834,6 @@
      (setq vc-follow-symlinks t)
    #+END_SRC
 
-   Use =dumb-jump= to jump to definition in source code.
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package dumb-jump
-       :ensure
-       :bind
-       (("M-g o" . dumb-jump-go-to-other-window)
-        ("M-g d" . dumb-jump-go)
-        ("M-g p" . dumb-jump-back)
-        ("M-g q" . dumb-jump-quick-look)
-        ("M-g i" . dumb-jump-go-prompt))
-       :config
-       (dumb-jump-mode)
-       (setq dumb-jump-selector 'helm))
-   #+END_SRC
-
    Use =yasnippets= for snippets.
 
    #+BEGIN_SRC emacs-lisp
@@ -875,6 +862,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package magit
+       :ensure t
        :bind ("C-x g" . magit-status)
        :config
        (use-package evil-magit)
@@ -889,6 +877,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package company
+       :ensure t
        :diminish company-mode
        :bind (:map company-active-map
                    ("M-j" . company-select-next)
@@ -904,6 +893,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package cquery
        :ensure t
+       :defer t
        :commands (lsp-cquery-enable)
        :hook (c-mode-common . lsp-cquery-enable)
        :config
@@ -949,6 +939,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package cider
+       :ensure t
        :defer t
        :commands (cider cider-connect cider-jack-in)
        :init
@@ -987,6 +978,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package inf-clojure
        :ensure t
+       :defer t
        :config
        (defun my/lumo ()
          (when (bound-and-true-p cider-mode)
@@ -1007,6 +999,7 @@
 ** Dafny
 
    First, install the =boogie-friends= package.
+
    Indicate the paths to the Dafny and Boogie installations.
 
    #+BEGIN_SRC emacs-lisp
@@ -1027,6 +1020,8 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package js2-mode
+       :ensure t
+       :defer t
        :mode ("\\.js" . js2-mode)
        :interpreter ("node" . js2-mode)
        :config
@@ -1105,15 +1100,18 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package lean-mode
+       :ensure t
        :defer t
        :custom
        (lean-rootdir "~/lean-3.4.0-darwin"))
 
      (use-package company-lean
-       :ensure t)
+       :ensure t
+       :defer t)
 
      (use-package helm-lean
-       :ensure t)
+       :ensure t
+       :defer t)
    #+END_SRC
 
 ** Lisps
@@ -1174,6 +1172,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package lsp-mode
        :ensure t
+       :defer t
        :config
        ;; make sure we have lsp-imenu everywhere we have LSP
        (require 'lsp-imenu)
@@ -1194,11 +1193,14 @@
        ;; lsp extras
        (use-package lsp-ui
          :ensure t
+         :defer t
          :config
          (setq lsp-ui-sideline-ignore-duplicate t)
          (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
        (use-package company-lsp
+         :ensure t
+         :defer t
          :config
          (push 'company-lsp company-backends)))
    #+END_SRC
@@ -1217,6 +1219,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package pyvenv
        :ensure t
+       :defer t
        :commands
        (pyvenv-activate pyvenv-workon))
    #+END_SRC
@@ -1234,6 +1237,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package hy-mode
        :ensure t
+       :defer t
        :mode ("\\.hy\\'" . hy-mode)
        :config
        (define-key hy-mode-map "\C-x\C-e" 'hy-shell-eval-last-sexp)
@@ -1246,6 +1250,8 @@
 
    #+BEGIN_SRC emacs-lisp
      (use-package org-bullets
+       :ensure t
+       :defer t
        :init
        (add-hook 'org-mode-hook #'org-bullets-mode))
    #+END_SRC
@@ -1672,6 +1678,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package synosaurus
        :ensure t
+       :defer t
        :bind
        (("C-c C-h l" . synosaurus-lookup)
         ("C-c C-h r" . synosaurus-choose-and-replace))
@@ -1692,177 +1699,176 @@
        (typo-global-mode 1)
        (add-hook 'text-mode-hook 'typo-mode))
    #+END_SRC
- 
+
 * Email
-** Use =mu4e=
 
-   [[https://notanumber.io/2016-10-03/better-email-with-mu4e/][This post]] was super helpful for setting everything up.
+  [[https://notanumber.io/2016-10-03/better-email-with-mu4e/][This post]] was super helpful for setting everything up.
 
-   #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
-     (require 'mu4e)
+  #+BEGIN_SRC emacs-lisp
+    (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+    (require 'mu4e)
 
-     (setq mu4e-maildir (expand-file-name "~/Maildir"))
-     (setq mu4e-get-mail-command "mbsync -a")
-     (setq mu4e-change-filenames-when-moving t) ;; fix for mbsync
-     ;; Enable inline images.
-     (setq mu4e-view-show-images t)
-     (setq mu4e-view-image-max-width 800)
-     ;; Use imagemagick, if available.
-     (when (fboundp 'imagemagick-register-types)
-       (imagemagick-register-types))
-   #+END_SRC
+    (setq mu4e-maildir (expand-file-name "~/Maildir"))
+    (setq mu4e-get-mail-command "mbsync -a")
+    (setq mu4e-change-filenames-when-moving t) ;; fix for mbsync
+    ;; Enable inline images.
+    (setq mu4e-view-show-images t)
+    (setq mu4e-view-image-max-width 800)
+    ;; Use imagemagick, if available.
+    (when (fboundp 'imagemagick-register-types)
+      (imagemagick-register-types))
+  #+END_SRC
 
-   Show email addresses as well as names.
+  Show email addresses as well as names.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq mu4e-view-show-addresses t)
-   #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (setq mu4e-view-show-addresses t)
+  #+END_SRC
 
-   Open email in a browser if necessary.
+  Open email in a browser if necessary.
 
-   #+BEGIN_SRC emacs-lisp
-     (add-to-list 'mu4e-view-actions '("View in browser" . mu4e-action-view-in-browser) t)
-   #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (add-to-list 'mu4e-view-actions '("View in browser" . mu4e-action-view-in-browser) t)
+  #+END_SRC
 
-   Enable images in w3m.
+  Enable images in w3m.
 
-   Source: [[https://emacs.stackexchange.com/questions/41691/mu4e-display-inline-images-in-html-emails][Emacs StackExchange]]
+  Source: [[https://emacs.stackexchange.com/questions/41691/mu4e-display-inline-images-in-html-emails][Emacs StackExchange]]
 
-   #+BEGIN_SRC emacs-lisp
-     (setq w3m-default-desplay-inline-images t)
-     (defun mu4e-action-view-in-w3m ()
-       "View the body of the message in emacs w3m."
-       (interactive)
-       (w3m-browse-url (concat "file://"
-                               (mu4e~write-body-to-html (mu4e-message-at-point t)))))
-   #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (setq w3m-default-desplay-inline-images t)
+    (defun mu4e-action-view-in-w3m ()
+      "View the body of the message in emacs w3m."
+      (interactive)
+      (w3m-browse-url (concat "file://"
+                              (mu4e~write-body-to-html (mu4e-message-at-point t)))))
+  #+END_SRC
 
-   This hook correctly modifies the \Inbox and \Starred flags on email when they are marked to trigger the appropriate Gmail actions.
+  This hook correctly modifies the \Inbox and \Starred flags on email when they are marked to trigger the appropriate Gmail actions.
 
-   #+BEGIN_SRC emacs-lisp
-     (add-hook 'mu4e-mark-execute-pre-hook
-               (lambda (mark msg)
-                 (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg "-\\Inbox"))
-                       ((equal mark 'flag) (mu4e-action-retag-message msg "\\Starred"))
-                       ((equal mark 'unflag) (mu4e-action-retag-message msg "-\\Starred")))))
-   #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (add-hook 'mu4e-mark-execute-pre-hook
+              (lambda (mark msg)
+                (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg "-\\Inbox"))
+                      ((equal mark 'flag) (mu4e-action-retag-message msg "\\Starred"))
+                      ((equal mark 'unflag) (mu4e-action-retag-message msg "-\\Starred")))))
+  #+END_SRC
 
-   Define helper functions.
+  Define helper functions.
 
-   #+BEGIN_SRC emacs-lisp
-     (defun mu4e-message-maildir-matches (msg rx)
-       "Determine which account context I am in based on the maildir subfolder"
-       (when rx
-         (if (listp rx)
-             ;; If rx is a list, try each one for a match
-             (or (mu4e-message-maildir-matches msg (car rx))
-                 (mu4e-message-maildir-matches msg (cdr rx)))
-           ;; Not a list, check rx
-           (string-match rx (mu4e-message-field msg :maildir)))))
+  #+BEGIN_SRC emacs-lisp
+    (defun mu4e-message-maildir-matches (msg rx)
+      "Determine which account context I am in based on the maildir subfolder"
+      (when rx
+        (if (listp rx)
+            ;; If rx is a list, try each one for a match
+            (or (mu4e-message-maildir-matches msg (car rx))
+                (mu4e-message-maildir-matches msg (cdr rx)))
+          ;; Not a list, check rx
+          (string-match rx (mu4e-message-field msg :maildir)))))
 
-     (defun choose-msmtp-account ()
-       "Choose account label to feed msmtp -a option based on From header
-       in Message buffer; This function must be added to
-       message-send-mail-hook for on-the-fly change of From address before
-       sending message since message-send-mail-hook is processed right
-       before sending message."
-       (if (message-mail-p)
-           (save-excursion
-             (let*
-                 ((from (save-restriction
-                          (message-narrow-to-headers)
-                          (message-fetch-field "from")))
-                  (account
-                   (cond
-                    ((string-match "samarthkishor1@gmail.com" from) "gmail")
-                    ((string-match "sk4gz@virginia.edu" from) "uva"))))
-               (setq message-sendmail-extra-arguments (list '"-a" account))))))
-   #+END_SRC
+    (defun choose-msmtp-account ()
+      "Choose account label to feed msmtp -a option based on From header
+      in Message buffer; This function must be added to
+      message-send-mail-hook for on-the-fly change of From address before
+      sending message since message-send-mail-hook is processed right
+      before sending message."
+      (if (message-mail-p)
+          (save-excursion
+            (let*
+                ((from (save-restriction
+                         (message-narrow-to-headers)
+                         (message-fetch-field "from")))
+                 (account
+                  (cond
+                   ((string-match "samarthkishor1@gmail.com" from) "gmail")
+                   ((string-match "sk4gz@virginia.edu" from) "uva"))))
+              (setq message-sendmail-extra-arguments (list '"-a" account))))))
+  #+END_SRC
 
-   Use spellcheck when composing an email.
+  Use spellcheck when composing an email.
 
-   #+BEGIN_SRC emacs-lisp
-     (add-hook 'mu4e-compose-mode-hook 'flyspell-mode)
-   #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (add-hook 'mu4e-compose-mode-hook 'flyspell-mode)
+  #+END_SRC
 
-   Define email contexts for my personal and school accounts.
+  Define email contexts for my personal and school accounts.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq mu4e-contexts
-           `( ,(make-mu4e-context
-                :name "gmail"
-                :enter-func (lambda () (mu4e-message "Switch to the gmail context"))
-                :match-func (lambda (msg)
-                              (when msg
-                                (mu4e-message-maildir-matches msg "^/gmail")))
-                :leave-func (lambda () (mu4e-clear-caches))
-                :vars '((user-mail-address     . "samarthkishor1@gmail.com")
-                        (user-full-name        . "Samarth Kishor")
-                        (mu4e-sent-folder      . "/gmail/sent")
-                        (mu4e-drafts-folder    . "/gmail/drafts")
-                        (mu4e-trash-folder     . "/gmail/trash")
-                        (mu4e-refile-folder    . "/gmail/[Gmail].All Mail")))
-              ,(make-mu4e-context
-                :name "uva"
-                :enter-func (lambda () (mu4e-message "Switch to the UVA context"))
-                :match-func (lambda (msg)
-                              (when msg
-                                (mu4e-message-maildir-matches msg "^/uva")))
-                :leave-func (lambda () (mu4e-clear-caches))
-                :vars '((user-mail-address     . "sk4gz@virginia.edu")
-                        (user-full-name        . "Samarth Kishor")
-                        (mu4e-sent-folder      . "/uva/sent")
-                        (mu4e-drafts-folder    . "/uva/drafts")
-                        (mu4e-trash-folder     . "/uva/trash")
-                        (mu4e-refile-folder    . "/uva/[Gmail].All Mail")))))
-   #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (setq mu4e-contexts
+          `( ,(make-mu4e-context
+               :name "gmail"
+               :enter-func (lambda () (mu4e-message "Switch to the gmail context"))
+               :match-func (lambda (msg)
+                             (when msg
+                               (mu4e-message-maildir-matches msg "^/gmail")))
+               :leave-func (lambda () (mu4e-clear-caches))
+               :vars '((user-mail-address     . "samarthkishor1@gmail.com")
+                       (user-full-name        . "Samarth Kishor")
+                       (mu4e-sent-folder      . "/gmail/sent")
+                       (mu4e-drafts-folder    . "/gmail/drafts")
+                       (mu4e-trash-folder     . "/gmail/trash")
+                       (mu4e-refile-folder    . "/gmail/[Gmail].All Mail")))
+             ,(make-mu4e-context
+               :name "uva"
+               :enter-func (lambda () (mu4e-message "Switch to the UVA context"))
+               :match-func (lambda (msg)
+                             (when msg
+                               (mu4e-message-maildir-matches msg "^/uva")))
+               :leave-func (lambda () (mu4e-clear-caches))
+               :vars '((user-mail-address     . "sk4gz@virginia.edu")
+                       (user-full-name        . "Samarth Kishor")
+                       (mu4e-sent-folder      . "/uva/sent")
+                       (mu4e-drafts-folder    . "/uva/drafts")
+                       (mu4e-trash-folder     . "/uva/trash")
+                       (mu4e-refile-folder    . "/uva/[Gmail].All Mail")))))
+  #+END_SRC
 
-   =mu4e= freezes in header mode sometimes because of font ligatures. This should fix that.
+  =mu4e= freezes in header mode sometimes because of font ligatures. This should fix that.
 
-   Source: [[https://github.com/tonsky/FiraCode/issues/158][Fira Code Github issues]]
+  Source: [[https://github.com/tonsky/FiraCode/issues/158][Fira Code Github issues]]
 
-   #+BEGIN_SRC emacs-lisp
-     (add-hook 'mu4e-headers-mode-hook
-               (lambda ()
-                 (setq-local auto-composition-mode nil)))
-   #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (add-hook 'mu4e-headers-mode-hook
+              (lambda ()
+                (setq-local auto-composition-mode nil)))
+  #+END_SRC
 
-   Gmail already sends sent mail to the Sent folder.
+  Gmail already sends sent mail to the Sent folder.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq mu4e-sent-messages-behavior 'delete)
-   #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (setq mu4e-sent-messages-behavior 'delete)
+  #+END_SRC
 
-   View and compose email in =visual-line-mode= and use the =visual-fill-column= package to have soft-wrapped lines.
+  View and compose email in =visual-line-mode= and use the =visual-fill-column= package to have soft-wrapped lines.
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package visual-fill-column
-       :ensure t)
+  #+BEGIN_SRC emacs-lisp
+    (use-package visual-fill-column
+      :ensure t)
 
-     (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
-     (add-hook 'mu4e-compose-mode-hook
-               (lambda ()
-                 (set-fill-column 80)
-                 (auto-fill-mode 0)
-                 (visual-fill-column-mode)
-                 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
-                 (visual-line-mode)))
-   #+END_SRC
+    (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+    (add-hook 'mu4e-compose-mode-hook
+              (lambda ()
+                (set-fill-column 80)
+                (auto-fill-mode 0)
+                (visual-fill-column-mode)
+                (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+                (visual-line-mode)))
+  #+END_SRC
 
-   Handle html emails and preserve links.
+  Handle html emails and preserve links.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
+  #+BEGIN_SRC emacs-lisp
+    (setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
 
-     (require 'mu4e-contrib)
-     (setq mu4e-html2text-command 'mu4e-shr2text)
-     (add-hook 'mu4e-view-mode-hook
-               (lambda()
-                 ;; try to emulate some of the eww key-bindings
-                 (local-set-key (kbd "<tab>") 'shr-next-link)
-                 (local-set-key (kbd "<backtab>") 'shr-previous-link)))
-   #+END_SRC
+    (require 'mu4e-contrib)
+    (setq mu4e-html2text-command 'mu4e-shr2text)
+    (add-hook 'mu4e-view-mode-hook
+              (lambda()
+                ;; try to emulate some of the eww key-bindings
+                (local-set-key (kbd "<tab>") 'shr-next-link)
+                (local-set-key (kbd "<backtab>") 'shr-previous-link)))
+  #+END_SRC
 
 ** Send mail with =msmtp=
 
@@ -1897,7 +1903,7 @@
            `(("t" "TODO" entry (file+headline "~/Dropbox/org/tasks.org" "Tasks")
               "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")))
    #+END_SRC
- 
+
 * Web Browsing
 
   Because why not
@@ -1948,7 +1954,7 @@
     (use-package flycheck-ledger
       :after ledger-mode)
   #+END_SRC
- 
+
 * Music
 
   Control Spotify through Emacs (you need Spotify Premium).
