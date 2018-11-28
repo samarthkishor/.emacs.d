@@ -778,6 +778,17 @@
        (evil-leader/set-key "r" 'iedit-mode))
    #+END_SRC
 
+** Eyebrowse
+
+Eyebrowse is a package that gives Emacs the ability to manage "workspaces"
+
+#+BEGIN_SRC emacs-lisp
+  (use-package eyebrowse
+    :ensure t
+    :config
+    (eyebrowse-mode))
+#+END_SRC
+
 * Programming Environments
 ** General settings
 
