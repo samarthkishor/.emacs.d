@@ -581,13 +581,13 @@
   :config
   (add-to-list 'eglot-server-programs '((c++ mode c-mode) . (eglot-cquery "cquery"))))
 
-(use-package cquery
-  :ensure t
-  :defer t
-  :commands (lsp-cquery-enable)
-  :hook (c-mode-common . lsp-cquery-enable)
-  :config
-  (setq cquery-executable "/usr/local/bin/cquery"))
+;; (use-package cquery
+;;   :ensure t
+;;   :defer t
+;;   :commands (lsp-cquery-enable)
+;;   :hook (c-mode-common . lsp-cquery-enable)
+;;   :config
+;;   (setq cquery-executable "/usr/local/bin/cquery"))
 
 (setq-default c-basic-offset 4)
 (defvar astyle-command "astyle --align-pointer=type -A2 -s4 -S")
