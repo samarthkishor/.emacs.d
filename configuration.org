@@ -47,9 +47,9 @@
         "n"  'evil-window-bottom
         "e"  'evil-window-up
         "i"  'evil-window-right
-        "b"  'helm-mini
-        "m"  'helm-imenu
-        "x"  'helm-M-x
+        "b"  'ivy-switch-buffer
+        "m"  'counsel-imenu
+        "x"  'counsel-M-x
         "cl" 'flycheck-list-errors
         ","  'evilnc-comment-operator
         "cc" 'evilnc-comment-or-uncomment-lines))
@@ -81,7 +81,7 @@
       (setq evil-want-fine-undo t)
       (setq evil-shift-width 2)
       (setq evil-want-abbrev-expand-on-insert-exit nil)
-      (define-key evil-normal-state-map (kbd "C-p") 'helm-projectile)
+      (define-key evil-normal-state-map (kbd "C-p") 'counsel-projectile)
       (define-key evil-normal-state-map (kbd "q") nil)
       (define-key evil-normal-state-map (kbd "M-.") nil)
       (define-key evil-normal-state-map (kbd "M-,") nil)
@@ -646,8 +646,6 @@
        (setq projectile-enable-caching nil)
        (add-to-list 'projectile-globally-ignored-directories "*.cquery_cached_index")
        (add-to-list 'projectile-globally-ignored-directories "*node_modules"))
-
-     (use-package helm-projectile :ensure t)
    #+END_SRC
 
 ** Smooth scrolling
@@ -780,14 +778,23 @@
 
 ** Eyebrowse
 
-Eyebrowse is a package that gives Emacs the ability to manage "workspaces"
+   Eyebrowse is a package that gives Emacs the ability to manage "workspaces"
 
-#+BEGIN_SRC emacs-lisp
-  (use-package eyebrowse
-    :ensure t
-    :config
-    (eyebrowse-mode))
-#+END_SRC
+   #+BEGIN_SRC emacs-lisp
+     (use-package eyebrowse
+       :ensure t
+       :config
+       (eyebrowse-mode))
+   #+END_SRC
+
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package counsel-projectile
+       :ensure t
+       :config
+       (counsel-projectile-mode)
+       (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+   #+END_SRC
 
 * Programming Environments
 ** General settings
@@ -920,16 +927,16 @@ Eyebrowse is a package that gives Emacs the ability to manage "workspaces"
    #+END_SRC
 
 ** Language Servers
- 
-Use =eglot= to support the language server protocol in Emacs. Start it with =M-x eglot=.
 
-#+BEGIN_SRC emacs-lisp
-  (use-package eglot
-    :ensure t
-    :defer t
-    :config
-    (add-to-list 'eglot-server-programs '((c++ mode c-mode) . (eglot-cquery "cquery"))))
-#+END_SRC
+   Use =eglot= to support the language server protocol in Emacs. Start it with =M-x eglot=.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package eglot
+       :ensure t
+       :defer t
+       :config
+       (add-to-list 'eglot-server-programs '((c++ mode c-mode) . (eglot-cquery "cquery"))))
+   #+END_SRC
 
 ** C/C++
 
@@ -1560,32 +1567,69 @@ Use =eglot= to support the language server protocol in Emacs. Start it with =M-x
   Use Helm for incremental completions and narrowing selections.
 
   #+BEGIN_SRC emacs-lisp
-    (use-package helm
-      :ensure t
-      :diminish helm-mode
-      :bind
-      ("C-x C-f" . 'helm-find-files)
-      ("C-x C-b" . 'helm-buffers-list)
-      ("C-x b"   . 'helm-mini)
-      ("M-x"     . 'helm-M-x)
-      :custom
-      (helm-buffers-fuzzy-matching t)
-      (helm-recentf-fuzzy-match t)
-      (helm-projectile-fuzzy-match t)
-      (helm-imenu-fuzzy-match t)
-      :init
-      (helm-mode 1)
-      (add-hook 'helm-major-mode-hook
-                (lambda ()
-                  (setq auto-composition-mode nil))))
+    ;; (use-package helm
+    ;;   :ensure t
+    ;;   :diminish helm-mode
+    ;;   :bind
+    ;;   ("C-x C-f" . 'helm-find-files)
+    ;;   ("C-x C-b" . 'helm-buffers-list)
+    ;;   ("C-x b"   . 'helm-mini)
+    ;;   ("M-x"     . 'helm-M-x)
+    ;;   :custom
+    ;;   (helm-buffers-fuzzy-matching t)
+    ;;   (helm-recentf-fuzzy-match t)
+    ;;   (helm-projectile-fuzzy-match t)
+    ;;   (helm-imenu-fuzzy-match t)
+    ;;   :init
+    ;;   (helm-mode 1)
+    ;;   (add-hook 'helm-major-mode-hook
+    ;;             (lambda ()
+    ;;               (setq auto-composition-mode nil))))
   #+END_SRC
 
   Use =swiper= (with a Helm interface) instead of =isearch= for searching with =C-s=.
 
   #+BEGIN_SRC emacs-lisp
-    (use-package swiper-helm
+    ;; (use-package swiper-helm
+    ;;   :ensure t
+    ;;   :bind ("C-s" . swiper-helm))
+  #+END_SRC
+
+* Ivy/Counsel/Swiper
+
+  Use Ivy as the completion framework. It's faster and more lightweight than Helm.
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package ivy
       :ensure t
-      :bind ("C-s" . swiper-helm))
+      :config
+      (ivy-mode 1)
+      (setq ivy-use-virtual-buffers t)
+      (setq enable-recursive-minibuffers t)
+      (setq ivy-height 10)
+      (setq ivy-count-format "")
+      (setq ivy-initial-inputs-alist nil)
+      (global-set-key "\C-s" 'swiper)
+      (global-set-key (kbd "C-c C-r") 'ivy-resume)
+      (global-set-key (kbd "<f6>") 'ivy-resume)
+      (global-set-key (kbd "M-x") 'counsel-M-x)
+      (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+      (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+      (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+      (global-set-key (kbd "<f1> l") 'counsel-find-library)
+      (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+      (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+      (global-set-key (kbd "C-c g") 'counsel-git)
+      (global-set-key (kbd "C-c j") 'counsel-git-grep)
+      (global-set-key (kbd "C-c k") 'counsel-ag)
+      (global-set-key (kbd "C-x l") 'counsel-locate)
+      (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+      (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
+  #+END_SRC
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package counsel
+      :ensure t)
   #+END_SRC
 
 * Hydra
