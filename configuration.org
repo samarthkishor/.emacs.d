@@ -574,6 +574,16 @@
      (setq-default indicate-empty-lines t)
    #+END_SRC
 
+** Distraction-free editing
+
+=writeroom-mode= gives Emacs a distraction-free writing experience.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package writeroom-mode
+    :ensure t
+    :defer t)
+#+END_SRC
+
 * Editing Settings
 ** Visit Emacs configuration
 
@@ -941,7 +951,7 @@
 ** C/C++
 
    Use the =cquery= language server to make Emacs a C/C++ IDE.
-   
+
    [removed because =eglot= is better for my use case]
 
    #+BEGIN_SRC emacs-lisp
@@ -1368,6 +1378,12 @@
                                 (org-agenda-files :maxlevel . 1)))
    #+END_SRC
 
+   Always start in visual-line-mode (soft line wrapping).
+
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'org-mode-hook 'visual-line-mode)
+   #+END_SRC
+
 ** Task Management
 
    Store org files in Dropbox.
@@ -1755,10 +1771,27 @@
      (add-hook 'org-mode-hook #'flycheck-mode)
    #+END_SRC
 
+   Use =flyspell= when writing LaTeX.
+
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'tex-mode-hook #'flyspell-mode)
+   #+END_SRC
+
    Set spell checker to =aspell=.
 
    #+BEGIN_SRC emacs-lisp
      (setq ispell-program-name "/usr/local/bin/aspell")
+   #+END_SRC
+
+   Write good.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package writegood-mode
+       :ensure t
+       :hook ((markdown-mode . writegood-mode)
+              (tex-mode . writegood-mode)
+              (text-mode . writegood-mode)
+              (org-mode . writegood-mode)))
    #+END_SRC
 
 ** Thesaurus

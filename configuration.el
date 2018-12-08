@@ -414,6 +414,10 @@
 
 (setq-default indicate-empty-lines t)
 
+(use-package writeroom-mode
+  :ensure t
+  :defer t)
+
 (defun visit-emacs-config ()
   (interactive)
   (find-file "~/.emacs.d/configuration.org"))
@@ -862,6 +866,8 @@
 (setq org-refile-targets '((nil :maxlevel . 1)
                            (org-agenda-files :maxlevel . 1)))
 
+(add-hook 'org-mode-hook 'visual-line-mode)
+
 (setq org-directory "~/Dropbox/org/")
 
 (global-set-key (kbd "C-c a") 'org-agenda)
@@ -1138,7 +1144,16 @@
 (add-hook 'text-mode-hook #'flycheck-mode)
 (add-hook 'org-mode-hook #'flycheck-mode)
 
+(add-hook 'tex-mode-hook #'flyspell-mode)
+
 (setq ispell-program-name "/usr/local/bin/aspell")
+
+(use-package writegood-mode
+  :ensure t
+  :hook ((markdown-mode . writegood-mode)
+         (tex-mode . writegood-mode)
+         (text-mode . writegood-mode)
+         (org-mode . writegood-mode)))
 
 (use-package synosaurus
   :ensure t
