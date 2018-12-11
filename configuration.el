@@ -1042,6 +1042,33 @@
 (use-package counsel
   :ensure t)
 
+(use-package ivy-rich
+  :ensure t
+  :init
+  (ivy-rich-mode 1)
+  :config
+  '(counsel-M-x
+    (:columns
+     ((counsel-M-x-transformer (:width 40))  ; the original transfomer
+      (ivy-rich-counsel-function-docstring (:face font-lock-doc-face))))  ; return the docstring of the command
+    counsel-describe-function
+    (:columns
+     ((counsel-describe-function-transformer (:width 40))  ; the original transformer
+      (ivy-rich-counsel-function-docstring (:face font-lock-doc-face))))  ; return the docstring of the function
+    counsel-describe-variable
+    (:columns
+     ((counsel-describe-variable-transformer (:width 40))  ; the original transformer
+      (ivy-rich-counsel-variable-docstring (:face font-lock-doc-face))))  ; return the docstring of the variable
+    counsel-recentf
+    (:columns
+     ((ivy-rich-candidate (:width 0.8)) ; return the candidate itself
+      (ivy-rich-file-last-modified-time (:face font-lock-comment-face)))))) ; return the last modified time of the file
+
+(use-package all-the-icons-ivy
+  :ensure t
+  :config
+  (all-the-icons-ivy-setup))
+
 (use-package hydra
   :ensure t
   :after evil-leader
