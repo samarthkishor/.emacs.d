@@ -16,6 +16,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(TeX-PDF-mode t t)
+ '(TeX-auto-save t t)
+ '(TeX-byte-compile t t)
+ '(TeX-clean-confirm nil t)
+ '(TeX-master (quote dwim) t)
+ '(TeX-parse-self t t)
+ '(TeX-source-correlate-mode t t)
+ '(TeX-view-program-selection (quote ((output-pdf "open") (output-html "xdg-open"))) t)
+ '(company-quickhelp-mode t t)
  '(custom-enabled-themes (quote (solarized-dark)))
  '(custom-safe-themes
    (quote
@@ -28,6 +37,7 @@
               (upcase am-pm))
       (quote help-echo)
       (format-time-string "%a, %b %e %Y" now)))))
+ '(eldoc-echo-area-use-multiline-p t)
  '(helm-buffers-fuzzy-matching t)
  '(helm-imenu-fuzzy-match t)
  '(helm-projectile-fuzzy-match t)
@@ -35,6 +45,9 @@
  '(lean-rootdir "~/lean-3.4.0-darwin" t)
  '(ledger-clear-whole-transactions t t)
  '(magit-pull-arguments nil)
+ '(merlin-command (quote opam))
+ '(merlin-completion-with-doc t)
+ '(merlin-eldoc-max-lines 8)
  '(org-agenda-files (quote ("~/Dropbox/org/beorg-local.org")))
  '(org-capture-templates
    (quote
@@ -51,7 +64,7 @@
   Assets:Cash:Wallet" :empty-lines 1 :immediate-finish t))) t)
  '(package-selected-packages
    (quote
-    (all-the-icons-ivy ivy-rich writeroom-mode writegood-mode counsel-projectile counsel eglot eyebrowse iedit org-ref yasnippet-snippets cquery elfeed-org elfeed-goodies expand-region evil-numbers dashboard helm-spotify-plus helm-lean company-lean lean-mode flycheck-ledger ledger-mode hy-mode helm-projectile helm-projectie clj-refactor atomic-chrome swiper-helm evil-lion evil-mc xref-js2 company-tern tern js2-refactor js2-mode pipenv elpy rainbow-delimiters typo visual-fill-column synosaurus dumb-jump evil-paredit paredit org-pdfview beacon beacon-mode evil-nerd-commenter mu4e-conversation tablist pdf-tools evil-collection evil-mu4e inf-clojure cider evil-org org-mode feebleline doom-modeline eldoc-eval shrink-path prettier-js boogie-friends evil-surround evil-leader helm telephone-line minions which-key pretty-mode smart-mode-line spaceline-all-the-icons all-the-icons diminish nlinum-hl fancy-battery spaceline exec-path-from-shell flycheck ox-pandoc evil-magit melpa-upstream-visit magit org-bullets evil-visual-mark-mode)))
+    (slime utop flycheck-ocaml poet-theme poet merlin-eldoc merlin reason-mode company-math company-auctex auctex all-the-icons-ivy ivy-rich writeroom-mode writegood-mode counsel-projectile counsel eglot eyebrowse iedit org-ref yasnippet-snippets cquery elfeed-org elfeed-goodies expand-region evil-numbers dashboard helm-spotify-plus helm-lean company-lean lean-mode flycheck-ledger ledger-mode hy-mode helm-projectile helm-projectie clj-refactor atomic-chrome swiper-helm evil-lion evil-mc xref-js2 company-tern tern js2-refactor js2-mode pipenv elpy rainbow-delimiters typo visual-fill-column synosaurus dumb-jump evil-paredit paredit org-pdfview beacon beacon-mode evil-nerd-commenter mu4e-conversation tablist pdf-tools evil-collection evil-mu4e inf-clojure cider evil-org org-mode feebleline doom-modeline eldoc-eval shrink-path prettier-js boogie-friends evil-surround evil-leader helm telephone-line minions which-key pretty-mode smart-mode-line spaceline-all-the-icons all-the-icons diminish nlinum-hl fancy-battery spaceline exec-path-from-shell flycheck ox-pandoc evil-magit melpa-upstream-visit magit org-bullets evil-visual-mark-mode)))
  '(pdf-tools-handle-upgrades nil)
  '(projectile-mode t nil (projectile))
  '(send-mail-function (quote smtpmail-send-it)))
@@ -61,3 +74,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line

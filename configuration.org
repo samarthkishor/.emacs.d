@@ -898,6 +898,12 @@
      (use-package yasnippet-snippets :ensure t)
    #+END_SRC
 
+   Enable =eldoc= globally
+
+   #+BEGIN_SRC emacs-lisp
+     (global-eldoc-mode -1)
+   #+END_SRC
+
 ** Magit
 
    Bring up the status menu with =C-x g=.
@@ -1058,6 +1064,19 @@
 
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
+   #+END_SRC
+
+** Common Lisp
+
+   Use SLIME as the Common Lisp IDE.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package slime
+       :ensure t
+       :defer t
+       :config
+       (setq inferior-lisp-program (shell-cmd "which sbcl"))
+       (setq slime-contribs '(slime-fancy)))
    #+END_SRC
 
 ** Dafny
@@ -1307,6 +1326,125 @@
        (define-key hy-mode-map "\C-x\C-e" 'hy-shell-eval-last-sexp)
        (setq hy-mode-inferior-lisp-command "hy"))
    #+END_SRC
+
+** ReasonML
+
+   ReasonML seems like a promising new language from Facebook that might make JavaScript less annoying.
+
+   Some initial setup.
+
+   #+BEGIN_SRC emacs-lisp
+     (defun shell-cmd (cmd)
+       "Returns the stdout output of a shell command or nil if the command returned
+        an error"
+       (car (ignore-errors (apply 'process-lines (split-string cmd)))))
+
+     (defun reason-cmd-where (cmd)
+       (let ((where (shell-cmd cmd)))
+         (if (not (string-equal "unknown flag ----where" where))
+             where)))
+
+   #+END_SRC
+
+   Set up the packages.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package reason-mode
+       :ensure t
+       :config
+       (let* ((refmt-bin (or (reason-cmd-where "refmt ----where")
+                             (shell-cmd "which refmt")))
+              (merlin-bin (or (reason-cmd-where "ocamlmerlin ----where")
+                              (shell-cmd "which ocamlmerlin")))
+              (merlin-base-dir (when merlin-bin
+                                 (replace-regexp-in-string "bin/ocamlmerlin$" "" merlin-bin))))
+         ;; Add merlin.el to the emacs load path and tell emacs where to find ocamlmerlin
+         (when merlin-bin
+           (add-to-list 'load-path (concat merlin-base-dir "share/emacs/site-lisp/"))
+           (setq merlin-command merlin-bin))
+
+         (when refmt-bin
+           (setq refmt-command refmt-bin))))
+
+     (use-package merlin
+       :ensure t
+       :custom
+       (merlin-command 'opam)
+       (merlin-completion-with-doc t)
+       (company-quickhelp-mode t)
+       :bind (:map merlin-mode-map
+                   ("M-." . merlin-locate)
+                   ("M-," . merlin-pop-stack)
+                   ("C-c C-o" . merlin-occurrences)
+                   ("C-c C-j" . merlin-jump)
+                   ("C-c i" . merlin-locate-ident)
+                   ("C-c C-e" . merlin-iedit-occurrences))
+       :hook
+       (reason-mode . merlin-mode)
+       (tuareg-mode . merlin-mode)
+       (caml-mode-hook . merlin-mode)
+       :config
+       (add-hook 'reason-mode-hook (lambda ()
+                                     (add-hook 'before-save-hook 'refmt-before-save)
+                                     (merlin-mode)))
+       ;; Make company aware of merlin
+       (with-eval-after-load 'company
+         (add-to-list 'company-backends 'merlin-company-backend)))
+   #+END_SRC
+
+   Add =eldoc= support.
+
+   #+BEGIN_SRC emacs-lisp
+     ;; (use-package merlin-eldoc
+     ;;   :ensure t
+     ;;   :after merlin
+     ;;   :custom
+     ;;   (eldoc-echo-area-use-multiline-p t) ; use multiple lines when necessary
+     ;;   (merlin-eldoc-max-lines 8)          ; but not more than 8
+     ;;   :bind (:map merlin-mode-map
+     ;;               ("C-c m p" . merlin-eldoc-jump-to-prev-occurrence)
+     ;;               ("C-c m n" . merlin-eldoc-jump-to-next-occurrence))
+     ;;   :hook ((reason-mode tuareg-mode caml-mode) . merlin-eldoc-setup))
+   #+END_SRC
+
+   Add =flycheck= support.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package flycheck-ocaml
+       :ensure t
+       :config
+       (add-hook 'tuareg-mode-hook
+                 (lambda ()
+                   ;; disable Merlin's own error checking
+                   (setq-local merlin-error-after-save nil)
+                   ;; enable Flycheck checker
+                   (flycheck-ocaml-setup))))
+   #+END_SRC
+
+   Support the =utop= REPL in Emacs.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package utop
+       :config
+       (defun utop-opam-utop ()
+         (progn
+           (setq-local utop-command "opam config exec -- utop -emacs")
+           'utop-minor-mode))
+       (defun reason/rtop-prompt ()
+         "The rtop prompt function."
+         (let ((prompt (format "rtop[%d]> " utop-command-number)))
+           (add-text-properties 0 (length prompt) '(face utop-prompt) prompt)
+           prompt))
+       (defun utop-reason-cli-rtop ()
+         (progn
+           (setq-local utop-command (concat (shell-cmd "which rtop") " -emacs"))
+           (setq-local utop-prompt 'reason/rtop-prompt)
+           'utop-minor-mode))
+       :hook
+       (tuareg-mode . utop-opam-utop)
+       (reason-mode . utop-reason-cli-rtop))
+   #+END_SRC
+
 * Org-mode
 ** General Settings
 
@@ -1577,7 +1715,11 @@
       'org-babel-load-languages
       '((python . t)
         (emacs-lisp . t)
-        (C . t)))
+        (C . t)
+        (lisp . t)
+        (js . t)))
+
+     (setq org-babel-python-command "python3")
    #+END_SRC
 
 * Helm
