@@ -1917,6 +1917,54 @@
   #+END_SRC
 
 * Prose
+** LaTeX
+
+   I rarely have to write in actual LaTeX since org-mode works for 90% of my use-cases, but it's handy.
+
+   Source: [[https://github.com/rememberYou/.emacs.d/blob/master/config.org#latex][rememberYou's config]]
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package tex
+       :ensure auctex
+       :hook (LaTeX-mode . reftex-mode)
+       :custom
+       (TeX-PDF-mode t)
+       (TeX-auto-save t)
+       (TeX-byte-compile t)
+       (TeX-clean-confirm nil)
+       (TeX-master 'dwim)
+       (TeX-parse-self t)
+       (TeX-source-correlate-mode t)
+       (TeX-view-program-selection '((output-pdf "open")
+                                     (output-html "xdg-open"))))
+
+     (use-package bibtex
+       :after auctex
+       :hook (bibtex-mode . my/bibtex-fill-column)
+       :preface
+       (defun my/bibtex-fill-column ()
+         "Ensures that each entry does not exceed 120 characters."
+         (setq fill-column 120)))
+
+     (use-package company-auctex
+       :after (auctex company)
+       :config (company-auctex-init))
+
+     (use-package company-math :after (auctex company))
+   #+END_SRC
+
+   =xelatex= supports Unicode and is generally better than =pdflatex=.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq-default TeX-engine 'xetex)
+   #+END_SRC
+
+   Support citations and other references in LaTeX.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package reftex :after auctex)
+   #+END_SRC
+
 ** Linting
 
    Use =proselint=.
@@ -1999,6 +2047,22 @@
        :config
        (typo-global-mode 1)
        (add-hook 'text-mode-hook 'typo-mode))
+   #+END_SRC
+
+** Theme
+
+   Use the poet theme for writing prose.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package poet-theme
+       :ensure t
+       :defer t
+       :hook ((text-mode-hook . variable-pitch-mode)
+              (org-mode-hook . variable-pitch-mode))
+       :config
+       (set-face-attribute 'default nil :family "Fira Code" :height 130)
+       (set-face-attribute 'fixed-pitch nil :family "Fira Code")
+       (set-face-attribute 'variable-pitch nil :family "Baskerville"))
    #+END_SRC
 
 * Email

@@ -561,6 +561,8 @@
 
 (use-package yasnippet-snippets :ensure t)
 
+(global-eldoc-mode -1)
+
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status)
@@ -662,6 +664,13 @@
   (add-hook 'inf-clojure-minor-mode-hook 'my/lumo))
 
 (add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
+
+(use-package slime
+  :ensure t
+  :defer t
+  :config
+  (setq inferior-lisp-program (shell-cmd "which sbcl"))
+  (setq slime-contribs '(slime-fancy)))
 
 (setq dafny-verification-backend 'server)
 (setq flycheck-dafny-executable "/Users/samarth/dafny/dafny")
@@ -834,6 +843,99 @@
   (define-key hy-mode-map "\C-x\C-e" 'hy-shell-eval-last-sexp)
   (setq hy-mode-inferior-lisp-command "hy"))
 
+(defun shell-cmd (cmd)
+  "Returns the stdout output of a shell command or nil if the command returned
+   an error"
+  (car (ignore-errors (apply 'process-lines (split-string cmd)))))
+
+(defun reason-cmd-where (cmd)
+  (let ((where (shell-cmd cmd)))
+    (if (not (string-equal "unknown flag ----where" where))
+        where)))
+
+(use-package reason-mode
+  :ensure t
+  :config
+  (let* ((refmt-bin (or (reason-cmd-where "refmt ----where")
+                        (shell-cmd "which refmt")))
+         (merlin-bin (or (reason-cmd-where "ocamlmerlin ----where")
+                         (shell-cmd "which ocamlmerlin")))
+         (merlin-base-dir (when merlin-bin
+                            (replace-regexp-in-string "bin/ocamlmerlin$" "" merlin-bin))))
+    ;; Add merlin.el to the emacs load path and tell emacs where to find ocamlmerlin
+    (when merlin-bin
+      (add-to-list 'load-path (concat merlin-base-dir "share/emacs/site-lisp/"))
+      (setq merlin-command merlin-bin))
+
+    (when refmt-bin
+      (setq refmt-command refmt-bin))))
+
+(use-package merlin
+  :ensure t
+  :custom
+  (merlin-command 'opam)
+  (merlin-completion-with-doc t)
+  (company-quickhelp-mode t)
+  :bind (:map merlin-mode-map
+              ("M-." . merlin-locate)
+              ("M-," . merlin-pop-stack)
+              ("C-c C-o" . merlin-occurrences)
+              ("C-c C-j" . merlin-jump)
+              ("C-c i" . merlin-locate-ident)
+              ("C-c C-e" . merlin-iedit-occurrences))
+  :hook
+  (reason-mode . merlin-mode)
+  (tuareg-mode . merlin-mode)
+  (caml-mode-hook . merlin-mode)
+  :config
+  (add-hook 'reason-mode-hook (lambda ()
+                                (add-hook 'before-save-hook 'refmt-before-save)
+                                (merlin-mode)))
+  ;; Make company aware of merlin
+  (with-eval-after-load 'company
+    (add-to-list 'company-backends 'merlin-company-backend)))
+
+;; (use-package merlin-eldoc
+;;   :ensure t
+;;   :after merlin
+;;   :custom
+;;   (eldoc-echo-area-use-multiline-p t) ; use multiple lines when necessary
+;;   (merlin-eldoc-max-lines 8)          ; but not more than 8
+;;   :bind (:map merlin-mode-map
+;;               ("C-c m p" . merlin-eldoc-jump-to-prev-occurrence)
+;;               ("C-c m n" . merlin-eldoc-jump-to-next-occurrence))
+;;   :hook ((reason-mode tuareg-mode caml-mode) . merlin-eldoc-setup))
+
+(use-package flycheck-ocaml
+  :ensure t
+  :config
+  (add-hook 'tuareg-mode-hook
+            (lambda ()
+              ;; disable Merlin's own error checking
+              (setq-local merlin-error-after-save nil)
+              ;; enable Flycheck checker
+              (flycheck-ocaml-setup))))
+
+(use-package utop
+  :config
+  (defun utop-opam-utop ()
+    (progn
+      (setq-local utop-command "opam config exec -- utop -emacs")
+      'utop-minor-mode))
+  (defun reason/rtop-prompt ()
+    "The rtop prompt function."
+    (let ((prompt (format "rtop[%d]> " utop-command-number)))
+      (add-text-properties 0 (length prompt) '(face utop-prompt) prompt)
+      prompt))
+  (defun utop-reason-cli-rtop ()
+    (progn
+      (setq-local utop-command (concat (shell-cmd "which rtop") " -emacs"))
+      (setq-local utop-prompt 'reason/rtop-prompt)
+      'utop-minor-mode))
+  :hook
+  (tuareg-mode . utop-opam-utop)
+  (reason-mode . utop-reason-cli-rtop))
+
 (use-package org-bullets
   :ensure t
   :defer t
@@ -988,7 +1090,11 @@
  'org-babel-load-languages
  '((python . t)
    (emacs-lisp . t)
-   (C . t)))
+   (C . t)
+   (lisp . t)
+   (js . t)))
+
+(setq org-babel-python-command "python3")
 
 ;; (use-package helm
 ;;   :ensure t
@@ -1150,6 +1256,38 @@
       ("s" flycheck-select-checker)
       ("v" flycheck-verify-setup))))
 
+(use-package tex
+  :ensure auctex
+  :hook (LaTeX-mode . reftex-mode)
+  :custom
+  (TeX-PDF-mode t)
+  (TeX-auto-save t)
+  (TeX-byte-compile t)
+  (TeX-clean-confirm nil)
+  (TeX-master 'dwim)
+  (TeX-parse-self t)
+  (TeX-source-correlate-mode t)
+  (TeX-view-program-selection '((output-pdf "open")
+                                (output-html "xdg-open"))))
+
+(use-package bibtex
+  :after auctex
+  :hook (bibtex-mode . my/bibtex-fill-column)
+  :preface
+  (defun my/bibtex-fill-column ()
+    "Ensures that each entry does not exceed 120 characters."
+    (setq fill-column 120)))
+
+(use-package company-auctex
+  :after (auctex company)
+  :config (company-auctex-init))
+
+(use-package company-math :after (auctex company))
+
+(setq-default TeX-engine 'xetex)
+
+(use-package reftex :after auctex)
+
 (use-package flycheck
   :ensure t
   :diminish
@@ -1198,6 +1336,16 @@
   :config
   (typo-global-mode 1)
   (add-hook 'text-mode-hook 'typo-mode))
+
+(use-package poet-theme
+  :ensure t
+  :defer t
+  :hook ((text-mode-hook . variable-pitch-mode)
+         (org-mode-hook . variable-pitch-mode))
+  :config
+  (set-face-attribute 'default nil :family "Fira Code" :height 130)
+  (set-face-attribute 'fixed-pitch nil :family "Fira Code")
+  (set-face-attribute 'variable-pitch nil :family "Baskerville"))
 
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
 (require 'mu4e)
