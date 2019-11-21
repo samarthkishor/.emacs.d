@@ -1382,7 +1382,7 @@
    Use Merlin and Tuareg to get an IDE experience.
 
    #+BEGIN_SRC emacs-lisp
-     (use-package tuareg-mode
+     (use-package tuareg
        :config
        (add-hook 'tuareg-mode-hook
                  (lambda()
@@ -1432,21 +1432,6 @@
 
      (use-package merlin-eldoc
        :hook (merlin-mode . merlin-eldoc-setup))
-
-     (use-package merlin-imenu
-       :hook (merlin-mode . merlin-use-merlin-imenu))
-
-     (use-package ocamlformat
-       :commands ocamlformat
-       :hook (tuareg-mode . +ocaml-init-ocamlformat-h)
-       :config
-
-       (defun +ocaml-init-ocamlformat-h ()
-         (when (and (executable-find "ocamlformat")
-                    (locate-dominating-file default-directory ".ocamlformat"))
-           (add-hook 'tuareg-mode-hook (lambda ()
-                                         (define-key tuareg-mode-map (kbd "C-M-<tab>") #'ocamlformat)
-                                         (add-hook 'before-save-hook #'ocamlformat-before-save))))))
 
      (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
        (when (and opam-share (file-directory-p opam-share))
