@@ -1138,29 +1138,6 @@
 
 (setq org-babel-python-command "python3")
 
-;; (use-package helm
-;;   :ensure t
-;;   :diminish helm-mode
-;;   :bind
-;;   ("C-x C-f" . 'helm-find-files)
-;;   ("C-x C-b" . 'helm-buffers-list)
-;;   ("C-x b"   . 'helm-mini)
-;;   ("M-x"     . 'helm-M-x)
-;;   :custom
-;;   (helm-buffers-fuzzy-matching t)
-;;   (helm-recentf-fuzzy-match t)
-;;   (helm-projectile-fuzzy-match t)
-;;   (helm-imenu-fuzzy-match t)
-;;   :init
-;;   (helm-mode 1)
-;;   (add-hook 'helm-major-mode-hook
-;;             (lambda ()
-;;               (setq auto-composition-mode nil))))
-
-;; (use-package swiper-helm
-;;   :ensure t
-;;   :bind ("C-s" . swiper-helm))
-
 (use-package ivy
   :ensure t
   :config
@@ -1521,17 +1498,6 @@
 (setq org-capture-templates
       `(("t" "TODO" entry (file+headline "~/Dropbox/org/tasks.org" "Tasks")
          "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")))
-
-(use-package atomic-chrome
-  :ensure t
-  :config
-  (setq atomic-chrome-default-major-mode 'org-mode)
-  (setq atomic-chrome-buffer-open-style 'frame)
-  (add-hook 'atomic-chrome-edit-done-hook 'delete-frame)
-  ;; Handle if there is an Emacs instance running which has the server already started
-  (ignore-errors
-    ;; Start the server
-    (atomic-chrome-start-server)))
 
 (use-package ledger-mode
   :mode ("\\.dat\\'"
