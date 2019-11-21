@@ -24,8 +24,6 @@
  '(TeX-parse-self t t)
  '(TeX-source-correlate-mode t t)
  '(TeX-view-program-selection (quote ((output-pdf "open") (output-html "xdg-open"))) t)
- '(ansi-color-names-vector
-   ["#2E3440" "#C16069" "#A2BF8A" "#ECCC87" "#80A0C2" "#B58DAE" "#86C0D1" "#ECEFF4"])
  '(company-quickhelp-mode t t)
  '(custom-enabled-themes (quote (solarized-dark)))
  '(custom-safe-themes
@@ -40,7 +38,6 @@
       (quote help-echo)
       (format-time-string "%a, %b %e %Y" now)))))
  '(eldoc-echo-area-use-multiline-p t)
- '(fci-rule-color "#4C566A")
  '(helm-buffers-fuzzy-matching t)
  '(helm-imenu-fuzzy-match t)
  '(helm-projectile-fuzzy-match t)
@@ -71,32 +68,10 @@
   Assets:Cash:Wallet" :empty-lines 1 :immediate-finish t))) t)
  '(package-selected-packages
    (quote
-    (doom-themes evil-commentary slime utop flycheck-ocaml poet-theme poet merlin-eldoc merlin reason-mode company-math company-auctex auctex all-the-icons-ivy ivy-rich writeroom-mode writegood-mode counsel-projectile counsel eglot eyebrowse iedit org-ref yasnippet-snippets cquery elfeed-org elfeed-goodies expand-region evil-numbers dashboard helm-spotify-plus helm-lean company-lean lean-mode flycheck-ledger ledger-mode hy-mode helm-projectile helm-projectie clj-refactor atomic-chrome swiper-helm evil-lion evil-mc xref-js2 company-tern tern js2-refactor js2-mode pipenv elpy rainbow-delimiters typo visual-fill-column synosaurus dumb-jump evil-paredit paredit org-pdfview beacon beacon-mode evil-nerd-commenter mu4e-conversation tablist pdf-tools evil-collection evil-mu4e inf-clojure cider evil-org org-mode feebleline doom-modeline eldoc-eval shrink-path prettier-js boogie-friends evil-surround evil-leader helm telephone-line minions which-key pretty-mode smart-mode-line spaceline-all-the-icons all-the-icons diminish nlinum-hl fancy-battery spaceline exec-path-from-shell flycheck ox-pandoc evil-magit melpa-upstream-visit magit org-bullets evil-visual-mark-mode)))
+    (prolog-mode doom-themes evil-commentary slime utop flycheck-ocaml poet-theme poet merlin-eldoc merlin reason-mode company-math company-auctex auctex all-the-icons-ivy ivy-rich writeroom-mode writegood-mode counsel-projectile counsel eglot eyebrowse iedit org-ref yasnippet-snippets cquery elfeed-org elfeed-goodies expand-region evil-numbers dashboard helm-spotify-plus helm-lean company-lean lean-mode flycheck-ledger ledger-mode hy-mode helm-projectile helm-projectie clj-refactor atomic-chrome swiper-helm evil-lion evil-mc xref-js2 company-tern tern js2-refactor js2-mode pipenv elpy rainbow-delimiters typo visual-fill-column synosaurus dumb-jump evil-paredit paredit org-pdfview beacon beacon-mode evil-nerd-commenter mu4e-conversation tablist pdf-tools evil-collection evil-mu4e inf-clojure cider evil-org org-mode feebleline doom-modeline eldoc-eval shrink-path prettier-js boogie-friends evil-surround evil-leader helm telephone-line minions which-key pretty-mode smart-mode-line spaceline-all-the-icons all-the-icons diminish nlinum-hl fancy-battery spaceline exec-path-from-shell flycheck ox-pandoc evil-magit melpa-upstream-visit magit org-bullets evil-visual-mark-mode)))
  '(pdf-tools-handle-upgrades nil)
  '(projectile-mode t nil (projectile))
- '(send-mail-function (quote smtpmail-send-it))
- '(vc-annotate-background "#2E3440")
- '(vc-annotate-color-map
-   (list
-    (cons 20 "#A2BF8A")
-    (cons 40 "#bac389")
-    (cons 60 "#d3c788")
-    (cons 80 "#ECCC87")
-    (cons 100 "#e3b57e")
-    (cons 120 "#da9e75")
-    (cons 140 "#D2876D")
-    (cons 160 "#c88982")
-    (cons 180 "#be8b98")
-    (cons 200 "#B58DAE")
-    (cons 220 "#b97e97")
-    (cons 240 "#bd6f80")
-    (cons 260 "#C16069")
-    (cons 280 "#a15b66")
-    (cons 300 "#825663")
-    (cons 320 "#625160")
-    (cons 340 "#4C566A")
-    (cons 360 "#4C566A")))
- '(vc-annotate-very-old-color nil))
+ '(send-mail-function (quote smtpmail-send-it)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
