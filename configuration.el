@@ -12,7 +12,7 @@
       user-mail-address "samarthkishor1@gmail.com")
 
 (use-package evil-leader
-  :after evil-nerd-commenter
+  :after (evil-commentary projectile-mode)
   :commands (evil-leader-mode global-evil-leader-mode)
   :ensure evil-leader
   :demand evil-leader
@@ -23,15 +23,14 @@
   (evil-leader/set-leader "<SPC>")
   (evil-leader/set-key
     "h"  'evil-window-left
-    "n"  'evil-window-bottom
-    "e"  'evil-window-up
-    "i"  'evil-window-right
+    "j"  'evil-window-bottom
+    "k"  'evil-window-up
+    "l"  'evil-window-right
     "b"  'ivy-switch-buffer
     "m"  'counsel-imenu
-    "x"  'counsel-M-x
-    "cl" 'flycheck-list-errors
-    ","  'evilnc-comment-operator
-    "cc" 'evilnc-comment-or-uncomment-lines))
+    "e" 'flycheck-list-errors
+    "gg" 'magit-status
+    "pp" 'counsel-projectile-switch-project))_
 
 (use-package evil
   :ensure t
@@ -54,7 +53,6 @@
   (setq evil-want-fine-undo t)
   (setq evil-shift-width 2)
   (setq evil-want-abbrev-expand-on-insert-exit nil)
-  (define-key evil-normal-state-map (kbd "C-p") 'counsel-projectile)
   (define-key evil-normal-state-map (kbd "q") nil)
   (define-key evil-normal-state-map (kbd "M-.") nil)
   (define-key evil-normal-state-map (kbd "M-,") nil)
@@ -73,11 +71,6 @@
     "t" 'org-todo ; mark a TODO item as DONE
     ",c" 'org-cycle
     (kbd "TAB") 'org-cycle
-    ",e" 'org-export-dispatch
-    ",n" 'outline-next-visible-heading
-    ",p" 'outline-previous-visible-heading
-    ",t" 'org-set-tags-command
-    ",u" 'outline-up-heading
     "$" 'org-end-of-line ; smarter behavior on headlines etc.
     "^" 'org-beginning-of-line ; ditto
     "-" 'org-ctrl-c-minus ; change bullet style
@@ -96,9 +89,10 @@
 (setq sentence-end-double-space nil)
 (define-key evil-normal-state-map ")" 'forward-sentence)
 
-(use-package evil-nerd-commenter
+(use-package evil-commentary
   :ensure t
-  :requires (evil))
+  :requires (evil)
+  :hook (prog-mode . evil-commentary-mode))
 
 (use-package evil-surround
   :ensure t
