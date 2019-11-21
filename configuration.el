@@ -12,7 +12,7 @@
       user-mail-address "samarthkishor1@gmail.com")
 
 (use-package evil-leader
-  :after (evil-commentary projectile-mode)
+  :after (evil-commentary projectile-mode persp-mode)
   :commands (evil-leader-mode global-evil-leader-mode)
   :ensure evil-leader
   :demand evil-leader
@@ -29,8 +29,11 @@
     "b"  'ivy-switch-buffer
     "m"  'counsel-imenu
     "e" 'flycheck-list-errors
+    "," '(lambda (arg)
+           (interactive "P")
+           (with-persp-buffer-list () (counsel-switch-buffer)))
     "gg" 'magit-status
-    "pp" 'counsel-projectile-switch-project))_
+    "pp" 'counsel-projectile-switch-project))
 
 (use-package evil
   :ensure t
@@ -95,9 +98,29 @@
   :hook (prog-mode . evil-commentary-mode))
 
 (use-package evil-surround
-  :ensure t
   :config
-  (global-evil-surround-mode 1))
+  (global-evil-surround-mode 1)
+  (add-hook 'c++-mode-hook (lambda ()
+                             (push '(?< . ("< " . " >")) evil-surround-pairs-alist)))
+  (add-hook 'java-mode-hook (lambda ()
+                              (push '(?< . ("< " . " >")) evil-surround-pairs-alist)))
+
+  (defmacro define-and-bind-quoted-text-object (name key start-regex end-regex)
+    (let ((inner-name (make-symbol (concat "evil-inner-" name)))
+          (outer-name (make-symbol (concat "evil-a-" name))))
+      `(progn
+         (evil-define-text-object ,inner-name (count &optional beg end type)
+           (evil-select-paren ,start-regex ,end-regex beg end type count nil))
+         (evil-define-text-object ,outer-name (count &optional beg end type)
+           (evil-select-paren ,start-regex ,end-regex beg end type count t))
+         (define-key evil-inner-text-objects-map ,key #',inner-name)
+         (define-key evil-outer-text-objects-map ,key #',outer-name))))
+
+  (define-and-bind-quoted-text-object "pipe" "|" "|" "|")
+  (define-and-bind-quoted-text-object "slash" "/" "/" "/")
+  (define-and-bind-quoted-text-object "star" "*" "*" "*")
+  (define-and-bind-quoted-text-object "dollar" "$" "\\$" "\\$")
+  (add-hook 'org-mode-hook (define-and-bind-quoted-text-object "equals" "=" "=" "=")))
 
 (use-package evil-mc
   :ensure t
@@ -163,6 +186,11 @@
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
 (setq ns-use-proxy-icon  nil)
 (setq frame-title-format nil)
+
+(setq scroll-preserve-screen-position t
+      scroll-conservatively 0
+      maximum-scroll-margin 0.5
+      scroll-margin 99999)
 
 (setq-default inhibit-startup-screen t)
 
@@ -443,13 +471,23 @@
   (add-to-list 'projectile-globally-ignored-directories "*.cquery_cached_index")
   (add-to-list 'projectile-globally-ignored-directories "*node_modules"))
 
+(use-package counsel-projectile
+  :ensure t
+  :config
+  (counsel-projectile-mode)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
 (setq scroll-conservatively 100)
 
 (use-package which-key
   :ensure t
   :diminish which-key-mode
+  :init
+  (which-key-mode)
   :config
-  (which-key-mode))
+  (which-key-add-key-based-replacements
+    "C-x p b" "persp switch buffer"
+    "SPC ," "persp switch buffer"))
 
 (use-package undo-tree
   :ensure t
@@ -501,16 +539,25 @@
   :config
   (evil-leader/set-key "r" 'iedit-mode))
 
-(use-package eyebrowse
+(use-package persp-mode
   :ensure t
   :config
-  (eyebrowse-mode))
-
-(use-package counsel-projectile
-  :ensure t
-  :config
-  (counsel-projectile-mode)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+  (setq wg-morph-on nil) ;; switch off animation
+  (setq persp-autokill-buffer-on-remove 'kill-weak)
+  (add-hook 'after-init-hook #'(lambda () (persp-mode 1)))
+  (global-set-key (kbd "C-x p b")
+                  #'(lambda (arg)
+                      (interactive "P")
+                      (with-persp-buffer-list () (counsel-switch-buffer))))
+  (define-key persp-mode-map (kbd "C-x p n") #'persp-add-new)
+  (define-key persp-mode-map (kbd "C-x p s") #'persp-switch)
+  (define-key persp-mode-map (kbd "C-x p r") #'persp-rename)
+  (define-key persp-mode-map (kbd "C-x p c") #'persp-kill)
+  (define-key persp-mode-map (kbd "C-x p a") #'persp-add-buffer)
+  (define-key persp-mode-map (kbd "C-x p i") #'persp-import-buffers)
+  (define-key persp-mode-map (kbd "C-x p k") #'persp-remove-buffer)
+  (define-key persp-mode-map (kbd "C-x p w") #'persp-save-state-to-file)
+  (define-key persp-mode-map (kbd "C-x p l") #'persp-load-state-from-file))
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
@@ -556,6 +603,11 @@
 (use-package yasnippet-snippets :ensure t)
 
 (global-eldoc-mode -1)
+
+(use-package hl-todo
+  :ensure t
+  :init
+  (global-hl-todo-mode))
 
 (use-package magit
   :ensure t
@@ -767,7 +819,11 @@
     (indent-according-to-mode))
   (setq sp-escape-quotes-after-insert nil)
   (sp-local-pair 'c++-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
-  (sp-local-pair 'c-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET"))))
+  (sp-local-pair 'c-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
+  (sp-local-pair 'java-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
+  (sp-local-pair 'web-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
+  (sp-local-pair 'typescript-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET")))
+  (sp-local-pair 'js-mode "{" nil :post-handlers '((my-create-newline-and-enter-sexp "RET"))))
 
 (use-package evil-smartparens
   :ensure t
@@ -822,6 +878,8 @@
 
 (setq python-shell-interpreter "ipython")
 
+(add-to-list 'auto-mode-alist '("\\.pl\\'" . prolog-mode))
+
 (use-package hy-mode
   :ensure t
   :defer t
@@ -830,7 +888,7 @@
   (define-key hy-mode-map "\C-x\C-e" 'hy-shell-eval-last-sexp)
   (setq hy-mode-inferior-lisp-command "hy"))
 
-(use-package tuareg-mode
+(use-package tuareg
   :config
   (add-hook 'tuareg-mode-hook
             (lambda()
@@ -880,21 +938,6 @@
 
 (use-package merlin-eldoc
   :hook (merlin-mode . merlin-eldoc-setup))
-
-(use-package merlin-imenu
-  :hook (merlin-mode . merlin-use-merlin-imenu))
-
-(use-package ocamlformat
-  :commands ocamlformat
-  :hook (tuareg-mode . +ocaml-init-ocamlformat-h)
-  :config
-
-  (defun +ocaml-init-ocamlformat-h ()
-    (when (and (executable-find "ocamlformat")
-               (locate-dominating-file default-directory ".ocamlformat"))
-      (add-hook 'tuareg-mode-hook (lambda ()
-                                    (define-key tuareg-mode-map (kbd "C-M-<tab>") #'ocamlformat)
-                                    (add-hook 'before-save-hook #'ocamlformat-before-save))))))
 
 (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
   (when (and opam-share (file-directory-p opam-share))
@@ -1516,9 +1559,6 @@
 
 (use-package flycheck-ledger
   :after ledger-mode)
-
-(use-package helm-spotify-plus
-  :ensure t)
 
 (use-package elfeed
   :ensure t
