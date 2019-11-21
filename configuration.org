@@ -31,7 +31,7 @@
 
   #+BEGIN_SRC emacs-lisp
     (use-package evil-leader
-      :after (evil-commentary projectile-mode)
+      :after (evil-commentary projectile-mode persp-mode)
       :commands (evil-leader-mode global-evil-leader-mode)
       :ensure evil-leader
       :demand evil-leader
@@ -48,8 +48,11 @@
         "b"  'ivy-switch-buffer
         "m"  'counsel-imenu
         "e" 'flycheck-list-errors
+        "," '(lambda (arg)
+               (interactive "P")
+               (with-persp-buffer-list () (counsel-switch-buffer)))
         "gg" 'magit-status
-        "pp" 'counsel-projectile-switch-project))_
+        "pp" 'counsel-projectile-switch-project))
   #+End_SRC
 
   Use =evil=.
@@ -696,8 +699,12 @@
      (use-package which-key
        :ensure t
        :diminish which-key-mode
+       :init
+       (which-key-mode)
        :config
-       (which-key-mode))
+       (which-key-add-key-based-replacements
+         "C-x p b" "persp switch buffer"
+         "SPC ," "persp switch buffer"))
    #+END_SRC
 
 ** Undo tree
@@ -809,24 +816,30 @@
        (evil-leader/set-key "r" 'iedit-mode))
    #+END_SRC
 
-** Eyebrowse
+** Workspaces
 
-   Eyebrowse is a package that gives Emacs the ability to manage "workspaces"
-
-   #+BEGIN_SRC emacs-lisp
-     (use-package eyebrowse
-       :ensure t
-       :config
-       (eyebrowse-mode))
-   #+END_SRC
-
+   Use =persp-mode= to manage workspaces.
 
    #+BEGIN_SRC emacs-lisp
-     (use-package counsel-projectile
+     (use-package persp-mode
        :ensure t
        :config
-       (counsel-projectile-mode)
-       (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+       (setq wg-morph-on nil) ;; switch off animation
+       (setq persp-autokill-buffer-on-remove 'kill-weak)
+       (add-hook 'after-init-hook #'(lambda () (persp-mode 1)))
+       (global-set-key (kbd "C-x p b")
+                       #'(lambda (arg)
+                           (interactive "P")
+                           (with-persp-buffer-list () (counsel-switch-buffer))))
+       (define-key persp-mode-map (kbd "C-x p n") #'persp-add-new)
+       (define-key persp-mode-map (kbd "C-x p s") #'persp-switch)
+       (define-key persp-mode-map (kbd "C-x p r") #'persp-rename)
+       (define-key persp-mode-map (kbd "C-x p c") #'persp-kill)
+       (define-key persp-mode-map (kbd "C-x p a") #'persp-add-buffer)
+       (define-key persp-mode-map (kbd "C-x p i") #'persp-import-buffers)
+       (define-key persp-mode-map (kbd "C-x p k") #'persp-remove-buffer)
+       (define-key persp-mode-map (kbd "C-x p w") #'persp-save-state-to-file)
+       (define-key persp-mode-map (kbd "C-x p l") #'persp-load-state-from-file))
    #+END_SRC
 
 * Programming Environments
