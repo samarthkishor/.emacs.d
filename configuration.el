@@ -146,9 +146,9 @@
         image-dired-thumbnail-mode
         eww-mode))
 
-(use-package solarized-theme
+(use-package doom-themes
   :ensure t
-  :config (load-theme 'solarized-dark t))
+  :init (load-theme 'doom-nord t))
 
 (if window-system (scroll-bar-mode -1))
 (tool-bar-mode 0)
@@ -955,9 +955,6 @@
 ;;     (set-face-attribute face nil :weight 'semi-bold :height 1.1)))
 
 ;; (add-hook 'org-mode-hook 'my/org-mode-hook)
-(setq solarized-scale-org-headlines t)
-
-(setq solarized-use-variable-pitch nil)
 
 (setq org-refile-targets '((nil :maxlevel . 1)
                            (org-agenda-files :maxlevel . 1)))
