@@ -2312,15 +2312,6 @@
       :after ledger-mode)
   #+END_SRC
 
-* Music
-
-  Control Spotify through Emacs (you need Spotify Premium).
-
-  #+BEGIN_SRC emacs-lisp
-    (use-package helm-spotify-plus
-      :ensure t)
-  #+END_SRC
-
 * RSS Feeds
 
   =elfeed= is a good RSS feed reader. I used to use =newsboat= but this might be a bit more powerful.
