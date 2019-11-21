@@ -830,6 +830,79 @@
   (define-key hy-mode-map "\C-x\C-e" 'hy-shell-eval-last-sexp)
   (setq hy-mode-inferior-lisp-command "hy"))
 
+(use-package tuareg-mode
+  :config
+  (add-hook 'tuareg-mode-hook
+            (lambda()
+              (when (functionp 'prettify-symbols-mode)
+                (prettify-symbols-mode))))
+  (add-hook 'tuareg-mode-hook #'(lambda() (setq mode-name "🐫"))))
+
+(use-package merlin
+  :ensure t
+  :custom
+  (merlin-command 'opam)
+  (merlin-completion-with-doc t)
+  (company-quickhelp-mode t)
+  :bind (:map merlin-mode-map
+              ("M-." . merlin-locate)
+              ("M-," . merlin-pop-stack)
+              ("C-c C-o" . merlin-occurrences)
+              ("C-c C-j" . merlin-jump)
+              ("C-c i" . merlin-locate-ident)
+              ("C-c C-e" . merlin-iedit-occurrences))
+  :hook
+  (reason-mode . merlin-mode)
+  (tuareg-mode . +ocaml-init-merlin-h)
+  (caml-mode-hook . merlin-mode)
+  :init
+  (defun +ocaml-init-merlin-h ()
+    "Activate `merlin-mode' if the ocamlmerlin executable exists."
+    (when (executable-find "ocamlmerlin")
+      (merlin-mode)))
+  :config
+  (add-hook 'reason-mode-hook (lambda ()
+                                (add-hook 'before-save-hook 'refmt-before-save)
+                                (merlin-mode)))
+  ;; Make company aware of merlin
+  (with-eval-after-load 'company
+    (add-to-list 'company-backends 'merlin-company-backend)))
+
+(use-package flycheck-ocaml
+  :hook (merlin-mode . +ocaml-init-flycheck-h)
+  :config
+  (defun +ocaml-init-flycheck-h ()
+    "Activate `flycheck-ocaml`"
+    ;; Disable Merlin's own error checking
+    (setq merlin-error-after-save nil)
+    ;; Enable Flycheck checker
+    (flycheck-ocaml-setup)))
+
+(use-package merlin-eldoc
+  :hook (merlin-mode . merlin-eldoc-setup))
+
+(use-package merlin-imenu
+  :hook (merlin-mode . merlin-use-merlin-imenu))
+
+(use-package ocamlformat
+  :commands ocamlformat
+  :hook (tuareg-mode . +ocaml-init-ocamlformat-h)
+  :config
+
+  (defun +ocaml-init-ocamlformat-h ()
+    (when (and (executable-find "ocamlformat")
+               (locate-dominating-file default-directory ".ocamlformat"))
+      (add-hook 'tuareg-mode-hook (lambda ()
+                                    (define-key tuareg-mode-map (kbd "C-M-<tab>") #'ocamlformat)
+                                    (add-hook 'before-save-hook #'ocamlformat-before-save))))))
+
+(let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
+  (when (and opam-share (file-directory-p opam-share))
+    (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
+    (autoload 'merlin-mode "merlin" nil t nil)
+    (add-hook 'tuareg-mode-hook 'merlin-mode t)
+    (add-hook 'caml-mode-hook 'merlin-mode t)))
+
 (defun shell-cmd (cmd)
   "Returns the stdout output of a shell command or nil if the command returned
    an error"
@@ -856,31 +929,6 @@
 
     (when refmt-bin
       (setq refmt-command refmt-bin))))
-
-(use-package merlin
-  :ensure t
-  :custom
-  (merlin-command 'opam)
-  (merlin-completion-with-doc t)
-  (company-quickhelp-mode t)
-  :bind (:map merlin-mode-map
-              ("M-." . merlin-locate)
-              ("M-," . merlin-pop-stack)
-              ("C-c C-o" . merlin-occurrences)
-              ("C-c C-j" . merlin-jump)
-              ("C-c i" . merlin-locate-ident)
-              ("C-c C-e" . merlin-iedit-occurrences))
-  :hook
-  (reason-mode . merlin-mode)
-  (tuareg-mode . merlin-mode)
-  (caml-mode-hook . merlin-mode)
-  :config
-  (add-hook 'reason-mode-hook (lambda ()
-                                (add-hook 'before-save-hook 'refmt-before-save)
-                                (merlin-mode)))
-  ;; Make company aware of merlin
-  (with-eval-after-load 'company
-    (add-to-list 'company-backends 'merlin-company-backend)))
 
 ;; (use-package merlin-eldoc
 ;;   :ensure t
