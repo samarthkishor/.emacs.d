@@ -27,13 +27,11 @@
 
 * =evil-mode=
 
-  Use =evil-leader= to emulate leader key functionality. Set , as the leader key.
-
-  Note: the window movement keys correspond to hjkl in the Colemak layout.
+  Use =evil-leader= to emulate leader key functionality. Set SPACE as the leader key.
 
   #+BEGIN_SRC emacs-lisp
     (use-package evil-leader
-      :after evil-nerd-commenter
+      :after (evil-commentary projectile-mode)
       :commands (evil-leader-mode global-evil-leader-mode)
       :ensure evil-leader
       :demand evil-leader
@@ -44,15 +42,14 @@
       (evil-leader/set-leader "<SPC>")
       (evil-leader/set-key
         "h"  'evil-window-left
-        "n"  'evil-window-bottom
-        "e"  'evil-window-up
-        "i"  'evil-window-right
+        "j"  'evil-window-bottom
+        "k"  'evil-window-up
+        "l"  'evil-window-right
         "b"  'ivy-switch-buffer
         "m"  'counsel-imenu
-        "x"  'counsel-M-x
-        "cl" 'flycheck-list-errors
-        ","  'evilnc-comment-operator
-        "cc" 'evilnc-comment-or-uncomment-lines))
+        "e" 'flycheck-list-errors
+        "gg" 'magit-status
+        "pp" 'counsel-projectile-switch-project))_
   #+End_SRC
 
   Use =evil=.
@@ -81,7 +78,6 @@
       (setq evil-want-fine-undo t)
       (setq evil-shift-width 2)
       (setq evil-want-abbrev-expand-on-insert-exit nil)
-      (define-key evil-normal-state-map (kbd "C-p") 'counsel-projectile)
       (define-key evil-normal-state-map (kbd "q") nil)
       (define-key evil-normal-state-map (kbd "M-.") nil)
       (define-key evil-normal-state-map (kbd "M-,") nil)
@@ -100,11 +96,6 @@
         "t" 'org-todo ; mark a TODO item as DONE
         ",c" 'org-cycle
         (kbd "TAB") 'org-cycle
-        ",e" 'org-export-dispatch
-        ",n" 'outline-next-visible-heading
-        ",p" 'outline-previous-visible-heading
-        ",t" 'org-set-tags-command
-        ",u" 'outline-up-heading
         "$" 'org-end-of-line ; smarter behavior on headlines etc.
         "^" 'org-beginning-of-line ; ditto
         "-" 'org-ctrl-c-minus ; change bullet style
@@ -136,12 +127,13 @@
     (define-key evil-normal-state-map ")" 'forward-sentence)
   #+END_SRC
 
-  Use =evil-nerd-commenter= to make commenting lines easier.
+  Use =evil-commentary= to make commenting lines easier.
 
   #+BEGIN_SRC emacs-lisp
-    (use-package evil-nerd-commenter
+    (use-package evil-commentary
       :ensure t
-      :requires (evil))
+      :requires (evil)
+      :hook (prog-mode . evil-commentary-mode))
   #+END_SRC
 
   Use =evil-surround= to emulate =surround.vim=.
@@ -217,12 +209,12 @@
 * UI Preferences
 ** Theme
 
-   I prefer Solarized Dark.
+   Doom themes are nice. I prefer nord.
 
    #+BEGIN_SRC emacs-lisp
-     (use-package solarized-theme
+     (use-package doom-themes
        :ensure t
-       :config (load-theme 'solarized-dark t))
+       :init (load-theme 'doom-nord t))
    #+END_SRC
 
 ** Tweak window settings
@@ -258,6 +250,17 @@
      (setq ns-use-proxy-icon  nil)
      (setq frame-title-format nil)
    #+END_SRC
+   
+   Center the cursor while scrolling.
+
+   Source: [[https://two-wrongs.com/centered-cursor-mode-in-vanilla-emacs.html][Two Wrongs]]
+
+   #+BEGIN_SRC emacs-lisp
+     (setq scroll-preserve-screen-position t
+           scroll-conservatively 0
+           maximum-scroll-margin 0.5
+           scroll-margin 99999)
+   #+END_SRC
 
 ** Remove startup screen
 
@@ -267,79 +270,79 @@
      (setq-default inhibit-startup-screen t)
    #+END_SRC
 
-** Mode line
+* Mode line
 
-   Spaceline might be a bit too much for my needs but it looks great so it's worth it.
+  Spaceline might be a bit too much for my needs but it looks great so it's worth it.
 
-   Update: switched to doom-modeline because it's faster.
+  Update: switched to doom-modeline because it's faster.
 
-   #+BEGIN_SRC emacs-lisp
-     ;; (use-package powerline
-     ;;   :if window-system
-     ;;   :config (setq-default powerline-default-separator 'nil))
+  #+BEGIN_SRC emacs-lisp
+    ;; (use-package powerline
+    ;;   :if window-system
+    ;;   :config (setq-default powerline-default-separator 'nil))
 
-     ;; (use-package spaceline
-     ;;   :after powerline
-     ;;   :ensure t
-     ;;   :config
-     ;;   (setq spaceline-responsive nil))
+    ;; (use-package spaceline
+    ;;   :after powerline
+    ;;   :ensure t
+    ;;   :config
+    ;;   (setq spaceline-responsive nil))
 
-     ;; (use-package spaceline-all-the-icons
-     ;;   :after spaceline
-     ;;   :config
-     ;;   (setq spaceline-all-the-icons-icon-set-modified 'circle
-     ;;         spaceline-all-the-icons-icon-set-flycheck-slim 'dots
-     ;;         spaceline-all-the-icons-separator-type 'none
-     ;;         spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
-     ;;         spaceline-all-the-icons-flycheck-alternate t)
-     ;;   (spaceline-all-the-icons-theme)
-     ;;   (spaceline-toggle-all-the-icons-projectile-on)
-     ;;   (spaceline-toggle-all-the-icons-buffer-position-on)
-     ;;   (spaceline-helm-mode)
-     ;;   (spaceline-toggle-all-the-icons-minor-modes-off))
+    ;; (use-package spaceline-all-the-icons
+    ;;   :after spaceline
+    ;;   :config
+    ;;   (setq spaceline-all-the-icons-icon-set-modified 'circle
+    ;;         spaceline-all-the-icons-icon-set-flycheck-slim 'dots
+    ;;         spaceline-all-the-icons-separator-type 'none
+    ;;         spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
+    ;;         spaceline-all-the-icons-flycheck-alternate t)
+    ;;   (spaceline-all-the-icons-theme)
+    ;;   (spaceline-toggle-all-the-icons-projectile-on)
+    ;;   (spaceline-toggle-all-the-icons-buffer-position-on)
+    ;;   (spaceline-helm-mode)
+    ;;   (spaceline-toggle-all-the-icons-minor-modes-off))
 
-     (use-package doom-modeline
-       :ensure t
-       :defer t
-       :hook (after-init . doom-modeline-init)
-       :config
-       (setq doom-modeline-height 20)
-       (setq doom-modeline-major-mode-icon t)
-       (setq doom-modeline-buffer-file-name-style 'truncate-upto-project))
-   #+END_SRC
+    (use-package doom-modeline
+      :ensure t
+      :defer t
+      :hook (after-init . doom-modeline-init)
+      :config
+      (setq doom-modeline-height 20)
+      (setq doom-modeline-major-mode-icon t)
+      (setq doom-modeline-buffer-file-name-style 'truncate-upto-project))
+  #+END_SRC
 
-   Remove the weird lines below the mode-line. Need to reload with =C-c r= after starting Emacs for this to work (not sure why).
+  Remove the weird lines below the mode-line. Need to reload with =C-c r= after starting Emacs for this to work (not sure why).
 
-   Source: [[https://github.com/domtronn/all-the-icons.el/issues/29][all-the-icons.el issues]]
+  Source: [[https://github.com/domtronn/all-the-icons.el/issues/29][all-the-icons.el issues]]
 
-   #+BEGIN_SRC emacs-lisp
-     (defun remove-mode-line-box ()
-       (set-face-attribute 'mode-line nil :box nil :underline nil)
-       (set-face-attribute 'mode-line-inactive nil :box nil :underline nil))
+  #+BEGIN_SRC emacs-lisp
+    (defun remove-mode-line-box ()
+      (set-face-attribute 'mode-line nil :box nil :underline nil)
+      (set-face-attribute 'mode-line-inactive nil :box nil :underline nil))
 
-     (when (window-system)
-       (remove-mode-line-box))
-   #+END_SRC
+    (when (window-system)
+      (remove-mode-line-box))
+  #+END_SRC
 
-   Get rid of clutter using =diminish=.
+  Get rid of clutter using =diminish=.
 
-   #+BEGIN_SRC emacs-lisp
-     (use-package diminish
-       :ensure t
-       :init
-       (diminish 'undo-tree-mode)
-       (diminish 'auto-revert-mode)
-       (diminish 'global-auto-revert-mode)
-       (diminish 'eldoc-mode)
-       (diminish 'hs-minor-mode)
-       (diminish 'flyspell-mode))
-   #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (use-package diminish
+      :ensure t
+      :init
+      (diminish 'undo-tree-mode)
+      (diminish 'auto-revert-mode)
+      (diminish 'global-auto-revert-mode)
+      (diminish 'eldoc-mode)
+      (diminish 'hs-minor-mode)
+      (diminish 'flyspell-mode))
+  #+END_SRC
 
-   Don't display the system load average.
+  Don't display the system load average.
 
-   #+BEGIN_SRC emacs-lisp
-     (setq display-time-default-load-average nil)
-   #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (setq display-time-default-load-average nil)
+  #+END_SRC
 
 ** Disable the bell
 
@@ -1079,21 +1082,6 @@
        (setq slime-contribs '(slime-fancy)))
    #+END_SRC
 
-** Dafny
-
-   First, install the =boogie-friends= package.
-
-   Indicate the paths to the Dafny and Boogie installations.
-
-   #+BEGIN_SRC emacs-lisp
-     (setq dafny-verification-backend 'server)
-     (setq flycheck-dafny-executable "/Users/samarth/dafny/dafny")
-     (setq flycheck-boogie-executable "/Users/samarth/dafny/dafny-server")
-     (setq flycheck-z3-smt2-executable "/Users/samarth/dafny/z3/bin/z3")
-     (setq flycheck-inferior-dafny-executable "/Users/samarth/dafny/dafny-server") ;; Optional
-     ;; (setq boogie-friends-profile-analyzer-executable "PATH-TO-Z3-AXIOM-PROFILER") ;; Optional
-   #+END_SRC
-
 ** JavaScript
 
    Use =js2-mode= to get some nice JavaScript IDE features.
@@ -1327,6 +1315,85 @@
        (setq hy-mode-inferior-lisp-command "hy"))
    #+END_SRC
 
+** OCaml
+   
+   Use Merlin and Tuareg to get an IDE experience.
+
+   #+BEGIN_SRC emacs-lisp
+  (use-package tuareg-mode
+    :config
+    (add-hook 'tuareg-mode-hook
+              (lambda()
+                (when (functionp 'prettify-symbols-mode)
+                  (prettify-symbols-mode))))
+    (add-hook 'tuareg-mode-hook #'(lambda() (setq mode-name "🐫"))))
+
+  (use-package merlin
+    :ensure t
+    :custom
+    (merlin-command 'opam)
+    (merlin-completion-with-doc t)
+    (company-quickhelp-mode t)
+    :bind (:map merlin-mode-map
+                ("M-." . merlin-locate)
+                ("M-," . merlin-pop-stack)
+                ("C-c C-o" . merlin-occurrences)
+                ("C-c C-j" . merlin-jump)
+                ("C-c i" . merlin-locate-ident)
+                ("C-c C-e" . merlin-iedit-occurrences))
+    :hook
+    (reason-mode . merlin-mode)
+    (tuareg-mode . +ocaml-init-merlin-h)
+    (caml-mode-hook . merlin-mode)
+    :init
+    (defun +ocaml-init-merlin-h ()
+      "Activate `merlin-mode' if the ocamlmerlin executable exists."
+      (when (executable-find "ocamlmerlin")
+        (merlin-mode)))
+    :config
+    (add-hook 'reason-mode-hook (lambda ()
+                                  (add-hook 'before-save-hook 'refmt-before-save)
+                                  (merlin-mode)))
+    ;; Make company aware of merlin
+    (with-eval-after-load 'company
+      (add-to-list 'company-backends 'merlin-company-backend)))
+
+  (use-package flycheck-ocaml
+    :hook (merlin-mode . +ocaml-init-flycheck-h)
+    :config
+    (defun +ocaml-init-flycheck-h ()
+      "Activate `flycheck-ocaml`"
+      ;; Disable Merlin's own error checking
+      (setq merlin-error-after-save nil)
+      ;; Enable Flycheck checker
+      (flycheck-ocaml-setup)))
+
+  (use-package merlin-eldoc
+    :hook (merlin-mode . merlin-eldoc-setup))
+
+  (use-package merlin-imenu
+    :hook (merlin-mode . merlin-use-merlin-imenu))
+
+  (use-package ocamlformat
+    :commands ocamlformat
+    :hook (tuareg-mode . +ocaml-init-ocamlformat-h)
+    :config
+
+    (defun +ocaml-init-ocamlformat-h ()
+      (when (and (executable-find "ocamlformat")
+                 (locate-dominating-file default-directory ".ocamlformat"))
+        (add-hook 'tuareg-mode-hook (lambda ()
+                                      (define-key tuareg-mode-map (kbd "C-M-<tab>") #'ocamlformat)
+                                      (add-hook 'before-save-hook #'ocamlformat-before-save))))))
+
+  (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
+    (when (and opam-share (file-directory-p opam-share))
+      (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
+      (autoload 'merlin-mode "merlin" nil t nil)
+      (add-hook 'tuareg-mode-hook 'merlin-mode t)
+      (add-hook 'caml-mode-hook 'merlin-mode t)))
+#+END_SRC
+
 ** ReasonML
 
    ReasonML seems like a promising new language from Facebook that might make JavaScript less annoying.
@@ -1366,30 +1433,6 @@
          (when refmt-bin
            (setq refmt-command refmt-bin))))
 
-     (use-package merlin
-       :ensure t
-       :custom
-       (merlin-command 'opam)
-       (merlin-completion-with-doc t)
-       (company-quickhelp-mode t)
-       :bind (:map merlin-mode-map
-                   ("M-." . merlin-locate)
-                   ("M-," . merlin-pop-stack)
-                   ("C-c C-o" . merlin-occurrences)
-                   ("C-c C-j" . merlin-jump)
-                   ("C-c i" . merlin-locate-ident)
-                   ("C-c C-e" . merlin-iedit-occurrences))
-       :hook
-       (reason-mode . merlin-mode)
-       (tuareg-mode . merlin-mode)
-       (caml-mode-hook . merlin-mode)
-       :config
-       (add-hook 'reason-mode-hook (lambda ()
-                                     (add-hook 'before-save-hook 'refmt-before-save)
-                                     (merlin-mode)))
-       ;; Make company aware of merlin
-       (with-eval-after-load 'company
-         (add-to-list 'company-backends 'merlin-company-backend)))
    #+END_SRC
 
    Add =eldoc= support.
@@ -1500,13 +1543,6 @@
      ;;     (set-face-attribute face nil :weight 'semi-bold :height 1.1)))
 
      ;; (add-hook 'org-mode-hook 'my/org-mode-hook)
-     (setq solarized-scale-org-headlines t)
-   #+END_SRC
-
-   Don't use variable pitch in the solarized color-scheme.
-
-   #+BEGIN_SRC emacs-lisp
-     (setq solarized-use-variable-pitch nil)
    #+END_SRC
 
    Set up refile targets.
@@ -1543,7 +1579,7 @@
      (setq org-log-done 'time)
    #+END_SRC
 
-   Create a function to go to my tasks.org file. Called with =M-x RET tasks RET=.
+   Create functions to open my tasks and another to open my homework. Called with =M-x RET tasks RET= or =M-x RET homework RET=.
    Source: [[https://github.com/munen/emacs.d/#general-configuration]]
 
    #+BEGIN_SRC emacs-lisp
@@ -1556,9 +1592,19 @@
      (set-org-agenda-files)
 
      (defun tasks ()
-       "Open main 'org-mode' file and start 'org-agenda' for this week."
+       "Open main tasks file and start 'org-agenda' for this week."
        (interactive)
        (find-file (concat org-directory "tasks.org"))
+       (set-org-agenda-files)
+       (org-agenda-list)
+       (org-agenda-week-view)
+       (shrink-window-if-larger-than-buffer)
+       (other-window 1))
+
+     (defun homework ()
+       "Open homework file and start 'org-agenda' for this week."
+       (interactive)
+       (find-file (concat org-directory "homework.org"))
        (set-org-agenda-files)
        (org-agenda-list)
        (org-agenda-week-view)
@@ -1721,39 +1767,6 @@
 
      (setq org-babel-python-command "python3")
    #+END_SRC
-
-* Helm
-
-  Use Helm for incremental completions and narrowing selections.
-
-  #+BEGIN_SRC emacs-lisp
-    ;; (use-package helm
-    ;;   :ensure t
-    ;;   :diminish helm-mode
-    ;;   :bind
-    ;;   ("C-x C-f" . 'helm-find-files)
-    ;;   ("C-x C-b" . 'helm-buffers-list)
-    ;;   ("C-x b"   . 'helm-mini)
-    ;;   ("M-x"     . 'helm-M-x)
-    ;;   :custom
-    ;;   (helm-buffers-fuzzy-matching t)
-    ;;   (helm-recentf-fuzzy-match t)
-    ;;   (helm-projectile-fuzzy-match t)
-    ;;   (helm-imenu-fuzzy-match t)
-    ;;   :init
-    ;;   (helm-mode 1)
-    ;;   (add-hook 'helm-major-mode-hook
-    ;;             (lambda ()
-    ;;               (setq auto-composition-mode nil))))
-  #+END_SRC
-
-  Use =swiper= (with a Helm interface) instead of =isearch= for searching with =C-s=.
-
-  #+BEGIN_SRC emacs-lisp
-    ;; (use-package swiper-helm
-    ;;   :ensure t
-    ;;   :bind ("C-s" . swiper-helm))
-  #+END_SRC
 
 * Ivy/Counsel/Swiper
 
@@ -2268,27 +2281,6 @@
            `(("t" "TODO" entry (file+headline "~/Dropbox/org/tasks.org" "Tasks")
               "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")))
    #+END_SRC
-
-* Web Browsing
-
-  Because why not
-
-  Make sure that the right browser extensions are installed. I'm using GhostText with Firefox.
-
-  Source: [[https://github.com/munen/emacs.d/][even more dotfiles]]
-
-  #+BEGIN_SRC emacs-lisp
-    (use-package atomic-chrome
-      :ensure t
-      :config
-      (setq atomic-chrome-default-major-mode 'org-mode)
-      (setq atomic-chrome-buffer-open-style 'frame)
-      (add-hook 'atomic-chrome-edit-done-hook 'delete-frame)
-      ;; Handle if there is an Emacs instance running which has the server already started
-      (ignore-errors
-        ;; Start the server
-        (atomic-chrome-start-server)))
-  #+END_SRC
 
 * Finances
 
