@@ -948,6 +948,15 @@
      (global-eldoc-mode -1)
    #+END_SRC
 
+   Highlight TODO keywords.
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package hl-todo
+       :ensure t
+       :init
+       (global-hl-todo-mode))
+   #+END_SRC
+
 ** Magit
 
    Bring up the status menu with =C-x g=.
