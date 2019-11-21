@@ -1301,9 +1301,17 @@
      (setq python-shell-interpreter "ipython")
    #+END_SRC
 
+** Prolog
+
+   Use Prolog mode on files with a .pl extension.
+
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'auto-mode-alist '("\\.pl\\'" . prolog-mode))
+   #+END_SRC
+
 ** Hy
 
-   Lisp + Python? Seems legit.
+   Lisp + Python
 
    #+BEGIN_SRC emacs-lisp
      (use-package hy-mode
