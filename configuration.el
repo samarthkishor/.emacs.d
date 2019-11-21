@@ -666,13 +666,6 @@
   (setq inferior-lisp-program (shell-cmd "which sbcl"))
   (setq slime-contribs '(slime-fancy)))
 
-(setq dafny-verification-backend 'server)
-(setq flycheck-dafny-executable "/Users/samarth/dafny/dafny")
-(setq flycheck-boogie-executable "/Users/samarth/dafny/dafny-server")
-(setq flycheck-z3-smt2-executable "/Users/samarth/dafny/z3/bin/z3")
-(setq flycheck-inferior-dafny-executable "/Users/samarth/dafny/dafny-server") ;; Optional
-;; (setq boogie-friends-profile-analyzer-executable "PATH-TO-Z3-AXIOM-PROFILER") ;; Optional
-
 (use-package js2-mode
   :ensure t
   :defer t
