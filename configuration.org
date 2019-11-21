@@ -684,6 +684,14 @@
        (add-to-list 'projectile-globally-ignored-directories "*node_modules"))
    #+END_SRC
 
+   #+BEGIN_SRC emacs-lisp
+     (use-package counsel-projectile
+       :ensure t
+       :config
+       (counsel-projectile-mode)
+       (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+   #+END_SRC
+
 ** Smooth scrolling
 
    Makes scrolling a whole lot nicer.
