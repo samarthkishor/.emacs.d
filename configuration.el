@@ -1018,9 +1018,19 @@
 (set-org-agenda-files)
 
 (defun tasks ()
-  "Open main 'org-mode' file and start 'org-agenda' for this week."
+  "Open main tasks file and start 'org-agenda' for this week."
   (interactive)
   (find-file (concat org-directory "tasks.org"))
+  (set-org-agenda-files)
+  (org-agenda-list)
+  (org-agenda-week-view)
+  (shrink-window-if-larger-than-buffer)
+  (other-window 1))
+
+(defun homework ()
+  "Open homework file and start 'org-agenda' for this week."
+  (interactive)
+  (find-file (concat org-directory "homework.org"))
   (set-org-agenda-files)
   (org-agenda-list)
   (org-agenda-week-view)
